@@ -1,0 +1,90 @@
+package com.hw.filter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hw.entity.RevokeClient;
+import com.hw.entity.RevokeResourceOwner;
+import com.hw.repo.RevokeClientRepo;
+import com.hw.repo.RevokeResourceOwnerRepo;
+import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.jwt.Jwt;
+import org.springframework.security.jwt.JwtHelper;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.Map;
+
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
+import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
+
+@Component
+public class RevokeFilter extends ZuulFilter {
+
+    @Autowired
+    RevokeClientRepo revokeClientRepo;
+
+    @Autowired
+    RevokeResourceOwnerRepo revokeResourceOwnerRepo;
+
+    @Autowired
+    ObjectMapper mapper;
+
+    @Override
+    public String filterType() {
+        return PRE_TYPE;
+    }
+
+    @Override
+    public int filterOrder() {
+        return PRE_DECORATION_FILTER_ORDER - 1; // run before PreDecoration
+    }
+
+    @Override
+    public boolean shouldFilter() {
+        return true;
+    }
+
+    @Override
+    public Object run() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+        HttpServletRequest request = ctx.getRequest();
+        String authHeader = request.getHeader("authorization");
+        if (authHeader != null && authHeader.contains("Bearer")) {
+            Jwt jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
+            Map claims;
+            try {
+                claims = mapper.readValue(jwt.getClaims(), Map.class);
+
+                Integer iat = (Integer) claims.get("iat");
+                String userName = (String) claims.get("user_name");
+                String clientId = (String) claims.get("client_id");
+
+                if (userName != null) {
+                    RevokeResourceOwner byName = revokeResourceOwnerRepo.findByName(userName);
+                    if (byName != null && byName.getIssuedAt() > iat) {
+                        ctx.setSendZuulResponse(false);
+                        ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
+                        /** reject request*/
+                    }
+                }
+                if (clientId != null) {
+                    RevokeClient byName = revokeClientRepo.findByName(clientId);
+                    if (byName != null && byName.getIssuedAt() > iat) {
+                        /** reject request*/
+                        ctx.setSendZuulResponse(false);
+                        ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
+                    }
+                }
+
+            } catch (IOException e) {
+                /** this block is left blank on purpose*/
+                return null;
+            }
+
+        }
+        return null;
+    }
+}
