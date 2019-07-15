@@ -32,7 +32,7 @@ public class BlackListControllerTest {
     private TestRestTemplate restTemplate = new TestRestTemplate();
 
     @Test
-    public void happy_receive_request_from_oauth2service_add_client() {
+    public void happy_receive_request_blacklist_client_then_block_client_old_request() {
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse = getTokenResponse(client_credentials, valid_clientId, valid_clientSecret);
         String bearer = tokenResponse.getBody().getValue();
 
@@ -45,10 +45,12 @@ public class BlackListControllerTest {
         HttpEntity<MultiValueMap<String, String>> hashMapHttpEntity = new HttpEntity<>(map, headers);
         ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity, String.class);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
+        //@todo validate request is getting blocked
     }
 
     @Test
-    public void happy_receive_request_from_oauth2service_add_resourceOwner() {
+    public void happy_receive_request_blacklist_resourceOwner_then_block_resourceOwner_old_request() {
+        //@todo use password flow
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse = getTokenResponse(client_credentials, valid_clientId, valid_clientSecret);
         String bearer = tokenResponse.getBody().getValue();
 
@@ -62,6 +64,7 @@ public class BlackListControllerTest {
         ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity, String.class);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
     }
+
 
     private ResponseEntity<DefaultOAuth2AccessToken> getTokenResponse(String grantType, String clientId, String clientSecret) {
         String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";

@@ -81,7 +81,6 @@ public class RevokeFilter extends ZuulFilter {
 
             } catch (IOException e) {
                 /** this block is left blank on purpose*/
-                return null;
             }
 
         }
