@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 
+/**
+ * zuul can not proxy it's own endpoint,
+ *
+ * @todo apply block logic here to prevent blacklisted root&trust client access
+ */
 @RestController
 @RequestMapping("proxy/blacklist")
 @PreAuthorize("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isClient()")
