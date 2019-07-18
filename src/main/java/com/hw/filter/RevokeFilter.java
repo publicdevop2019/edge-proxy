@@ -73,7 +73,8 @@ public class RevokeFilter extends ZuulFilter {
                 if (clientId != null) {
                     RevokeClient byName = revokeClientRepo.findByName(clientId);
                     if (byName != null && byName.getIssuedAt() > iat) {
-                        /** reject request*/
+                        /** reject request, for internal forwarding, set attribute */
+                        request.setAttribute("internal_forward_block","true");
                         ctx.setSendZuulResponse(false);
                         ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
                     }

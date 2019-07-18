@@ -1,5 +1,7 @@
 package com.hw.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.EdgeProxy;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -14,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -34,12 +37,14 @@ public class BlackListControllerTest {
     @LocalServerPort
     int randomServerPort;
 
+    private ObjectMapper mapper = new ObjectMapper();
+
     private TestRestTemplate restTemplate = new TestRestTemplate();
     private String username = "admin@gmail.com";
     private String userPwd = "root";
 
     /**
-     * wait until @todo is done in controller level
+     * running test with spring runner can get away with security constrain
      */
     @Test
     @Ignore
@@ -93,7 +98,7 @@ public class BlackListControllerTest {
     }
 
     @Test
-    public void sad_receive_request_blacklist_client_then_block_client_old_request() {
+    public void sad_receive_request_blacklist_client_then_block_client_old_request() throws JsonProcessingException {
 
         String url = "http://localhost:" + randomServerPort + "/proxy/blacklist" + "/client";
         String url2 = "http://localhost:" + randomServerPort + "/api/v1" + "/resourceOwners";
@@ -116,12 +121,14 @@ public class BlackListControllerTest {
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse = getTokenResponse(client_credentials, valid_clientId, valid_clientSecret);
         String bearer = tokenResponse.getBody().getValue();
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("name", should_block_clientId_non_root);
+        HashMap<String, String> stringStringHashMap = new HashMap<>();
+        stringStringHashMap.put("name", should_block_clientId_non_root);
+        String s = mapper.writeValueAsString(stringStringHashMap);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(bearer);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> hashMapHttpEntity = new HttpEntity<>(map, headers);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> hashMapHttpEntity = new HttpEntity<>(s, headers);
         ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity, String.class);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 
@@ -146,17 +153,18 @@ public class BlackListControllerTest {
      * only root client and trusted client can add blacklist
      */
     @Test
-    public void sad_receive_request_blacklist_from_wrong_client() {
+    public void sad_receive_request_blacklist_from_wrong_client() throws JsonProcessingException {
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse = getTokenResponse(client_credentials, wrong_clientId, "");
         String bearer = tokenResponse.getBody().getValue();
 
         String url = "http://localhost:" + randomServerPort + "/proxy/blacklist" + "/client";
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("name", UUID.randomUUID().toString());
+        HashMap<String, String> stringStringHashMap = new HashMap<>();
+        stringStringHashMap.put("name", UUID.randomUUID().toString());
+        String s = mapper.writeValueAsString(stringStringHashMap);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(bearer);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> hashMapHttpEntity = new HttpEntity<>(map, headers);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> hashMapHttpEntity = new HttpEntity<>(s, headers);
         ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity, String.class);
         Assert.assertEquals(HttpStatus.FORBIDDEN, exchange.getStatusCode());
     }

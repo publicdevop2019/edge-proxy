@@ -39,6 +39,7 @@ public class CORSConfig {
         source.registerCorsConfiguration("/api/v1/resourceOwners", configuration);
         source.registerCorsConfiguration("/api/v1/blacklist/**", configuration);
         source.registerCorsConfiguration("/api/v1/authorize", configuration);
+        source.registerCorsConfiguration("/proxy/blacklist/**", configuration);
         FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
         /**
          * make sure oauth security check happen after cors filter
