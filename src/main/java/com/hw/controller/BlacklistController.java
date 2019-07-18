@@ -7,7 +7,11 @@ import com.hw.repo.RevokeResourceOwnerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -32,7 +36,7 @@ public class BlacklistController {
 
     @PostMapping("client")
     public ResponseEntity<?> revokeClient(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
-        Object internal_forward_block = request.getAttribute("internal_forward_block");
+        blacklisted(request);
         String name1 = stringStringMap.get("name");
         long epochSecond = Instant.now().getEpochSecond();
         RevokeClient by = revokeClientRepo.findByName(name1);
@@ -50,19 +54,27 @@ public class BlacklistController {
     }
 
     @PostMapping("resourceOwner")
-    public ResponseEntity<?> revokeResourceOwner(@RequestParam() String name) {
+    public ResponseEntity<?> revokeResourceOwner(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
+        blacklisted(request);
+        String name1 = stringStringMap.get("name");
         long epochSecond = Instant.now().getEpochSecond();
-        RevokeResourceOwner byName = revokeResourceOwnerRepo.findByName(name);
+        RevokeResourceOwner byName = revokeResourceOwnerRepo.findByName(name1);
         /**if exist update issuedAt other wise create*/
         if (byName == null) {
             RevokeResourceOwner revokeResourceOwner = new RevokeResourceOwner();
             revokeResourceOwner.setIssuedAt(epochSecond);
-            revokeResourceOwner.setName(name);
+            revokeResourceOwner.setName(name1);
             revokeResourceOwnerRepo.save(revokeResourceOwner);
         } else {
             byName.setIssuedAt(epochSecond);
             revokeResourceOwnerRepo.save(byName);
         }
         return ResponseEntity.ok().build();
+    }
+
+    private void blacklisted(HttpServletRequest request) {
+        Boolean internal_forward_block = (Boolean) request.getAttribute("internal_forward_block");
+        if (internal_forward_block != null && internal_forward_block)
+            throw new UnauthorizedClientException("internal endpoint access denied");
     }
 }

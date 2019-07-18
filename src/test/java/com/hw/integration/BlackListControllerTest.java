@@ -43,24 +43,22 @@ public class BlackListControllerTest {
     private String username = "admin@gmail.com";
     private String userPwd = "root";
 
-    /**
-     * running test with spring runner can get away with security constrain
-     */
     @Test
-    @Ignore
-    public void sad_receive_request_blacklist_client_then_block_client_old_request_access_proxy_endpoints() {
+    public void sad_receive_request_blacklist_client_then_block_client_old_request_access_proxy_endpoints() throws JsonProcessingException {
         String url = "http://localhost:" + randomServerPort + "/proxy/blacklist" + "/client";
         /**
          * before client get blacklisted, client is able to access proxy endpoints
          */
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse1 = getTokenResponse(client_credentials, should_block_clientId_root, valid_clientSecret);
         String bearer1 = tokenResponse1.getBody().getValue();
-        MultiValueMap<String, String> map1 = new LinkedMultiValueMap<>();
-        map1.add("name", UUID.randomUUID().toString());
+
+        HashMap<String, String> stringStringHashMap = new HashMap<>();
+        stringStringHashMap.put("name", UUID.randomUUID().toString());
+        String s = mapper.writeValueAsString(stringStringHashMap);
         HttpHeaders headers1 = new HttpHeaders();
         headers1.setBearerAuth(bearer1);
-        headers1.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> hashMapHttpEntity1 = new HttpEntity<>(map1, headers1);
+        headers1.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> hashMapHttpEntity1 = new HttpEntity<>(s, headers1);
         ResponseEntity<String> exchange1 = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity1, String.class);
         Assert.assertEquals(HttpStatus.OK, exchange1.getStatusCode());
 
@@ -71,20 +69,21 @@ public class BlackListControllerTest {
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse = getTokenResponse(client_credentials, valid_clientId, valid_clientSecret);
         String bearer = tokenResponse.getBody().getValue();
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("name", should_block_clientId_root);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(bearer);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> hashMapHttpEntity = new HttpEntity<>(map, headers);
-        ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity, String.class);
+        HashMap<String, String> blockBody = new HashMap<>();
+        blockBody.put("name", should_block_clientId_root);
+        String body = mapper.writeValueAsString(blockBody);
+        HttpHeaders blockCallHeader = new HttpHeaders();
+        blockCallHeader.setBearerAuth(bearer);
+        blockCallHeader.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> blockReqEntity = new HttpEntity<>(body, blockCallHeader);
+        ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, blockReqEntity, String.class);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
 
         /**
          * after client get blacklisted, client with old token will get 401
          */
         ResponseEntity<String> exchange2 = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity1, String.class);
-        Assert.assertEquals(HttpStatus.FORBIDDEN, exchange2.getStatusCode());
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED, exchange2.getStatusCode());
 
         /**
          * after client obtain new token from auth server, it can access resource again
@@ -92,7 +91,7 @@ public class BlackListControllerTest {
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse3 = getTokenResponse(client_credentials, should_block_clientId_root, valid_clientSecret);
         String bearer3 = tokenResponse3.getBody().getValue();
         headers1.setBearerAuth(bearer3);
-        HttpEntity<MultiValueMap<String, String>> hashMapHttpEntity3 = new HttpEntity<>(map1, headers1);
+        HttpEntity<String> hashMapHttpEntity3 = new HttpEntity<>(s, headers1);
         ResponseEntity<String> exchange3 = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity3, String.class);
         Assert.assertEquals(HttpStatus.OK, exchange3.getStatusCode());
     }
@@ -170,18 +169,18 @@ public class BlackListControllerTest {
     }
 
     @Test
-    public void happy_receive_request_blacklist_resourceOwner_then_block_resourceOwner_old_request() {
+    public void happy_receive_request_blacklist_resourceOwner_then_block_resourceOwner_old_request() throws JsonProcessingException {
         //@todo use password flow
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse = getTokenResponse(client_credentials, valid_clientId, valid_clientSecret);
         String bearer = tokenResponse.getBody().getValue();
 
         String url = "http://localhost:" + randomServerPort + "/proxy/blacklist" + "/resourceOwner";
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("name", UUID.randomUUID().toString());
+        HashMap<String, String> stringStringHashMap = new HashMap<>();
+        stringStringHashMap.put("name", UUID.randomUUID().toString());
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(bearer);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> hashMapHttpEntity = new HttpEntity<>(map, headers);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> hashMapHttpEntity = new HttpEntity<>(mapper.writeValueAsString(stringStringHashMap), headers);
         ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, hashMapHttpEntity, String.class);
         Assert.assertEquals(HttpStatus.OK, exchange.getStatusCode());
     }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.common.exceptions.RedirectMismatchException;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,7 +43,7 @@ public class GlobleExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {AccessDeniedException.class})
-    protected ResponseEntity<?> handleAuthException(RuntimeException ex, WebRequest request) {
+    protected ResponseEntity<?> handle403Exception(RuntimeException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
 
@@ -53,6 +54,20 @@ public class GlobleExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("error_id", s);
         log.error("Handled exception UUID - {} - class - [{}] - Exception :", s, ex.getClass(), ex);
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    }
+
+    @ExceptionHandler(value = {UnauthorizedClientException.class})
+    protected ResponseEntity<?> handle401Exception(RuntimeException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+
+        String[] split = NestedExceptionUtils.getMostSpecificCause(ex).getMessage().replace("\t", "").split("\n");
+
+        String s = UUID.randomUUID().toString();
+        body.put("errors", split);
+        body.put("error_id", s);
+        log.error("Handled exception UUID - {} - class - [{}] - Exception :", s, ex.getClass(), ex);
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
     @Order()
