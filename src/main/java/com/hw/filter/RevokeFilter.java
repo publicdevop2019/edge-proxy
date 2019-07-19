@@ -7,6 +7,7 @@ import com.hw.repo.RevokeClientRepo;
 import com.hw.repo.RevokeResourceOwnerRepo;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
+import com.netflix.zuul.http.HttpServletRequestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.jwt.Jwt;
@@ -51,9 +52,21 @@ public class RevokeFilter extends ZuulFilter {
     public Object run() {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
-        String authHeader = request.getHeader("authorization");
-        if (authHeader != null && authHeader.contains("Bearer")) {
-            Jwt jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
+        HttpServletRequestWrapper httpServletRequestWrapper = (HttpServletRequestWrapper) request;
+        String requestURI = httpServletRequestWrapper.getRequestURI();
+        String authHeader = httpServletRequestWrapper.getHeader("authorization");
+        /**
+         * block both access token and refresh token
+         */
+        if ((authHeader != null && authHeader.contains("Bearer")) ||
+                ("/oauth/token".equals(requestURI) && httpServletRequestWrapper.getRequest().getParameter("refresh_token") != null)
+        ) {
+            Jwt jwt;
+            if (authHeader != null && authHeader.contains("Bearer")) {
+                jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
+            } else {
+                jwt = JwtHelper.decode(httpServletRequestWrapper.getRequest().getParameter("refresh_token"));
+            }
             Map claims;
             try {
                 claims = mapper.readValue(jwt.getClaims(), Map.class);
@@ -65,7 +78,7 @@ public class RevokeFilter extends ZuulFilter {
                 if (userName != null) {
                     RevokeResourceOwner byName = revokeResourceOwnerRepo.findByName(userName);
                     if (byName != null && byName.getIssuedAt() >= iat) {
-                        request.setAttribute("internal_forward_block",Boolean.TRUE);
+                        request.setAttribute("internal_forward_block", Boolean.TRUE);
                         ctx.setSendZuulResponse(false);
                         ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
                         /** reject request*/
@@ -75,7 +88,7 @@ public class RevokeFilter extends ZuulFilter {
                     RevokeClient byName = revokeClientRepo.findByName(clientId);
                     if (byName != null && byName.getIssuedAt() >= iat) {
                         /** reject request, for internal forwarding, set attribute */
-                        request.setAttribute("internal_forward_block",Boolean.TRUE);
+                        request.setAttribute("internal_forward_block", Boolean.TRUE);
                         ctx.setSendZuulResponse(false);
                         ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
                     }

@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("proxy/blacklist")
-@PreAuthorize("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust')")
+@PreAuthorize("(hasRole('ROLE_ADMIN') or hasRole('ROLE_ROOT')) and #oauth2.hasScope('trust')")
 public class BlacklistController {
 
     @Autowired
