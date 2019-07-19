@@ -44,7 +44,7 @@ public class BlackListControllerTest {
     private String userPwd = "root";
 
     @Test
-    public void sad_receive_request_blacklist_client_then_block_client_old_request_access_proxy_endpoints() throws JsonProcessingException {
+    public void sad_receive_request_blacklist_client_then_block_client_old_request_access_proxy_endpoints() throws JsonProcessingException, InterruptedException {
         String url = "http://localhost:" + randomServerPort + "/proxy/blacklist" + "/client";
         /**
          * before client get blacklisted, client is able to access proxy endpoints
@@ -87,7 +87,9 @@ public class BlackListControllerTest {
 
         /**
          * after client obtain new token from auth server, it can access resource again
+         * add thread sleep to prevent token get revoked and generate within a second
          */
+        Thread.sleep(1000);
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse3 = getTokenResponse(client_credentials, should_block_clientId_root, valid_clientSecret);
         String bearer3 = tokenResponse3.getBody().getValue();
         headers1.setBearerAuth(bearer3);
@@ -97,7 +99,7 @@ public class BlackListControllerTest {
     }
 
     @Test
-    public void sad_receive_request_blacklist_client_then_block_client_old_request() throws JsonProcessingException {
+    public void sad_receive_request_blacklist_client_then_block_client_old_request() throws JsonProcessingException, InterruptedException {
 
         String url = "http://localhost:" + randomServerPort + "/proxy/blacklist" + "/client";
         String url2 = "http://localhost:" + randomServerPort + "/api/v1" + "/resourceOwners";
@@ -139,7 +141,9 @@ public class BlackListControllerTest {
 
         /**
          * after client obtain new token from auth server, it can access resource again
+         * add thread sleep to prevent token get revoked and generate within a second
          */
+        Thread.sleep(1000);
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse3 = getPwdTokenResponse(password, should_block_clientId_non_root, "", username, userPwd);
         String bearer3 = tokenResponse3.getBody().getValue();
         headers1.setBearerAuth(bearer3);
