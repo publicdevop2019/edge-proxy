@@ -1,0 +1,4 @@
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(0,'oauth2-id','/api/v1/clients','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(1,'oauth2-id','/api/v1/client','POST','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(2,'oauth2-id','/api/v1/client/**','PUT','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(3,'oauth2-id','/api/v1/client/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
