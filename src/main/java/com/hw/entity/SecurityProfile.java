@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "security_profile_list")
@@ -14,12 +15,16 @@ public class SecurityProfile {
     /**
      * spring security style expression e.g. "hasRole('ROLE_USER') and #oauth2.hasScope('trust') and #oauth2.isUser()"
      */
+    @NotBlank
     private String expression;
 
+    @NotBlank
     private String resourceID;
 
+    @NotBlank
     private String endpoint;
 
+    @NotBlank
     private String method;
 
     @Id

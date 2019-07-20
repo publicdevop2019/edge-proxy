@@ -22,6 +22,9 @@ import java.util.Map;
  * internal forwarding is having issue with form data,
  *
  * @todo apply block logic here to prevent blacklisted root&trust client access, access control for oauth2-id and login-id
+ *
+ * need both admin and root present due to client role does not have admin
+ *
  */
 @RestController
 @RequestMapping("proxy/blacklist")
