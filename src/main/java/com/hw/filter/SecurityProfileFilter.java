@@ -18,6 +18,7 @@ import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecurityExpressionHandler;
 import org.springframework.security.util.SimpleMethodInvocation;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -71,7 +72,18 @@ public class SecurityProfileFilter extends ZuulFilter {
          * poc
          */
         SecurityProfile securityProfile = new SecurityProfile("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()",
-                "oauth2-id", "/api/v1/clients", HttpMethod.GET);
+                "oauth2-id", "/api/v1/clients", HttpMethod.GET, 0L);
+        SecurityProfile securityProfile2 = new SecurityProfile("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()",
+                "oauth2-id", "/api/v1/client", HttpMethod.POST, 1L);
+        SecurityProfile securityProfile3 = new SecurityProfile("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()",
+                "oauth2-id", "/api/v1/client/**", HttpMethod.PUT, 2L);
+        SecurityProfile securityProfile4 = new SecurityProfile("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()",
+                "oauth2-id", "/api/v1/client/**", HttpMethod.DELETE, 3L);
+        ArrayList<SecurityProfile> securityProfiles = new ArrayList<>(4);
+        securityProfiles.add(securityProfile);
+        securityProfiles.add(securityProfile2);
+        securityProfiles.add(securityProfile3);
+        securityProfiles.add(securityProfile4);
 
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
@@ -79,11 +91,11 @@ public class SecurityProfileFilter extends ZuulFilter {
         String requestURI = httpServletRequestWrapper.getRequestURI();
         String method = httpServletRequestWrapper.getMethod();
         String authHeader = httpServletRequestWrapper.getHeader("authorization");
-
-        if (requestURI.equals(securityProfile.getEndpoint()) && method.equals(securityProfile.getMethod().toString())) {
-            /**
-             * check security rule
-             */
+        AntPathMatcher antPathMatcher = new AntPathMatcher();
+        /**
+         * check endpoint url, method first then check resourceId and security rule
+         */
+        if (securityProfiles.stream().anyMatch(e -> antPathMatcher.match(e.getEndpoint(), requestURI) && method.equals(e.getMethod().toString()))) {
             if (authHeader != null && authHeader.contains("Bearer")) {
                 Jwt jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
                 try {
