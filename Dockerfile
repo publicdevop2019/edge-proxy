@@ -31,4 +31,4 @@ COPY --from=jlink-package /opt/jdk-11-mini-runtime /opt/jdk-11-mini-runtime
 COPY --from=maven ./target/EdgeProxyService.jar ./
 
 EXPOSE 8111 8080
-CMD java -jar EdgeProxyService.jar
+ENTRYPOINT java -jar EdgeProxyService.jar
