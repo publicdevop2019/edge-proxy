@@ -22,6 +22,9 @@ import java.util.Map;
  * internal forwarding is having issue with form data,
  *
  * @todo apply block logic here to prevent blacklisted root&trust client access, access control for oauth2-id and login-id
+ *
+ * need both admin and root present due to client role does not have admin
+ *
  */
 @RestController
 @RequestMapping("proxy/blacklist")
@@ -72,7 +75,7 @@ public class BlacklistController {
         return ResponseEntity.ok().build();
     }
 
-    private void blacklisted(HttpServletRequest request) {
+    public static void blacklisted(HttpServletRequest request) {
         Boolean internal_forward_block = (Boolean) request.getAttribute("internal_forward_block");
         if (internal_forward_block != null && internal_forward_block)
             throw new UnauthorizedClientException("internal endpoint access denied");

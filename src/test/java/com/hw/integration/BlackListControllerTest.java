@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * this integration test requires oauth2service to be running
+ * this integration auth requires oauth2service to be running
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = EdgeProxy.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,7 +28,7 @@ public class BlackListControllerTest {
     private String password = "password";
     private String valid_clientId = "oauth2-id";
     private String should_block_clientId_root = "block-id";
-    private String should_block_clientId_non_root = "test-id";
+    private String should_block_clientId_non_root = "login-id";
     private String wrong_clientId = "register-id";
     private String login_clientId = "login-id";
     private String valid_clientSecret = "root";

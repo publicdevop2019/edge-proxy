@@ -40,7 +40,7 @@ public class RevokeFilter extends ZuulFilter {
 
     @Override
     public int filterOrder() {
-        return PRE_DECORATION_FILTER_ORDER - 1; // run before PreDecoration
+        return PRE_DECORATION_FILTER_ORDER - 2; // run before PreDecoration
     }
 
     @Override
