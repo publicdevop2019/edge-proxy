@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.hw.clazz.Constant.EDGE_PROXY_TOKEN_REVOKED;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
@@ -78,7 +79,7 @@ public class RevokeFilter extends ZuulFilter {
                 if (userName != null) {
                     RevokeResourceOwner byName = revokeResourceOwnerRepo.findByName(userName);
                     if (byName != null && byName.getIssuedAt() >= iat) {
-                        request.setAttribute("internal_forward_block", Boolean.TRUE);
+                        request.setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
                         ctx.setSendZuulResponse(false);
                         ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
                         /** reject request*/
@@ -88,7 +89,7 @@ public class RevokeFilter extends ZuulFilter {
                     RevokeClient byName = revokeClientRepo.findByName(clientId);
                     if (byName != null && byName.getIssuedAt() >= iat) {
                         /** reject request, for internal forwarding, set attribute */
-                        request.setAttribute("internal_forward_block", Boolean.TRUE);
+                        request.setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
                         ctx.setSendZuulResponse(false);
                         ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
                     }

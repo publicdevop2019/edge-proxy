@@ -29,15 +29,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.hw.clazz.Constant.EDGE_PROXY_UNAUTHORIZED_ACCESS;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 @Component
 public class SecurityProfileFilter extends ZuulFilter {
 
+    private static Method triggerCheckMethod;
+    private static SpelExpressionParser parser;
+
+    static {
+        try {
+            triggerCheckMethod = SecurityObject.class.getMethod("triggerCheck");
+        } catch (NoSuchMethodException e) {
+//            logger.error(e);
+        }
+        parser = new SpelExpressionParser();
+    }
+
     @Autowired
     ObjectMapper mapper;
-
     @Autowired
     SecurityProfileRepo securityProfileRepo;
 
@@ -56,41 +68,8 @@ public class SecurityProfileFilter extends ZuulFilter {
         return true;
     }
 
-    private static class SecurityObject {
-        public void triggerCheck() { /*NOP*/ }
-    }
-
-    private static Method triggerCheckMethod;
-    private static SpelExpressionParser parser;
-
-    static {
-        try {
-            triggerCheckMethod = SecurityObject.class.getMethod("triggerCheck");
-        } catch (NoSuchMethodException e) {
-//            logger.error(e);
-        }
-        parser = new SpelExpressionParser();
-    }
-
     @Override
     public Object run() throws ZuulException {
-        /**
-         * poc
-         */
-//        SecurityProfile securityProfile = new SecurityProfile("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()",
-//                "oauth2-id", "/api/v1/clients", HttpMethod.GET.toString(), 0L);
-//        SecurityProfile securityProfile2 = new SecurityProfile("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()",
-//                "oauth2-id", "/api/v1/client", HttpMethod.POST.toString(), 1L);
-//        SecurityProfile securityProfile3 = new SecurityProfile("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()",
-//                "oauth2-id", "/api/v1/client/**", HttpMethod.PUT.toString(), 2L);
-//        SecurityProfile securityProfile4 = new SecurityProfile("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()",
-//                "oauth2-id", "/api/v1/client/**", HttpMethod.DELETE.toString(), 3L);
-//        ArrayList<SecurityProfile> securityProfiles = new ArrayList<>(4);
-//        securityProfiles.add(securityProfile);
-//        securityProfiles.add(securityProfile2);
-//        securityProfiles.add(securityProfile3);
-//        securityProfiles.add(securityProfile4);
-
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
         HttpServletRequestWrapper httpServletRequestWrapper = (HttpServletRequestWrapper) request;
@@ -126,18 +105,24 @@ public class SecurityProfileFilter extends ZuulFilter {
             List<SecurityProfile> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getEndpoint(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             boolean b = collect1.stream().allMatch(e -> ExpressionUtils.evaluateAsBoolean(parser.parseExpression(e.getExpression()), evaluationContext));
 
-            if (b) {
-                return null;
-            } else {
+            if (!b || collect1.isEmpty()) {
+                request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
-                return null;
             }
-        } else {
+        } else if ("/oauth/token".equals(requestURI)) {
             /**
-             * for api without bearer token, can be token endpoints or un-registered endpoints
+             * permit all token endpoints
              */
-            return null;
+        } else {
+            /** un-registered endpoints */
+            ctx.setSendZuulResponse(false);
+            ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
         }
+        return null;
+    }
+
+    private static class SecurityObject {
+        public void triggerCheck() { /*NOP*/ }
     }
 }

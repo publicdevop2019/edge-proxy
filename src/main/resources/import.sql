@@ -7,3 +7,9 @@ INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VAL
 INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(6,'oauth2-id','/api/v1/resourceOwner/**','PUT','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(7,'oauth2-id','/api/v1/resourceOwner/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(8,'oauth2-id','/api/v1/resourceOwner/pwd','PATCH','hasRole(''ROLE_USER'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(9,'edge-proxy','/proxy/blacklist/client','POST','(hasRole(''ROLE_ADMIN'') or hasRole(''ROLE_ROOT'')) and #oauth2.hasScope(''trust'')');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(10,'edge-proxy','/proxy/blacklist/resourceOwner','POST','(hasRole(''ROLE_ADMIN'') or hasRole(''ROLE_ROOT'')) and #oauth2.hasScope(''trust'')');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(11,'edge-proxy','/proxy/security/profile','POST','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'')');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(12,'edge-proxy','/proxy/security/profiles','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'')');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(13,'edge-proxy','/proxy/security/profile/**','PUT','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'')');
+INSERT INTO security_profile_list (ID,resourceID,endpoint,method,expression) VALUES(14,'edge-proxy','/proxy/security/profile/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'')');
