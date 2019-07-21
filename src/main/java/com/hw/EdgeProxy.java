@@ -8,8 +8,8 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 @EnableZuulProxy
 public class EdgeProxy {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EdgeProxy.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EdgeProxy.class, args);
+    }
 
 }

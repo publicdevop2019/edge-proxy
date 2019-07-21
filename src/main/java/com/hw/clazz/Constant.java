@@ -6,4 +6,6 @@ public class Constant {
             "/oauth/token_key/**",
             "/api/v1/**"
     };
+    public static String EDGE_PROXY_TOKEN_REVOKED = "ep_token_revoked";
+    public static String EDGE_PROXY_UNAUTHORIZED_ACCESS = "ep_unauthorized_access";
 }

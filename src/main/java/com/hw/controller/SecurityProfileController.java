@@ -1,5 +1,6 @@
 package com.hw.controller;
 
+import com.hw.clazz.InternalForwardHelper;
 import com.hw.entity.SecurityProfile;
 import com.hw.repo.SecurityProfileRepo;
 import org.springframework.beans.BeanUtils;
@@ -15,7 +16,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("proxy/security")
-@PreAuthorize("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust')")
 public class SecurityProfileController {
 
     @Autowired
@@ -23,20 +23,20 @@ public class SecurityProfileController {
 
     @PostMapping("profile")
     public ResponseEntity<?> create(@Valid @RequestBody SecurityProfile securityProfile, HttpServletRequest request) {
-        BlacklistController.blacklisted(request);
+        InternalForwardHelper.forwardCheck(request);
         SecurityProfile save = securityProfileRepo.save(securityProfile);
         return ResponseEntity.ok().header("Location", String.valueOf(save.getId())).build();
     }
 
     @GetMapping("profiles")
     public List<SecurityProfile> readAll(HttpServletRequest request) {
-        BlacklistController.blacklisted(request);
+        InternalForwardHelper.forwardCheck(request);
         return securityProfileRepo.findAll();
     }
 
     @PutMapping("profile/{id}")
     public ResponseEntity<?> replace(@Valid @RequestBody SecurityProfile securityProfile, @PathVariable Long id, HttpServletRequest request) {
-        BlacklistController.blacklisted(request);
+        InternalForwardHelper.forwardCheck(request);
         Optional<SecurityProfile> byId = securityProfileRepo.findById(id);
         if (byId.isEmpty())
             return ResponseEntity.badRequest().build();
@@ -47,11 +47,12 @@ public class SecurityProfileController {
 
     @DeleteMapping("profile/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
-        BlacklistController.blacklisted(request);
+        InternalForwardHelper.forwardCheck(request);
         Optional<SecurityProfile> byId = securityProfileRepo.findById(id);
         if (byId.isEmpty())
             return ResponseEntity.badRequest().build();
         securityProfileRepo.delete(byId.get());
         return ResponseEntity.ok().build();
     }
+
 }
