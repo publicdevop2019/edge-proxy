@@ -75,7 +75,7 @@ public class BlacklistController {
         return ResponseEntity.ok().build();
     }
 
-    private void blacklisted(HttpServletRequest request) {
+    public static void blacklisted(HttpServletRequest request) {
         Boolean internal_forward_block = (Boolean) request.getAttribute("internal_forward_block");
         if (internal_forward_block != null && internal_forward_block)
             throw new UnauthorizedClientException("internal endpoint access denied");

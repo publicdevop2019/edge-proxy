@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -21,26 +22,21 @@ public class SecurityProfileController {
     SecurityProfileRepo securityProfileRepo;
 
     @PostMapping("profile")
-    public ResponseEntity<?> create(@Valid @RequestBody SecurityProfile securityProfile) {
+    public ResponseEntity<?> create(@Valid @RequestBody SecurityProfile securityProfile, HttpServletRequest request) {
+        BlacklistController.blacklisted(request);
         SecurityProfile save = securityProfileRepo.save(securityProfile);
         return ResponseEntity.ok().header("Location", String.valueOf(save.getId())).build();
     }
 
     @GetMapping("profiles")
-    public List<SecurityProfile> readAll() {
+    public List<SecurityProfile> readAll(HttpServletRequest request) {
+        BlacklistController.blacklisted(request);
         return securityProfileRepo.findAll();
     }
 
-    @GetMapping("profile/{id}")
-    public ResponseEntity<?> read(@PathVariable Long id) {
-        Optional<SecurityProfile> byId = securityProfileRepo.findById(id);
-        if (!byId.isEmpty())
-            return ResponseEntity.ok(byId.get());
-        return ResponseEntity.badRequest().build();
-    }
-
     @PutMapping("profile/{id}")
-    public ResponseEntity<?> replace(@Valid @RequestBody SecurityProfile securityProfile, @PathVariable Long id) {
+    public ResponseEntity<?> replace(@Valid @RequestBody SecurityProfile securityProfile, @PathVariable Long id, HttpServletRequest request) {
+        BlacklistController.blacklisted(request);
         Optional<SecurityProfile> byId = securityProfileRepo.findById(id);
         if (byId.isEmpty())
             return ResponseEntity.badRequest().build();
@@ -50,7 +46,8 @@ public class SecurityProfileController {
     }
 
     @DeleteMapping("profile/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
+        BlacklistController.blacklisted(request);
         Optional<SecurityProfile> byId = securityProfileRepo.findById(id);
         if (byId.isEmpty())
             return ResponseEntity.badRequest().build();
