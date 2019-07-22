@@ -17,12 +17,8 @@ import java.time.Instant;
 import java.util.Map;
 
 /**
- * zuul own endpoints are getting internal forward,
+ * @note zuul own endpoints are getting internal forward,
  * internal forwarding is having issue with form data,
- *
- * @todo apply block logic here to prevent internalForwardCheck root&trust client access, access control for oauth2-id and login-id
- * <p>
- * need both admin and root present due to client role does not have admin
  */
 @RestController
 @RequestMapping("proxy/blacklist")
