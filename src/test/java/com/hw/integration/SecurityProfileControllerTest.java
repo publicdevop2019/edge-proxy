@@ -57,7 +57,7 @@ public class SecurityProfileControllerTest {
          * modify profile to prevent admin access
          */
         SecurityProfile securityProfile = new SecurityProfile();
-        securityProfile.setEndpoint("/api/v1/resourceOwners");
+        securityProfile.setPath("/api/v1/resourceOwners");
         securityProfile.setExpression("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()");
         securityProfile.setMethod("GET");
         securityProfile.setResourceID("oauth2-id");
@@ -99,7 +99,7 @@ public class SecurityProfileControllerTest {
          * modify profile to prevent admin access
          */
         SecurityProfile securityProfile = new SecurityProfile();
-        securityProfile.setEndpoint("/api/v1/resourceOwners");
+        securityProfile.setPath("/api/v1/resourceOwners");
         securityProfile.setExpression("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()");
         securityProfile.setMethod("GET");
         securityProfile.setResourceID("oauth2-id");

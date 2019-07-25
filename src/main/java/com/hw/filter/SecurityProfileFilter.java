@@ -50,8 +50,12 @@ public class SecurityProfileFilter extends ZuulFilter {
 
     @Autowired
     ObjectMapper mapper;
+
     @Autowired
     SecurityProfileRepo securityProfileRepo;
+
+    @Autowired
+    AntPathMatcher antPathMatcher;
 
     @Override
     public String filterType() {
@@ -76,7 +80,7 @@ public class SecurityProfileFilter extends ZuulFilter {
         String requestURI = httpServletRequestWrapper.getRequestURI();
         String method = httpServletRequestWrapper.getMethod();
         String authHeader = httpServletRequestWrapper.getHeader("authorization");
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
+
         /**
          * check endpoint url, method first then check resourceId and security rule
          */
@@ -102,7 +106,7 @@ public class SecurityProfileFilter extends ZuulFilter {
             /**
              * fetch security rule by endpoint & method
              */
-            List<SecurityProfile> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getEndpoint(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+            List<SecurityProfile> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             boolean b = collect1.stream().allMatch(e -> ExpressionUtils.evaluateAsBoolean(parser.parseExpression(e.getExpression()), evaluationContext));
 
             if (!b || collect1.isEmpty()) {
@@ -110,9 +114,10 @@ public class SecurityProfileFilter extends ZuulFilter {
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
             }
-        } else if ("/oauth/token".equals(requestURI)) {
+        } else if ("/token".equals(requestURI)) {
             /**
-             * permit all token endpoints
+             * permit all token endpoints,
+             * we could apply security to token endpoint as well, however we don't want to increase DB query
              */
         } else {
             /** un-registered endpoints */

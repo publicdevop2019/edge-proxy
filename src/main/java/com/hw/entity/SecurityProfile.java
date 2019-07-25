@@ -3,6 +3,7 @@ package com.hw.entity;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -22,10 +23,15 @@ public class SecurityProfile {
     private String resourceID;
 
     @NotBlank
-    private String endpoint;
+    private String path;
 
     @NotBlank
     private String method;
+
+    /**
+     * for dynamic routing
+     */
+    private String url;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "security_profile_list_gen")
