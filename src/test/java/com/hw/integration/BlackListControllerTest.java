@@ -102,7 +102,7 @@ public class BlackListControllerTest {
     public void sad_receive_request_blacklist_client_then_block_client_old_request() throws JsonProcessingException, InterruptedException {
 
         String url = "http://localhost:" + randomServerPort + "/proxy/blacklist" + "/client";
-        String url2 = "http://localhost:" + randomServerPort + "/api/v1" + "/resourceOwners";
+        String url2 = "http://localhost:" + randomServerPort + "/api" + "/resourceOwners";
         /**
          * before client get blacklisted, client is able to access auth server non token endpoint
          */
@@ -173,7 +173,7 @@ public class BlackListControllerTest {
 
     @Test
     public void happy_receive_request_blacklist_resourceOwner_then_block_resourceOwner_old_request() throws JsonProcessingException, InterruptedException {
-        String url2 = "http://localhost:" + randomServerPort + "/api/v1" + "/resourceOwners";
+        String url2 = "http://localhost:" + randomServerPort + "/api" + "/resourceOwners";
         /**
          * admin user can login & call resourceOwner api
          */
@@ -228,7 +228,7 @@ public class BlackListControllerTest {
 
 
     private ResponseEntity<DefaultOAuth2AccessToken> getTokenResponse(String grantType, String clientId, String clientSecret) {
-        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
+        String url = "http://localhost:" + randomServerPort + "/" + "token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         HttpHeaders headers = new HttpHeaders();
@@ -238,7 +238,7 @@ public class BlackListControllerTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getRefreshTokenResponse(String refreshToken, String clientId, String clientSecret) {
-        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
+        String url = "http://localhost:" + randomServerPort + "/" + "token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "refresh_token");
         params.add("refresh_token", refreshToken);
@@ -249,7 +249,7 @@ public class BlackListControllerTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getPwdTokenResponse(String grantType, String clientId, String clientSecret, String username, String pwd) {
-        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
+        String url = "http://localhost:" + randomServerPort + "/" + "token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         params.add("username", username);

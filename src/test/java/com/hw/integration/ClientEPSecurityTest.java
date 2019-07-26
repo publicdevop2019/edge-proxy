@@ -47,7 +47,7 @@ public class ClientEPSecurityTest {
     @Test
     public void sad_createClient_w_admin_account() throws JsonProcessingException {
         Client client = getClientAsNonResource(valid_resourceId);
-        String url = "http://localhost:" + randomServerPort + "/api/v1" + "/client";
+        String url = "http://localhost:" + randomServerPort + "/api" + "/client";
         ResponseEntity<DefaultOAuth2AccessToken> tokenResponse = getTokenResponse(password, valid_username_admin, valid_pwd, valid_clientId, valid_empty_secret);
         String bearer = tokenResponse.getBody().getValue();
         HttpHeaders headers = new HttpHeaders();
@@ -85,7 +85,7 @@ public class ClientEPSecurityTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getTokenResponse(String grantType, String username, String userPwd, String clientId, String clientSecret) {
-        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
+        String url = "http://localhost:" + randomServerPort + "/" + "token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         params.add("username", username);

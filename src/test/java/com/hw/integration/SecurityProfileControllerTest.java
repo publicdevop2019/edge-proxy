@@ -41,7 +41,7 @@ public class SecurityProfileControllerTest {
 
     @Test
     public void modify_existing_profile_to_prevent_access() {
-        String url2 = "http://localhost:" + randomServerPort + "/api/v1" + "/resourceOwners";
+        String url2 = "http://localhost:" + randomServerPort + "/api" + "/resourceOwners";
         /**
          * before modify, admin is able to access resourceOwner apis
          */
@@ -57,15 +57,16 @@ public class SecurityProfileControllerTest {
          * modify profile to prevent admin access
          */
         SecurityProfile securityProfile = new SecurityProfile();
-        securityProfile.setPath("/api/v1/resourceOwners");
+        securityProfile.setPath("/api/resourceOwners");
         securityProfile.setExpression("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()");
         securityProfile.setMethod("GET");
         securityProfile.setResourceID("oauth2-id");
+        securityProfile.setUrl("http://localhost:8080/v1/api/resourceOwners");
         ResponseEntity<String> stringResponseEntity = updateProfile(securityProfile, 5L);
         Assert.assertEquals(HttpStatus.OK, stringResponseEntity.getStatusCode());
 
         /**
-         * before modify, admin is able to access resourceOwner apis
+         * after modify, admin is not able to access resourceOwner apis
          */
         ResponseEntity<String> exchange = restTemplate.exchange(url2, HttpMethod.GET, hashMapHttpEntity1, String.class);
         Assert.assertEquals(HttpStatus.FORBIDDEN, exchange.getStatusCode());
@@ -83,7 +84,7 @@ public class SecurityProfileControllerTest {
 
     @Test
     public void create_profile_to_prevent_access_then_delete_to_allow_access() {
-        String url2 = "http://localhost:" + randomServerPort + "/api/v1" + "/resourceOwners";
+        String url2 = "http://localhost:" + randomServerPort + "/api" + "/resourceOwners";
         /**
          * before modify, admin is able to access resourceOwner apis
          */
@@ -99,10 +100,11 @@ public class SecurityProfileControllerTest {
          * modify profile to prevent admin access
          */
         SecurityProfile securityProfile = new SecurityProfile();
-        securityProfile.setPath("/api/v1/resourceOwners");
+        securityProfile.setPath("/api/resourceOwners");
         securityProfile.setExpression("hasRole('ROLE_ROOT') and #oauth2.hasScope('trust') and #oauth2.isUser()");
         securityProfile.setMethod("GET");
         securityProfile.setResourceID("oauth2-id");
+        securityProfile.setUrl("http://localhost:8080/v1/api/resourceOwners");
         ResponseEntity<String> stringResponseEntity = createProfile(securityProfile);
         Assert.assertEquals(HttpStatus.OK, stringResponseEntity.getStatusCode());
 
@@ -127,7 +129,7 @@ public class SecurityProfileControllerTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getPwdTokenResponse(String grantType, String clientId, String clientSecret, String username, String pwd) {
-        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
+        String url = "http://localhost:" + randomServerPort + "/" + "token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         params.add("username", username);

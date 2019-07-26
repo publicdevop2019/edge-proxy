@@ -50,7 +50,7 @@ public class ResourceOwnerEPSecurityTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> createUser(ResourceOwner user, String clientId) throws JsonProcessingException {
-        String url = "http://localhost:" + randomServerPort + "/api/v1" + "/resourceOwner";
+        String url = "http://localhost:" + randomServerPort + "/api" + "/resourceOwner";
         ResponseEntity<DefaultOAuth2AccessToken> registerTokenResponse = getRegisterTokenResponse(client_credentials, clientId, valid_empty_secret);
         String value = registerTokenResponse.getBody().getValue();
         HttpHeaders headers = new HttpHeaders();
@@ -62,7 +62,7 @@ public class ResourceOwnerEPSecurityTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getRegisterTokenResponse(String grantType, String clientId, String clientSecret) {
-        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
+        String url = "http://localhost:" + randomServerPort + "/" + "token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         HttpHeaders headers = new HttpHeaders();
