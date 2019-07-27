@@ -228,7 +228,7 @@ public class BlackListControllerTest {
 
 
     private ResponseEntity<DefaultOAuth2AccessToken> getTokenResponse(String grantType, String clientId, String clientSecret) {
-        String url = "http://localhost:" + randomServerPort + "/" + "token";
+        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         HttpHeaders headers = new HttpHeaders();
@@ -238,7 +238,7 @@ public class BlackListControllerTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getRefreshTokenResponse(String refreshToken, String clientId, String clientSecret) {
-        String url = "http://localhost:" + randomServerPort + "/" + "token";
+        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "refresh_token");
         params.add("refresh_token", refreshToken);
@@ -249,7 +249,7 @@ public class BlackListControllerTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getPwdTokenResponse(String grantType, String clientId, String clientSecret, String username, String pwd) {
-        String url = "http://localhost:" + randomServerPort + "/" + "token";
+        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         params.add("username", username);

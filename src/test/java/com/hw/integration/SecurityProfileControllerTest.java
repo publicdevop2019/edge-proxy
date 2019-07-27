@@ -129,7 +129,7 @@ public class SecurityProfileControllerTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getPwdTokenResponse(String grantType, String clientId, String clientSecret, String username, String pwd) {
-        String url = "http://localhost:" + randomServerPort + "/" + "token";
+        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         params.add("username", username);

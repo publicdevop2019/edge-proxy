@@ -60,7 +60,7 @@ public class RevokeFilter extends ZuulFilter {
          * block both access token and refresh token
          */
         if ((authHeader != null && authHeader.contains("Bearer")) ||
-                ("/token".equals(requestURI) && httpServletRequestWrapper.getRequest().getParameter("refresh_token") != null)
+                ("/oauth/token".equals(requestURI) && httpServletRequestWrapper.getRequest().getParameter("refresh_token") != null)
         ) {
             Jwt jwt;
             if (authHeader != null && authHeader.contains("Bearer")) {

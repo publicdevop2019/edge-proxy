@@ -62,7 +62,7 @@ public class ResourceOwnerEPSecurityTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getRegisterTokenResponse(String grantType, String clientId, String clientSecret) {
-        String url = "http://localhost:" + randomServerPort + "/" + "token";
+        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         HttpHeaders headers = new HttpHeaders();
