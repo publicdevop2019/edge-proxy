@@ -114,7 +114,7 @@ public class SecurityProfileFilter extends ZuulFilter {
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
             }
-        } else if ("/token".equals(requestURI)) {
+        } else if ("/oauth/token".equals(requestURI)) {
             /**
              * permit all token endpoints,
              * we could apply security to token endpoint as well, however we don't want to increase DB query

@@ -85,7 +85,7 @@ public class ClientEPSecurityTest {
     }
 
     private ResponseEntity<DefaultOAuth2AccessToken> getTokenResponse(String grantType, String username, String userPwd, String clientId, String clientSecret) {
-        String url = "http://localhost:" + randomServerPort + "/" + "token";
+        String url = "http://localhost:" + randomServerPort + "/" + "oauth/token";
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", grantType);
         params.add("username", username);

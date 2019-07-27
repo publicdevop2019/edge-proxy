@@ -38,7 +38,7 @@ public class DynamicRouteFilter extends ZuulFilter {
     public boolean shouldFilter() {
         RequestContext ctx = RequestContext.getCurrentContext();
         String requestURL = ctx.getRequest().getRequestURL().toString();
-        return !requestURL.contains("proxy");
+        return !(requestURL.contains("proxy") || requestURL.contains("token"));
     }
 
     @Autowired
