@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
@@ -181,6 +182,7 @@ public class BlackListControllerTest {
 
         String bearer0 = pwdTokenResponse.getBody().getValue();
         String refreshToken = pwdTokenResponse.getBody().getRefreshToken().getValue();
+        String user_name =(String) pwdTokenResponse.getBody().getAdditionalInformation().get("user_name");
         HttpHeaders headers1 = new HttpHeaders();
         headers1.setBearerAuth(bearer0);
         HttpEntity<Object> hashMapHttpEntity1 = new HttpEntity<>(headers1);
@@ -195,7 +197,7 @@ public class BlackListControllerTest {
 
         String url = "http://localhost:" + randomServerPort + "/proxy/blacklist" + "/resourceOwner";
         HashMap<String, String> stringStringHashMap = new HashMap<>();
-        stringStringHashMap.put("name", username);
+        stringStringHashMap.put("name", user_name);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(bearer);
         headers.setContentType(MediaType.APPLICATION_JSON);
