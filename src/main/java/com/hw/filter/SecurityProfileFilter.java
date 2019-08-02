@@ -23,10 +23,7 @@ import org.springframework.util.AntPathMatcher;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.hw.clazz.Constant.EDGE_PROXY_UNAUTHORIZED_ACCESS;
@@ -38,6 +35,7 @@ public class SecurityProfileFilter extends ZuulFilter {
 
     private static Method triggerCheckMethod;
     private static SpelExpressionParser parser;
+    private static List<String> allowedEps = Arrays.asList("/oauth/token", "/oauth/token_key");
 
     static {
         try {
@@ -114,7 +112,7 @@ public class SecurityProfileFilter extends ZuulFilter {
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
             }
-        } else if ("/oauth/token".equals(requestURI)) {
+        } else if (allowedEps.contains(requestURI)) {
             /**
              * permit all token endpoints,
              * we could apply security to token endpoint as well, however we don't want to increase DB query
