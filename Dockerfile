@@ -32,5 +32,5 @@ COPY --from=maven ./target/EdgeProxyService.jar ./
 
 EXPOSE 8111 8080
 
-ENTRYPOINT ["java","-jar","EdgeProxyService.jar"]
+ENTRYPOINT ["java"]
 
