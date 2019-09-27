@@ -19,8 +19,8 @@ public class CORSConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("*");
         configuration.addAllowedHeader("Authorization");
-        configuration.addAllowedHeader("location");
-        configuration.addAllowedHeader("lastupdateat");
+        configuration.addExposedHeader("location");
+        configuration.addExposedHeader("lastupdateat");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Accept");
         configuration.addAllowedHeader("Access-Control-Request-Method");
