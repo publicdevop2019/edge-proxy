@@ -11,8 +11,10 @@ import org.springframework.util.AntPathMatcher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static com.hw.clazz.Constant.EDGE_PROXY_UNMAPPED_ROUTE;
 
@@ -44,6 +46,32 @@ public class DynamicRouteFilter extends ZuulFilter {
     @Autowired
     AntPathMatcher antPathMatcher;
 
+
+    public List<String> getDynamicUrlParams(String requestURI, SecurityProfile securityProfile) {
+        /**
+         * e.g. /api/profiles/100 ==> /api/profiles/**
+         *      /api/profiles/100/addresses/100  ==> /api/profiles/**\/addresses/**
+         */
+        List<String> paramList = new ArrayList<>();
+        String[] split = requestURI.split("/");
+        String[] split1 = securityProfile.getPath().split("/");
+        IntStream.range(0, split1.length)
+                .filter(i -> split1[i].equals("**"))
+                .forEach(i -> {
+                    paramList.add(split[i]);
+                });
+        return paramList;
+    }
+
+    public String updateTargetUrl(List<String> params, String url) {
+        if (params.size() == 0)
+            return url;
+        for (String param : params) {
+            url = url.replaceFirst("/\\*\\*", "/" + param);
+        }
+        return url;
+    }
+
     @Override
     public Object run() {
         RequestContext ctx = RequestContext.getCurrentContext();
@@ -56,11 +84,11 @@ public class DynamicRouteFilter extends ZuulFilter {
          */
         if (first.isPresent()) {
             SecurityProfile securityProfile = first.get();
-            String replace = securityProfile.getPath().replace("/**", "");
-            String replace1 = requestURI.replace(replace, "");
-            ctx.set("requestURI", replace1);
+            List<String> dynamicUrlParams = getDynamicUrlParams(requestURI, securityProfile);
+            String s = updateTargetUrl(dynamicUrlParams, securityProfile.getUrl());
+            ctx.set("requestURI", "");
             try {
-                ctx.setRouteHost(new URL(securityProfile.getUrl()));
+                ctx.setRouteHost(new URL(s));
             } catch (MalformedURLException e) {
                 /**
                  * this block is purposely left blank
@@ -73,4 +101,5 @@ public class DynamicRouteFilter extends ZuulFilter {
         }
         return null;
     }
+
 }
