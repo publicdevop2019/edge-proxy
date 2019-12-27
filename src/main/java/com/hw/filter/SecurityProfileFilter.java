@@ -35,13 +35,12 @@ public class SecurityProfileFilter extends ZuulFilter {
 
     private static Method triggerCheckMethod;
     private static SpelExpressionParser parser;
-    private static List<String> allowedEps = Arrays.asList("/oauth/token", "/oauth/token_key");
+    private static List<String> tokenUrls = Arrays.asList("/oauth/token", "/oauth/token_key");
 
     static {
         try {
             triggerCheckMethod = SecurityObject.class.getMethod("triggerCheck");
         } catch (NoSuchMethodException e) {
-//            logger.error(e);
         }
         parser = new SpelExpressionParser();
     }
@@ -78,11 +77,24 @@ public class SecurityProfileFilter extends ZuulFilter {
         String requestURI = httpServletRequestWrapper.getRequestURI();
         String method = httpServletRequestWrapper.getMethod();
         String authHeader = httpServletRequestWrapper.getHeader("authorization");
+        if (tokenUrls.contains(requestURI)) {
+            /**
+             * permit all token endpoints,
+             * we could apply security to token endpoint as well, however we don't want to increase DB query
+             */
+        } else if (authHeader == null || !authHeader.contains("Bearer")) {
+            List<SecurityProfile> publicEpsProfiles = securityProfileRepo.findAll().stream().filter(e -> e.getExpression() == null).collect(Collectors.toList());
+            List<SecurityProfile> collect1 = publicEpsProfiles.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+            if (collect1.size() == 0) {
+                /** un-registered public endpoints */
+                ctx.setSendZuulResponse(false);
+                ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
+            }
 
-        /**
-         * check endpoint url, method first then check resourceId and security rule
-         */
-        if (authHeader != null && authHeader.contains("Bearer")) {
+        } else if (authHeader.contains("Bearer")) {
+            /**
+             * check endpoint url, method first then check resourceId and security rule
+             */
             Jwt jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
             Map claims = null;
             try {
@@ -112,11 +124,6 @@ public class SecurityProfileFilter extends ZuulFilter {
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
             }
-        } else if (allowedEps.contains(requestURI)) {
-            /**
-             * permit all token endpoints,
-             * we could apply security to token endpoint as well, however we don't want to increase DB query
-             */
         } else {
             /** un-registered endpoints */
             ctx.setSendZuulResponse(false);
