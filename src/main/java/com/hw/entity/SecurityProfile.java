@@ -15,8 +15,8 @@ import javax.validation.constraints.NotBlank;
 public class SecurityProfile {
     /**
      * spring security style expression e.g. "hasRole('ROLE_USER') and #oauth2.hasScope('trust') and #oauth2.isUser()"
+     * for public access this filed can be null
      */
-    @NotBlank
     private String expression;
 
     @NotBlank
