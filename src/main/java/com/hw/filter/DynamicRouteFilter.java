@@ -2,6 +2,7 @@ package com.hw.filter;
 
 import com.hw.entity.SecurityProfile;
 import com.hw.repo.SecurityProfileRepo;
+import com.hw.utility.SecurityProfileMatcher;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,15 +81,11 @@ public class DynamicRouteFilter extends ZuulFilter {
         List<SecurityProfile> all = securityProfileRepo.findAll();
         List<SecurityProfile> collect1 = all.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && e.getMethod().equals(method)).collect(Collectors.toList());
         /**
-         * find closet match, size of collect1 should be either 0 or 1
-         */
-        if (collect1.size() != 1)
-            collect1 = collect1.stream().filter(e -> !e.getPath().contains("/**")).collect(Collectors.toList());
-        /**
          * modify url
          */
         if (collect1.size() != 0) {
-            SecurityProfile securityProfile = collect1.get(0);
+
+            SecurityProfile securityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
             List<String> dynamicUrlParams = getDynamicUrlParams(requestURI, securityProfile);
             String s = updateTargetUrl(dynamicUrlParams, securityProfile.getUrl());
             ctx.set("requestURI", "");
@@ -106,5 +103,4 @@ public class DynamicRouteFilter extends ZuulFilter {
         }
         return null;
     }
-
 }

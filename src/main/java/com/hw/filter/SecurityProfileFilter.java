@@ -3,6 +3,7 @@ package com.hw.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.entity.SecurityProfile;
 import com.hw.repo.SecurityProfileRepo;
+import com.hw.utility.SecurityProfileMatcher;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -118,12 +119,9 @@ public class SecurityProfileFilter extends ZuulFilter {
              */
             List<SecurityProfile> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
 
-            /**
-             * find closet match, size of collect1 should be either 0 or 1
-             */
-            if (collect1.size() != 1)
-                collect1 = collect1.stream().filter(e -> !e.getPath().contains("/**")).collect(Collectors.toList());
-            boolean b = collect1.stream().allMatch(e -> ExpressionUtils.evaluateAsBoolean(parser.parseExpression(e.getExpression()), evaluationContext));
+            SecurityProfile securityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
+
+            boolean b = ExpressionUtils.evaluateAsBoolean(parser.parseExpression(securityProfile.getExpression()), evaluationContext);
 
             if (!b || collect1.isEmpty()) {
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
