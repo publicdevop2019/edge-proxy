@@ -117,6 +117,12 @@ public class SecurityProfileFilter extends ZuulFilter {
              * fetch security rule by endpoint & method
              */
             List<SecurityProfile> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+
+            /**
+             * find closet match, size of collect1 should be either 0 or 1
+             */
+            if (collect1.size() != 1)
+                collect1 = collect1.stream().filter(e -> !e.getPath().contains("/**")).collect(Collectors.toList());
             boolean b = collect1.stream().allMatch(e -> ExpressionUtils.evaluateAsBoolean(parser.parseExpression(e.getExpression()), evaluationContext));
 
             if (!b || collect1.isEmpty()) {

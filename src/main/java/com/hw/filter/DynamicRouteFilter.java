@@ -13,7 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.hw.clazz.Constant.EDGE_PROXY_UNMAPPED_ROUTE;
@@ -78,12 +78,17 @@ public class DynamicRouteFilter extends ZuulFilter {
         String requestURI = ctx.getRequest().getRequestURI();
         String method = ctx.getRequest().getMethod();
         List<SecurityProfile> all = securityProfileRepo.findAll();
-        Optional<SecurityProfile> first = all.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && e.getMethod().equals(method)).findFirst();
+        List<SecurityProfile> collect1 = all.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && e.getMethod().equals(method)).collect(Collectors.toList());
+        /**
+         * find closet match, size of collect1 should be either 0 or 1
+         */
+        if (collect1.size() != 1)
+            collect1 = collect1.stream().filter(e -> !e.getPath().contains("/**")).collect(Collectors.toList());
         /**
          * modify url
          */
-        if (first.isPresent()) {
-            SecurityProfile securityProfile = first.get();
+        if (collect1.size() != 0) {
+            SecurityProfile securityProfile = collect1.get(0);
             List<String> dynamicUrlParams = getDynamicUrlParams(requestURI, securityProfile);
             String s = updateTargetUrl(dynamicUrlParams, securityProfile.getUrl());
             ctx.set("requestURI", "");
