@@ -60,3 +60,4 @@ INSERT INTO security_profile_list (ID,resourceID,path,method,expression,url) VAL
 INSERT INTO security_profile_list (ID,resourceID,path,method,url) VALUES(59,'file-upload','/api/files/**','GET','http://localhost:8086/v1/api/files/**');
 INSERT INTO security_profile_list (ID,resourceID,path,method,expression,url) VALUES(60,'user-profile','/api/orders','GET','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()','http://localhost:8082/v1/api/orders');
 INSERT INTO security_profile_list (ID,resourceID,path,method,url) VALUES(61,'product','/api/productDetails/search','GET','http://localhost:8083/v1/api/productDetails/search');
+INSERT INTO security_profile_list (ID,resourceID,path,method,expression,url) VALUES(62,'product','/api/productDetails/validate','POST','hasRole(''ROLE_BACKEND'') and #oauth2.hasScope(''trust'') and #oauth2.isClient()','http://localhost:8083/v1/api/productDetails/validate');
