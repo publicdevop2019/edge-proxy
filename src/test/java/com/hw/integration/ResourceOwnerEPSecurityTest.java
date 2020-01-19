@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.EdgeProxy;
+import com.hw.Application;
 import com.hw.auth.entity.ResourceOwner;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +24,7 @@ import java.util.UUID;
  * this integration auth requires oauth2service to be running
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EdgeProxy.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ResourceOwnerEPSecurityTest {
     private String client_credentials = "client_credentials";
     private String invalid_clientId = "rightRoleNotSufficientResourceId";

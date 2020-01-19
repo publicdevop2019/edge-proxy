@@ -1,6 +1,6 @@
 package com.hw.integration.auth;
 
-import com.hw.EdgeProxy;
+import com.hw.Application;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -16,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * this test suits requires cors profile to be added
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EdgeProxy.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev,h2,cors")
 public class CORSTest {
     @LocalServerPort

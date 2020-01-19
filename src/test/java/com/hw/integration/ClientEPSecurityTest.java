@@ -2,7 +2,7 @@ package com.hw.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.EdgeProxy;
+import com.hw.Application;
 import com.hw.auth.clazz.GrantedAuthorityImpl;
 import com.hw.auth.clazz.eenum.ClientAuthorityEnum;
 import com.hw.auth.clazz.eenum.GrantTypeEnum;
@@ -28,7 +28,7 @@ import java.util.UUID;
  * this integration auth requires oauth2service to be running
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EdgeProxy.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ClientEPSecurityTest {
     private String password = "password";
     private String valid_clientId = "login-id";

@@ -1,6 +1,6 @@
 package com.hw.integration.auth;
 
-import com.hw.EdgeProxy;
+import com.hw.Application;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,7 @@ import org.springframework.util.MultiValueMap;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EdgeProxy.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PasswordFlowTest {
     private String password = "password";
     private String client_credentials = "client_credentials";
