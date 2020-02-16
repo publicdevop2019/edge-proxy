@@ -4,6 +4,8 @@ COPY ./src ./src
 
 COPY ./pom.xml ./pom.xml
 
+COPY ./shared/parent-pom.xml ./shared/parent-pom.xml
+
 # build all dependencies for offline use
 RUN mvn dependency:go-offline -B
 
@@ -30,7 +32,6 @@ COPY --from=jlink-package /opt/jdk-11-mini-runtime /opt/jdk-11-mini-runtime
 
 COPY --from=maven ./target/EdgeProxyService.jar ./
 
-EXPOSE 8111 8080
+EXPOSE 8111
 
 ENTRYPOINT ["java"]
-
