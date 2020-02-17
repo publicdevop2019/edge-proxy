@@ -1,5 +1,6 @@
 package com.hw.controller;
 
+import com.hw.clazz.BlacklistException;
 import com.hw.clazz.InternalForwardHelper;
 import com.hw.entity.RevokeClient;
 import com.hw.entity.RevokeResourceOwner;
@@ -34,6 +35,8 @@ public class BlacklistController {
     public ResponseEntity<?> revokeClient(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
         InternalForwardHelper.forwardCheck(request);
         String name1 = stringStringMap.get("name");
+        if (name1 == null)
+            return ResponseEntity.badRequest().body(new BlacklistException("name should not be empty"));
         long epochSecond = Instant.now().getEpochSecond();
         RevokeClient by = revokeClientRepo.findByName(name1);
         /**if exist update issuedAt other wise create*/
@@ -53,6 +56,8 @@ public class BlacklistController {
     public ResponseEntity<?> revokeResourceOwner(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
         InternalForwardHelper.forwardCheck(request);
         String name1 = stringStringMap.get("name");
+        if (name1 == null)
+            return ResponseEntity.badRequest().body(new BlacklistException("name should not be empty"));
         long epochSecond = Instant.now().getEpochSecond();
         RevokeResourceOwner byName = revokeResourceOwnerRepo.findByName(name1);
         /**if exist update issuedAt other wise create*/

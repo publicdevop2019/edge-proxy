@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SecurityProfileMatcherTest {
 
@@ -15,16 +16,16 @@ public class SecurityProfileMatcherTest {
         securityProfile.setPath("/api/profiles/100");
         SecurityProfile securityProfile2 = new SecurityProfile();
         securityProfile2.setPath("/api/profiles/**");
-        SecurityProfile mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile2, securityProfile));
-        Assert.assertEquals("/api/profiles/100", mostSpecificSecurityProfile.getPath());
+        Optional<SecurityProfile> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile2, securityProfile));
+        Assert.assertEquals("/api/profiles/100", mostSpecificSecurityProfile.get().getPath());
     }
 
     @Test
     public void getSecurityProfileWhenOneFound() {
         SecurityProfile securityProfile = new SecurityProfile();
         securityProfile.setPath("/api/profiles/**/addresses");
-        SecurityProfile mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile));
-        Assert.assertEquals("/api/profiles/**/addresses", mostSpecificSecurityProfile.getPath());
+        Optional<SecurityProfile> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile));
+        Assert.assertEquals("/api/profiles/**/addresses", mostSpecificSecurityProfile.get().getPath());
     }
 
     @Test
@@ -33,7 +34,7 @@ public class SecurityProfileMatcherTest {
         securityProfile.setPath("/api/profiles/**/addresses");
         SecurityProfile securityProfile2 = new SecurityProfile();
         securityProfile2.setPath("/api/profiles/**/addresses/**");
-        SecurityProfile mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile2, securityProfile));
-        Assert.assertEquals("/api/profiles/**/addresses", mostSpecificSecurityProfile.getPath());
+        Optional<SecurityProfile> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile2, securityProfile));
+        Assert.assertEquals("/api/profiles/**/addresses", mostSpecificSecurityProfile.get().getPath());
     }
 }

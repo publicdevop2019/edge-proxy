@@ -73,7 +73,7 @@ public class RevokeFilter extends ZuulFilter {
                 claims = mapper.readValue(jwt.getClaims(), Map.class);
 
                 Integer iat = (Integer) claims.get("iat");
-                String userName = (String) claims.get("user_name");
+                String userName = (String) claims.get("uid");
                 String clientId = (String) claims.get("client_id");
 
                 if (userName != null) {

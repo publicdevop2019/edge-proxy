@@ -119,11 +119,14 @@ public class SecurityProfileFilter extends ZuulFilter {
              */
             List<SecurityProfile> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
 
-            SecurityProfile securityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
+            Optional<SecurityProfile> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
 
-            boolean b = ExpressionUtils.evaluateAsBoolean(parser.parseExpression(securityProfile.getExpression()), evaluationContext);
+            boolean passed = false;
+            if (mostSpecificSecurityProfile.isPresent()) {
+                passed = ExpressionUtils.evaluateAsBoolean(parser.parseExpression(mostSpecificSecurityProfile.get().getExpression()), evaluationContext);
+            }
 
-            if (!b || collect1.isEmpty()) {
+            if (mostSpecificSecurityProfile.isEmpty() || !passed) {
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());

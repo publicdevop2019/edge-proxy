@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -80,14 +81,14 @@ public class DynamicRouteFilter extends ZuulFilter {
         String method = ctx.getRequest().getMethod();
         List<SecurityProfile> all = securityProfileRepo.findAll();
         List<SecurityProfile> collect1 = all.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && e.getMethod().equals(method)).collect(Collectors.toList());
+        Optional<SecurityProfile> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
         /**
          * modify url
          */
-        if (collect1.size() != 0) {
+        if (mostSpecificSecurityProfile.isPresent()) {
 
-            SecurityProfile securityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
-            List<String> dynamicUrlParams = getDynamicUrlParams(requestURI, securityProfile);
-            String s = updateTargetUrl(dynamicUrlParams, securityProfile.getUrl());
+            List<String> dynamicUrlParams = getDynamicUrlParams(requestURI, mostSpecificSecurityProfile.get());
+            String s = updateTargetUrl(dynamicUrlParams, mostSpecificSecurityProfile.get().getUrl());
             ctx.set("requestURI", "");
             try {
                 ctx.setRouteHost(new URL(s));
