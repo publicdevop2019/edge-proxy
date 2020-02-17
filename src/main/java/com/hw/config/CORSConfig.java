@@ -20,8 +20,10 @@ public class CORSConfig {
         configuration.addAllowedOrigin("*");
         configuration.addAllowedHeader("Authorization");
         configuration.addAllowedHeader("lastupdateat");
+        configuration.addAllowedHeader("uuid");
         configuration.addExposedHeader("location");
         configuration.addExposedHeader("lastupdateat");
+        configuration.addExposedHeader("uuid");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Accept");
         configuration.addAllowedHeader("Access-Control-Request-Method");
