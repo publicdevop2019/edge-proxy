@@ -1,6 +1,6 @@
 package com.hw.integration.auth;
 
-import com.hw.Application;
+import com.hw.Proxy;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +16,7 @@ import org.springframework.util.MultiValueMap;
 import java.util.UUID;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = Proxy.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class ClientCredentialsTest {
     private String password = "password";
     private String client_credentials = "client_credentials";

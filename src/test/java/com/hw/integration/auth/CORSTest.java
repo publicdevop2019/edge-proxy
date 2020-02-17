@@ -1,6 +1,6 @@
 package com.hw.integration.auth;
 
-import com.hw.Application;
+import com.hw.Proxy;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * this test suits requires cors profile to be added
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Proxy.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev,h2,cors")
 public class CORSTest {
     @LocalServerPort

@@ -2,7 +2,7 @@ package com.hw.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.Application;
+import com.hw.Proxy;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +22,7 @@ import java.util.UUID;
  * this integration auth requires oauth2service to be running
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Proxy.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BlackListControllerTest {
     private String client_credentials = "client_credentials";
     private String password = "password";

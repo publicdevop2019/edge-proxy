@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.Application;
+import com.hw.Proxy;
 import com.hw.auth.clazz.GrantedAuthorityImpl;
 import com.hw.auth.clazz.eenum.ResourceOwnerAuthorityEnum;
 import com.hw.auth.entity.ResourceOwner;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = Proxy.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class ResourceOwnerControllerTest {
     private String password = "password";
     private String client_credentials = "client_credentials";

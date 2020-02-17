@@ -1,6 +1,6 @@
 package com.hw.integration;
 
-import com.hw.Application;
+import com.hw.Proxy;
 import com.hw.entity.SecurityProfile;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import java.net.URI;
  * this integration auth requires oauth2service to be running
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Proxy.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SecurityProfileControllerTest {
     private String client_credentials = "client_credentials";
     private String password = "password";

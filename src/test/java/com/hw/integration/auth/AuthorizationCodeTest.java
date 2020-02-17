@@ -1,6 +1,6 @@
 package com.hw.integration.auth;
 
-import com.hw.Application;
+import com.hw.Proxy;
 import com.hw.auth.clazz.eenum.ClientAuthorityEnum;
 import com.hw.auth.clazz.eenum.ResourceOwnerAuthorityEnum;
 import com.jayway.jsonpath.JsonPath;
@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(classes = Proxy.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AuthorizationCodeTest {
 
     private String password = "password";
