@@ -2,6 +2,7 @@ package com.hw.clazz;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,8 +12,9 @@ import static com.hw.clazz.Constant.EDGE_PROXY_UNAUTHORIZED_ACCESS;
 /**
  * secure internal forward helper
  */
+@Component
 public class InternalForwardHelper {
-    public static void forwardCheck(HttpServletRequest request) {
+    public void forwardCheck(HttpServletRequest request) {
         Boolean internal_forward_block = (Boolean) request.getAttribute(EDGE_PROXY_TOKEN_REVOKED);
         Boolean internal_forward_block2 = (Boolean) request.getAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS);
         if (internal_forward_block != null && internal_forward_block)

@@ -18,7 +18,7 @@ import java.time.Instant;
 import java.util.Map;
 
 /**
- * @note zuul own endpoints are getting internal forward,
+ * zuul own endpoints are getting internal forward,
  * internal forwarding is having issue with form data,
  */
 @RestController
@@ -31,9 +31,12 @@ public class BlacklistController {
     @Autowired
     RevokeResourceOwnerRepo revokeResourceOwnerRepo;
 
+    @Autowired
+    InternalForwardHelper internalForwardHelper;
+
     @PostMapping("client")
     public ResponseEntity<?> revokeClient(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
-        InternalForwardHelper.forwardCheck(request);
+        internalForwardHelper.forwardCheck(request);
         String name1 = stringStringMap.get("name");
         if (name1 == null)
             return ResponseEntity.badRequest().body(new BlacklistException("name should not be empty"));
@@ -54,7 +57,7 @@ public class BlacklistController {
 
     @PostMapping("resourceOwner")
     public ResponseEntity<?> revokeResourceOwner(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
-        InternalForwardHelper.forwardCheck(request);
+        internalForwardHelper.forwardCheck(request);
         String name1 = stringStringMap.get("name");
         if (name1 == null)
             return ResponseEntity.badRequest().body(new BlacklistException("name should not be empty"));

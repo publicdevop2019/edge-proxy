@@ -73,11 +73,11 @@ public class RevokeFilter extends ZuulFilter {
                 claims = mapper.readValue(jwt.getClaims(), Map.class);
 
                 Integer iat = (Integer) claims.get("iat");
-                String userName = (String) claims.get("uid");
+                String userId = (String) claims.get("uid");
                 String clientId = (String) claims.get("client_id");
 
-                if (userName != null) {
-                    RevokeResourceOwner byName = revokeResourceOwnerRepo.findByName(userName);
+                if (userId != null) {
+                    RevokeResourceOwner byName = revokeResourceOwnerRepo.findByGlobalId(userId);
                     if (byName != null && byName.getIssuedAt() >= iat) {
                         request.setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
                         ctx.setSendZuulResponse(false);
@@ -86,7 +86,7 @@ public class RevokeFilter extends ZuulFilter {
                     }
                 }
                 if (clientId != null) {
-                    RevokeClient byName = revokeClientRepo.findByName(clientId);
+                    RevokeClient byName = revokeClientRepo.findByGlobalId(clientId);
                     if (byName != null && byName.getIssuedAt() >= iat) {
                         /** reject request, for internal forwarding, set attribute */
                         request.setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);

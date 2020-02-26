@@ -8,6 +8,6 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 @Data
 public class RevokeTokenInfo extends Auditable {
-    String name;
+    String globalId;
     Long issuedAt;
 }

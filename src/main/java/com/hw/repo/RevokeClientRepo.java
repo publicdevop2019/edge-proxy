@@ -4,5 +4,5 @@ import com.hw.entity.RevokeClient;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RevokeClientRepo extends JpaRepository<RevokeClient, Long> {
-    RevokeClient findByName(String name);
+    RevokeClient findByGlobalId(String global);
 }
