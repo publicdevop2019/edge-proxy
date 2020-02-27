@@ -41,12 +41,12 @@ public class BlacklistController {
         if (name1 == null)
             return ResponseEntity.badRequest().body(new BlacklistException("name should not be empty"));
         long epochSecond = Instant.now().getEpochSecond();
-        RevokeClient by = revokeClientRepo.findByName(name1);
+        RevokeClient by = revokeClientRepo.findByGlobalId(name1);
         /**if exist update issuedAt other wise create*/
         if (by == null) {
             RevokeClient revokeClient = new RevokeClient();
             revokeClient.setIssuedAt(epochSecond);
-            revokeClient.setName(name1);
+            revokeClient.setGlobalId(name1);
             revokeClientRepo.save(revokeClient);
         } else {
             by.setIssuedAt(epochSecond);
@@ -62,12 +62,12 @@ public class BlacklistController {
         if (name1 == null)
             return ResponseEntity.badRequest().body(new BlacklistException("name should not be empty"));
         long epochSecond = Instant.now().getEpochSecond();
-        RevokeResourceOwner byName = revokeResourceOwnerRepo.findByName(name1);
+        RevokeResourceOwner byName = revokeResourceOwnerRepo.findByGlobalId(name1);
         /**if exist update issuedAt other wise create*/
         if (byName == null) {
             RevokeResourceOwner revokeResourceOwner = new RevokeResourceOwner();
             revokeResourceOwner.setIssuedAt(epochSecond);
-            revokeResourceOwner.setName(name1);
+            revokeResourceOwner.setGlobalId(name1);
             revokeResourceOwnerRepo.save(revokeResourceOwner);
         } else {
             byName.setIssuedAt(epochSecond);
