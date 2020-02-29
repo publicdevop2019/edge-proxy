@@ -33,13 +33,11 @@ public class SecurityProfileServiceImplTest {
     public void same_profile_can_not_be_added_twice() {
         SecurityProfile stored = getSecurityProfile();
         Mockito.doReturn(Arrays.asList(stored)).when(securityProfileRepo).findByResourceID(any(String.class));
-        Mockito.doNothing().when(internalForwardHelper).forwardCheck(any(HttpServletRequest.class));
         securityProfileService.create(stored, null);
     }
 
     @Test
     public void create_profile() {
-        Mockito.doNothing().when(internalForwardHelper).forwardCheck(any(HttpServletRequest.class));
         SecurityProfile storedProfile = getSecurityProfile();
         SecurityProfile newProfile = getSecurityProfile();
         Mockito.doReturn(Arrays.asList(storedProfile)).when(securityProfileRepo).findByResourceID(any(String.class));
