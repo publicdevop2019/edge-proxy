@@ -1,14 +1,15 @@
 package com.hw.controller;
 
 import com.hw.entity.SecurityProfile;
+import com.hw.services.SecurityProfileServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.hw.services.SecurityProfileServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("proxy/security")
@@ -30,6 +31,12 @@ public class SecurityProfileController {
     @PutMapping("profile/{id}")
     public ResponseEntity<?> replace(@Valid @RequestBody SecurityProfile securityProfile, @PathVariable Long id, HttpServletRequest request) {
         securityProfileService.replace(securityProfile, id, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("profile/batch/url")
+    public ResponseEntity<?> batchUpdateUrl(@RequestBody Map<String, String> paramMap, HttpServletRequest request) {
+        securityProfileService.batchUpdateUrl(paramMap, request);
         return ResponseEntity.ok().build();
     }
 
