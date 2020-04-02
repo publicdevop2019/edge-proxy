@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("proxy/security")
@@ -33,9 +34,9 @@ public class SecurityProfileController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("profile/batch/url")
-    public ResponseEntity<?> batchUpdateUrl(@RequestParam("host") String host, @RequestParam("ids") String ids, HttpServletRequest request) {
-        securityProfileService.batchUpdateUrl(host, ids, request);
+    @PatchMapping("profile/batch/url")
+    public ResponseEntity<?> batchUpdateUrl(@RequestBody Map<String, String> map, HttpServletRequest request) {
+        securityProfileService.batchUpdateUrl(map, request);
         return ResponseEntity.ok().build();
     }
 

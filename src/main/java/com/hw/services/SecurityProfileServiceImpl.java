@@ -7,11 +7,13 @@ import com.hw.shared.BadRequestException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SecurityProfileServiceImpl {
@@ -56,16 +58,10 @@ public class SecurityProfileServiceImpl {
         securityProfileRepo.save(byId.get());
     }
 
-    @Transactional
-    public void batchUpdateUrl(String paramMap, String ids, HttpServletRequest request) {
+    public void batchUpdateUrl(Map<String, String> map, HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
-//        paramMap.forEach((k, v) -> {
-//            Optional<SecurityProfile> byId = securityProfileRepo.findById(Long.parseLong(k));
-//            if (byId.isEmpty())
-//                throw new BadRequestException("unable to find profile");
-//            byId.get().convertToURIFromString(v);
-//            securityProfileRepo.save(byId.get());
-//        });
+        String ids = map.get("ids");
+        securityProfileRepo.batchUpdateUrl(map.get("host"), Arrays.stream(ids.split(",")).map(Long::valueOf).collect(Collectors.toList()));
     }
 
     public void delete(Long id, HttpServletRequest request) {
