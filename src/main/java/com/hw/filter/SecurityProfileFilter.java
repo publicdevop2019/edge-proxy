@@ -85,7 +85,7 @@ public class SecurityProfileFilter extends ZuulFilter {
              */
         } else if (authHeader == null || !authHeader.contains("Bearer")) {
             List<SecurityProfile> publicEpsProfiles = securityProfileRepo.findAll().stream().filter(e -> e.getExpression() == null).collect(Collectors.toList());
-            List<SecurityProfile> collect1 = publicEpsProfiles.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+            List<SecurityProfile> collect1 = publicEpsProfiles.stream().filter(e -> antPathMatcher.match(e.getLookupPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             if (collect1.size() == 0) {
                 /** un-registered public endpoints */
                 ctx.setSendZuulResponse(false);
@@ -112,12 +112,12 @@ public class SecurityProfileFilter extends ZuulFilter {
             /**
              * fetch security profile
              */
-            List<SecurityProfile> collect = resourceIds.stream().map(e -> securityProfileRepo.findByResourceID(e)).flatMap(Collection::stream).collect(Collectors.toList());
+            List<SecurityProfile> collect = resourceIds.stream().map(e -> securityProfileRepo.findByResourceId(e)).flatMap(Collection::stream).collect(Collectors.toList());
 
             /**
              * fetch security rule by endpoint & method
              */
-            List<SecurityProfile> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+            List<SecurityProfile> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getLookupPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
 
             Optional<SecurityProfile> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
 

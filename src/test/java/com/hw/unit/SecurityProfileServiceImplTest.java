@@ -12,7 +12,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import com.hw.services.SecurityProfileServiceImpl;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -32,7 +31,7 @@ public class SecurityProfileServiceImplTest {
     @Test(expected = BadRequestException.class)
     public void same_profile_can_not_be_added_twice() {
         SecurityProfile stored = getSecurityProfile();
-        Mockito.doReturn(Arrays.asList(stored)).when(securityProfileRepo).findByResourceID(any(String.class));
+        Mockito.doReturn(Arrays.asList(stored)).when(securityProfileRepo).findByResourceId(any(String.class));
         securityProfileService.create(stored, null);
     }
 
@@ -40,17 +39,17 @@ public class SecurityProfileServiceImplTest {
     public void create_profile() {
         SecurityProfile storedProfile = getSecurityProfile();
         SecurityProfile newProfile = getSecurityProfile();
-        Mockito.doReturn(Arrays.asList(storedProfile)).when(securityProfileRepo).findByResourceID(any(String.class));
+        Mockito.doReturn(Arrays.asList(storedProfile)).when(securityProfileRepo).findByResourceId(any(String.class));
         securityProfileService.create(newProfile, null);
     }
 
     private SecurityProfile getSecurityProfile() {
         SecurityProfile sp = new SecurityProfile();
-        sp.setUrl(UUID.randomUUID().toString());
-        sp.setPath(UUID.randomUUID().toString());
+        sp.convertToURIFromString("http://ngform.com:8111/mockPath?search=mock&search2=mock2#frag1");
+        sp.setLookupPath(UUID.randomUUID().toString());
         sp.setExpression(UUID.randomUUID().toString());
         sp.setMethod(UUID.randomUUID().toString());
-        sp.setResourceID(UUID.randomUUID().toString());
+        sp.setResourceId(UUID.randomUUID().toString());
         return sp;
     }
 }

@@ -56,7 +56,7 @@ public class DynamicRouteFilter extends ZuulFilter {
          */
         List<String> paramList = new ArrayList<>();
         String[] split = requestURI.split("/");
-        String[] split1 = securityProfile.getPath().split("/");
+        String[] split1 = securityProfile.getLookupPath().split("/");
         IntStream.range(0, split1.length)
                 .filter(i -> split1[i].equals("**"))
                 .forEach(i -> {
@@ -80,7 +80,7 @@ public class DynamicRouteFilter extends ZuulFilter {
         String requestURI = ctx.getRequest().getRequestURI();
         String method = ctx.getRequest().getMethod();
         List<SecurityProfile> all = securityProfileRepo.findAll();
-        List<SecurityProfile> collect1 = all.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && e.getMethod().equals(method)).collect(Collectors.toList());
+        List<SecurityProfile> collect1 = all.stream().filter(e -> antPathMatcher.match(e.getLookupPath(), requestURI) && e.getMethod().equals(method)).collect(Collectors.toList());
         Optional<SecurityProfile> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
         /**
          * modify url
@@ -88,7 +88,7 @@ public class DynamicRouteFilter extends ZuulFilter {
         if (mostSpecificSecurityProfile.isPresent()) {
 
             List<String> dynamicUrlParams = getDynamicUrlParams(requestURI, mostSpecificSecurityProfile.get());
-            String s = updateTargetUrl(dynamicUrlParams, mostSpecificSecurityProfile.get().getUrl());
+            String s = updateTargetUrl(dynamicUrlParams, mostSpecificSecurityProfile.get().retrieveURIString());
             ctx.set("requestURI", "");
             try {
                 ctx.setRouteHost(new URL(s));
