@@ -36,7 +36,6 @@ public class SecurityProfileFilter extends ZuulFilter {
 
     private static Method triggerCheckMethod;
     private static SpelExpressionParser parser;
-    private static List<String> tokenUrls = Arrays.asList("/oauth/token", "/oauth/token_key");
 
     static {
         try {
@@ -78,7 +77,7 @@ public class SecurityProfileFilter extends ZuulFilter {
         String requestURI = httpServletRequestWrapper.getRequestURI();
         String method = httpServletRequestWrapper.getMethod();
         String authHeader = httpServletRequestWrapper.getHeader("authorization");
-        if (tokenUrls.contains(requestURI)) {
+        if (requestURI.contains("/oauth/token") || requestURI.contains("/oauth/token_key")) {
             /**
              * permit all token endpoints,
              * we could apply security to token endpoint as well, however we don't want to increase DB query
