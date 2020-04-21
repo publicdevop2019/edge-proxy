@@ -15,11 +15,11 @@ import static com.hw.clazz.Constant.EDGE_PROXY_UNAUTHORIZED_ACCESS;
 @Component
 public class InternalForwardHelper {
     public void forwardCheck(HttpServletRequest request) {
-        Boolean internal_forward_block = (Boolean) request.getAttribute(EDGE_PROXY_TOKEN_REVOKED);
-        Boolean internal_forward_block2 = (Boolean) request.getAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS);
-        if (internal_forward_block != null && internal_forward_block)
+        Boolean internalForwardBlock = (Boolean) request.getAttribute(EDGE_PROXY_TOKEN_REVOKED);
+        Boolean internalForwardBlock2 = (Boolean) request.getAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS);
+        if (internalForwardBlock != null && internalForwardBlock)
             throw new UnauthorizedClientException("internal endpoint access denied, revoked token found");
-        if (internal_forward_block2 != null && internal_forward_block2)
+        if (internalForwardBlock2 != null && internalForwardBlock2)
             throw new AccessDeniedException("internal endpoint access denied, unauthorized access");
     }
 }

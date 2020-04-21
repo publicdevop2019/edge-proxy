@@ -1,8 +1,7 @@
 package com.hw.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.entity.RevokeClient;
-import com.hw.entity.RevokeResourceOwner;
+import com.hw.entity.RevokeTokenInfo;
 import com.hw.repo.RevokeClientRepo;
 import com.hw.repo.RevokeResourceOwnerRepo;
 import com.netflix.zuul.ZuulFilter;
@@ -26,13 +25,13 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class RevokeFilter extends ZuulFilter {
 
     @Autowired
-    RevokeClientRepo revokeClientRepo;
+    private RevokeClientRepo revokeClientRepo;
 
     @Autowired
-    RevokeResourceOwnerRepo revokeResourceOwnerRepo;
+    private RevokeResourceOwnerRepo revokeResourceOwnerRepo;
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Override
     public String filterType() {
@@ -68,35 +67,29 @@ public class RevokeFilter extends ZuulFilter {
             } else {
                 jwt = JwtHelper.decode(httpServletRequestWrapper.getRequest().getParameter("refresh_token"));
             }
-            Map claims;
+            Map<String, Object> claims;
             try {
                 claims = mapper.readValue(jwt.getClaims(), Map.class);
 
                 Integer iat = (Integer) claims.get("iat");
                 String userId = (String) claims.get("uid");
                 String clientId = (String) claims.get("client_id");
-
+                RevokeTokenInfo byName = null;
                 if (userId != null) {
-                    RevokeResourceOwner byName = revokeResourceOwnerRepo.findByGlobalId(userId);
-                    if (byName != null && byName.getIssuedAt() >= iat) {
-                        request.setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
-                        ctx.setSendZuulResponse(false);
-                        ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-                        /** reject request*/
-                    }
+                    byName = revokeResourceOwnerRepo.findByGlobalId(userId);
                 }
                 if (clientId != null) {
-                    RevokeClient byName = revokeClientRepo.findByGlobalId(clientId);
-                    if (byName != null && byName.getIssuedAt() >= iat) {
-                        /** reject request, for internal forwarding, set attribute */
-                        request.setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
-                        ctx.setSendZuulResponse(false);
-                        ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-                    }
+                    byName = revokeClientRepo.findByGlobalId(clientId);
+                }
+                if (byName != null && byName.getIssuedAt() >= iat) {
+                    // reject request, for internal forwarding, set attribute */
+                    request.setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
+                    ctx.setSendZuulResponse(false);
+                    ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
                 }
 
             } catch (IOException e) {
-                /** this block is left blank on purpose*/
+                // this block is left blank on purpose*/
             }
 
         }

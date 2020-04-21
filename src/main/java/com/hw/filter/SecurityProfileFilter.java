@@ -96,10 +96,11 @@ public class SecurityProfileFilter extends ZuulFilter {
              * check endpoint url, method first then check resourceId and security rule
              */
             Jwt jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
-            Map claims = null;
+            Map claims;
             try {
                 claims = mapper.readValue(jwt.getClaims(), Map.class);
             } catch (IOException e) {
+                claims = new HashMap<>();
                 /** this block is purposely left blank */
             }
             ArrayList<String> resourceIds = (ArrayList<String>) claims.get("aud");

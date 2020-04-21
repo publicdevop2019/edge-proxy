@@ -14,7 +14,7 @@ import org.springframework.web.filter.CorsFilter;
 public class CORSConfig {
 
     @Bean
-    FilterRegistrationBean corsConfiguration() {
+    public FilterRegistrationBean<CorsFilter> corsConfiguration() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("*");
@@ -36,7 +36,7 @@ public class CORSConfig {
         configuration.addAllowedMethod("OPTIONS");
         configuration.setMaxAge(3600L);
         source.registerCorsConfiguration("/**/**/**", configuration);
-        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         /**
          * make sure oauth security check happen after cors filter
          */

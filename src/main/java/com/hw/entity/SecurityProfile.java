@@ -1,11 +1,11 @@
 package com.hw.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hw.shared.Auditable;
 import com.hw.shared.BadRequestException;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 @Table(name = "security_profile_list")
 @SequenceGenerator(name = "security_profile_list_gen", sequenceName = "security_profile_list_gen", initialValue = 100)
 @Data
+@Slf4j
 public class SecurityProfile extends Auditable {
     /**
      * spring security style expression e.g. "hasRole('ROLE_USER') and #oauth2.hasScope('trust') and #oauth2.isUser()"
@@ -44,10 +45,11 @@ public class SecurityProfile extends Auditable {
         try {
             return new URI(scheme, userInfo, host, port, path, query, fragment).toURL().toString();
         } catch (URISyntaxException | MalformedURLException e) {
-            e.printStackTrace();
+            log.error("unable to retrieveURI", e);
             throw new BadRequestException("invalid uri syntax");
         }
     }
+
     public void convertToURIFromString(String url) {
         URI uri = URI.create(url);
         scheme = uri.getScheme();
@@ -60,6 +62,7 @@ public class SecurityProfile extends Auditable {
         if (scheme == null || host == null || port == -1 || path == null)
             throw new BadRequestException("invalid url found");
     }
+
     @Column
     private String scheme;
     @Column

@@ -35,7 +35,7 @@ public class BlacklistController {
     InternalForwardHelper internalForwardHelper;
 
     @PostMapping("client")
-    public ResponseEntity<?> revokeClient(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
+    public ResponseEntity revokeClient(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
         String name1 = stringStringMap.get("name");
         if (name1 == null)
@@ -56,7 +56,7 @@ public class BlacklistController {
     }
 
     @PostMapping("resourceOwner")
-    public ResponseEntity<?> revokeResourceOwner(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
+    public ResponseEntity revokeResourceOwner(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
         String name1 = stringStringMap.get("name");
         if (name1 == null)

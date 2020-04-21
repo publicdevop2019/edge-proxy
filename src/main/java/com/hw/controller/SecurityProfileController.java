@@ -19,7 +19,7 @@ public class SecurityProfileController {
     SecurityProfileServiceImpl securityProfileService;
 
     @PostMapping("profile")
-    public ResponseEntity<?> create(@Valid @RequestBody SecurityProfile securityProfile, HttpServletRequest request) {
+    public ResponseEntity create(@Valid @RequestBody SecurityProfile securityProfile, HttpServletRequest request) {
         return ResponseEntity.ok().header("Location", String.valueOf(securityProfileService.create(securityProfile, request).getId())).build();
     }
 
@@ -29,19 +29,19 @@ public class SecurityProfileController {
     }
 
     @PutMapping("profile/{id}")
-    public ResponseEntity<?> replace(@Valid @RequestBody SecurityProfile securityProfile, @PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity replace(@Valid @RequestBody SecurityProfile securityProfile, @PathVariable Long id, HttpServletRequest request) {
         securityProfileService.replace(securityProfile, id, request);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("profile/batch/url")
-    public ResponseEntity<?> batchUpdateUrl(@RequestBody Map<String, String> map, HttpServletRequest request) {
+    public ResponseEntity batchUpdateUrl(@RequestBody Map<String, String> map, HttpServletRequest request) {
         securityProfileService.batchUpdateUrl(map, request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("profile/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity delete(@PathVariable Long id, HttpServletRequest request) {
         securityProfileService.delete(id, request);
         return ResponseEntity.ok().build();
     }
