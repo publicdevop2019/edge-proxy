@@ -74,18 +74,13 @@ public class RevokeFilter extends ZuulFilter {
                 Integer iat = (Integer) claims.get("iat");
                 String userId = (String) claims.get("uid");
                 String clientId = (String) claims.get("client_id");
-                RevokeTokenInfo byName = null;
                 if (userId != null) {
-                    byName = revokeResourceOwnerRepo.findByGlobalId(userId);
+                    RevokeTokenInfo byName = revokeResourceOwnerRepo.findByGlobalId(userId);
+                    checkToken(byName, ctx, iat);
                 }
                 if (clientId != null) {
-                    byName = revokeClientRepo.findByGlobalId(clientId);
-                }
-                if (byName != null && byName.getIssuedAt() >= iat) {
-                    // reject request, for internal forwarding, set attribute */
-                    request.setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
-                    ctx.setSendZuulResponse(false);
-                    ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
+                    RevokeTokenInfo byName = revokeClientRepo.findByGlobalId(clientId);
+                    checkToken(byName, ctx, iat);
                 }
 
             } catch (IOException e) {
@@ -94,5 +89,14 @@ public class RevokeFilter extends ZuulFilter {
 
         }
         return null;
+    }
+
+    private void checkToken(RevokeTokenInfo tokenInfo, RequestContext ctx, Integer iat) {
+        if (tokenInfo != null && tokenInfo.getIssuedAt() >= iat) {
+            // reject request, for internal forwarding, set attribute */
+            ctx.getRequest().setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
+            ctx.setSendZuulResponse(false);
+            ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
+        }
     }
 }
