@@ -41,7 +41,6 @@ public class ResponseErrorFilter extends ZuulFilter {
         HttpServletResponse servletResponse = context.getResponse();
         if (integers.contains(servletResponse.getStatus())){
             context.setResponseBody("");
-            context.setResponseGZipped(false);
         }
         return null;
     }
