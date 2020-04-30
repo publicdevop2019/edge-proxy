@@ -37,8 +37,6 @@ COPY --from=jlink-package /opt/jdk-11-mini-runtime /opt/jdk-11-mini-runtime
 
 COPY --from=maven ./target/EdgeProxyService.jar ./
 
-COPY ./build/hw/files ./files/
-
 EXPOSE 8111
 
 ENTRYPOINT ["java"]
