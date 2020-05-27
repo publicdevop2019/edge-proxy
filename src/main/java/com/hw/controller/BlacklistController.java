@@ -6,6 +6,7 @@ import com.hw.entity.RevokeClient;
 import com.hw.entity.RevokeResourceOwner;
 import com.hw.repo.RevokeClientRepo;
 import com.hw.repo.RevokeResourceOwnerRepo;
+import com.hw.shared.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,8 @@ public class BlacklistController {
 
     @Autowired
     InternalForwardHelper internalForwardHelper;
+    @Autowired
+    private IdGenerator idGenerator;
 
     @PostMapping("client")
     public ResponseEntity revokeClient(@RequestBody Map<String, String> stringStringMap, HttpServletRequest request) {
@@ -47,6 +50,7 @@ public class BlacklistController {
             RevokeClient revokeClient = new RevokeClient();
             revokeClient.setIssuedAt(epochSecond);
             revokeClient.setGlobalId(name1);
+            revokeClient.setId(idGenerator.getId());
             revokeClientRepo.save(revokeClient);
         } else {
             by.setIssuedAt(epochSecond);
@@ -68,6 +72,7 @@ public class BlacklistController {
             RevokeResourceOwner revokeResourceOwner = new RevokeResourceOwner();
             revokeResourceOwner.setIssuedAt(epochSecond);
             revokeResourceOwner.setGlobalId(name1);
+            revokeResourceOwner.setId(idGenerator.getId());
             revokeResourceOwnerRepo.save(revokeResourceOwner);
         } else {
             byName.setIssuedAt(epochSecond);

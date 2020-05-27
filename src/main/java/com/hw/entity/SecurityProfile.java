@@ -2,12 +2,13 @@ package com.hw.entity;
 
 import com.hw.shared.Auditable;
 import com.hw.shared.BadRequestException;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -15,7 +16,6 @@ import java.net.URISyntaxException;
 
 @Entity
 @Table(name = "security_profile_list")
-@SequenceGenerator(name = "security_profile_list_gen", sequenceName = "security_profile_list_gen", initialValue = 100)
 @Data
 @Slf4j
 public class SecurityProfile extends Auditable {
@@ -79,7 +79,5 @@ public class SecurityProfile extends Auditable {
     private String fragment;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "security_profile_list_gen")
-    @Setter(AccessLevel.NONE)
     private Long id;
 }
