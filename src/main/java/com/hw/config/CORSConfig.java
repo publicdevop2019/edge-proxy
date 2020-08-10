@@ -19,6 +19,7 @@ public class CORSConfig {
         configuration.addAllowedHeader("Authorization");
         configuration.addAllowedHeader("lastupdateat");
         configuration.addAllowedHeader("uuid");
+        configuration.addAllowedHeader("changeId");
         configuration.addExposedHeader("location");
         configuration.addExposedHeader("lastupdateat");
         configuration.addExposedHeader("uuid");
