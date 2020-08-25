@@ -3,7 +3,7 @@ package com.hw.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.entity.SecurityProfile;
 import com.hw.repo.SecurityProfileRepo;
-import com.hw.utility.SecurityProfileMatcher;
+import com.hw.misc.SecurityProfileMatcher;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;

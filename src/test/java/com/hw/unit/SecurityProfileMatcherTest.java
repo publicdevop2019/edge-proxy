@@ -1,7 +1,7 @@
 package com.hw.unit;
 
 import com.hw.entity.SecurityProfile;
-import com.hw.utility.SecurityProfileMatcher;
+import com.hw.misc.SecurityProfileMatcher;
 import org.junit.Assert;
 import org.junit.Test;
 

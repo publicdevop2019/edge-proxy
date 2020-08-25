@@ -1,4 +1,4 @@
-package com.hw.utility;
+package com.hw.misc;
 
 import com.hw.entity.SecurityProfile;
 
