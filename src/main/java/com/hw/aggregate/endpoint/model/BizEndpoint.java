@@ -34,6 +34,9 @@ public class BizEndpoint extends Auditable implements IdBasedEntity {
     @Column
     private String expression;
 
+    @Column
+    private String description;
+
     @NotBlank
     @Column
     private String resourceId;
@@ -70,6 +73,7 @@ public class BizEndpoint extends Auditable implements IdBasedEntity {
         this.resourceId = command.getResourceId();
         this.path = command.getPath();
         this.method = command.getMethod();
+        this.description = command.getDescription();
     }
 
     public BizEndpoint replace(UpdateBizEndpointCommand command) {

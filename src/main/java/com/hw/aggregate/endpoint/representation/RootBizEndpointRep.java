@@ -7,6 +7,7 @@ import lombok.Data;
 public class RootBizEndpointRep {
     private String expression;
     private String resourceId;
+    private String description;
     private String path;
     private String method;
     private Long id;
@@ -20,6 +21,7 @@ public class RootBizEndpointRep {
         this.path = bizEndpoint.getPath();
         this.method = bizEndpoint.getMethod();
         this.id = bizEndpoint.getId();
+        this.description=bizEndpoint.getDescription();
         this.createdBy = bizEndpoint.getCreatedBy();
         this.createdAt = bizEndpoint.getCreatedAt() != null ? bizEndpoint.getCreatedAt().getTime() : null;
         this.modifiedBy = bizEndpoint.getModifiedBy();

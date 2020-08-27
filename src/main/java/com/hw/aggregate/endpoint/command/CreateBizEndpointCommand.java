@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class CreateBizEndpointCommand {
     private String expression;
+    private String description;
 
     private String resourceId;
 

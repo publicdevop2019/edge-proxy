@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class RootBizEndpointCardRep {
     private String expression;
+    private String description;
     private String resourceId;
     private String path;
     private String method;
@@ -13,6 +14,7 @@ public class RootBizEndpointCardRep {
 
     public RootBizEndpointCardRep(BizEndpoint bizEndpoint) {
         this.expression = bizEndpoint.getExpression();
+        this.description = bizEndpoint.getDescription();
         this.resourceId = bizEndpoint.getResourceId();
         this.path = bizEndpoint.getPath();
         this.method = bizEndpoint.getMethod();

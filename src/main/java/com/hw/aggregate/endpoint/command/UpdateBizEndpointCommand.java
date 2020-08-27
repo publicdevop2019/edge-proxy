@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class UpdateBizEndpointCommand {
     private String expression;
+    private String description;
 
     private String resourceId;
 
