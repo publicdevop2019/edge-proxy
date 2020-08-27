@@ -1,7 +1,6 @@
 package com.hw.config;
 
 import com.hw.aggregate.endpoint.exception.DuplicateEndpointException;
-import com.hw.aggregate.revoke_token.exception.BlacklistException;
 import com.hw.shared.ErrorMessage;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -19,7 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class DomainExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {BlacklistException.class, DuplicateEndpointException.class})
+    @ExceptionHandler(value = {DuplicateEndpointException.class})
     protected ResponseEntity<?> handleException(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, new ErrorMessage(ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }

@@ -1,9 +1,8 @@
 package com.hw.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.aggregate.revoke_token.model.RevokeTokenInfo;
-import com.hw.aggregate.revoke_token.RevokeClientRepo;
-import com.hw.aggregate.revoke_token.RevokeResourceOwnerRepo;
+import com.hw.aggregate.revoke_token.RevokeTokenRepo;
+import com.hw.aggregate.revoke_token.model.RevokeToken;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.http.HttpServletRequestWrapper;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.hw.config.Constant.EDGE_PROXY_TOKEN_REVOKED;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
@@ -25,10 +25,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class RevokeFilter extends ZuulFilter {
 
     @Autowired
-    private RevokeClientRepo revokeClientRepo;
-
-    @Autowired
-    private RevokeResourceOwnerRepo revokeResourceOwnerRepo;
+    private RevokeTokenRepo revokeTokenRepo;
 
     @Autowired
     private ObjectMapper mapper;
@@ -75,12 +72,10 @@ public class RevokeFilter extends ZuulFilter {
                 String userId = (String) claims.get("uid");
                 String clientId = (String) claims.get("client_id");
                 if (userId != null) {
-                    RevokeTokenInfo byName = revokeResourceOwnerRepo.findByGlobalId(userId);
-                    checkToken(byName, ctx, iat);
+                    checkToken(Long.parseLong(userId), ctx, iat);
                 }
                 if (clientId != null) {
-                    RevokeTokenInfo byName = revokeClientRepo.findByGlobalId(clientId);
-                    checkToken(byName, ctx, iat);
+                    checkToken(Long.parseLong(clientId), ctx, iat);
                 }
 
             } catch (IOException e) {
@@ -91,8 +86,9 @@ public class RevokeFilter extends ZuulFilter {
         return null;
     }
 
-    private void checkToken(RevokeTokenInfo tokenInfo, RequestContext ctx, Integer iat) {
-        if (tokenInfo != null && tokenInfo.getIssuedAt() >= iat) {
+    private void checkToken(Long id, RequestContext ctx, Integer iat) {
+        Optional<RevokeToken> byId = revokeTokenRepo.findById(id);
+        if (byId.isPresent() && byId.get().getIssuedAt() >= iat) {
             // reject request, for internal forwarding, set attribute */
             ctx.getRequest().setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
             ctx.setSendZuulResponse(false);
