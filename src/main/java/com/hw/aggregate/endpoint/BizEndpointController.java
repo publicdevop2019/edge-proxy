@@ -1,5 +1,6 @@
 package com.hw.aggregate.endpoint;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
 import com.hw.aggregate.endpoint.command.UpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
@@ -50,4 +51,9 @@ public class BizEndpointController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping(path = "root/{id}", consumes = "application/json-patch+json")
+    public ResponseEntity<?> patchForRootById(@PathVariable(name = "id") Long id, @RequestBody JsonPatch patch, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        securityProfileService.patchById(id, patch, changeId);
+        return ResponseEntity.ok().build();
+    }
 }

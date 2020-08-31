@@ -5,6 +5,7 @@ import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
 import com.hw.aggregate.endpoint.command.UpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.hw.aggregate.endpoint.model.BizEndpointQueryRegistry;
+import com.hw.aggregate.endpoint.model.RootBizEndpointPatchMiddleLayer;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointRep;
 import com.hw.config.InternalForwardHelper;
@@ -23,7 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulService<BizEndpoint, RootBizEndpointCardRep, RootBizEndpointRep, VoidTypedClass> {
+public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulService<BizEndpoint, RootBizEndpointCardRep, RootBizEndpointRep, RootBizEndpointPatchMiddleLayer> {
 
     @Autowired
     private InternalForwardHelper internalForwardHelper;
@@ -52,6 +53,7 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
         idGenerator = idGenerator2;
         changeRepository = changeRepository2;
         om = objectMapper;
+        entityPatchSupplier= RootBizEndpointPatchMiddleLayer::new;
     }
 
     public CreatedEntityRep createForRoot(CreateBizEndpointCommand command, String changeId, HttpServletRequest request) {

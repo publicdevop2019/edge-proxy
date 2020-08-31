@@ -10,6 +10,7 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(5,'4','/
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(6,'4','/auth-svc/users/admin','GET','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(127,'4','/auth-svc/users/admin/**','GET','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(7,'4','/auth-svc/users/admin/**','PUT','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(130,'4','/auth-svc/users/admin/**','PATCH','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(8,'4','/auth-svc/users/admin/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(9,'4','/auth-svc/users/user/pwd','PUT','hasRole(''ROLE_USER'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(10,'4','/auth-svc/authorize','POST','hasRole(''ROLE_USER'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
