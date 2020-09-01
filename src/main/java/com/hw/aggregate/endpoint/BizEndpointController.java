@@ -52,7 +52,7 @@ public class BizEndpointController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("admin")
+    @DeleteMapping("root")
     public ResponseEntity<?> deleteForAdminByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam) {
         securityProfileService.deleteByQuery(queryParam);
         return ResponseEntity.ok().build();
