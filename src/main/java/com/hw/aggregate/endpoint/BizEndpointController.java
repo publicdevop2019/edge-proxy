@@ -33,10 +33,11 @@ public class BizEndpointController {
                                                                   HttpServletRequest request) {
         return securityProfileService.readAll(request, queryParam, pageParam, config);
     }
+
     @GetMapping("root/{id}")
     public RootBizEndpointRep readForRootById(@PathVariable Long id,
                                               HttpServletRequest request) {
-        return securityProfileService.readById(id,request);
+        return securityProfileService.readById(id, request);
     }
 
     @PutMapping("root/{id}")
@@ -48,6 +49,12 @@ public class BizEndpointController {
     @DeleteMapping("root/{id}")
     public ResponseEntity<?> deleteForRootById(@PathVariable Long id, HttpServletRequest request) {
         securityProfileService.delete(id, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("admin")
+    public ResponseEntity<?> deleteForAdminByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam) {
+        securityProfileService.deleteByQuery(queryParam);
         return ResponseEntity.ok().build();
     }
 
