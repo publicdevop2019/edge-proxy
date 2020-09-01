@@ -2,8 +2,6 @@ package com.hw.aggregate.endpoint.model;
 
 import com.hw.shared.sql.builder.SelectQueryBuilder;
 import com.hw.shared.sql.clause.SelectFieldCollectionContainsClause;
-import com.hw.shared.sql.clause.SelectFieldEnumStringEqualClause;
-import com.hw.shared.sql.clause.SelectFieldStringEqualClause;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

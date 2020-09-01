@@ -1,9 +1,9 @@
 package com.hw.unit;
 
+import com.hw.aggregate.endpoint.exception.DuplicateEndpointException;
 import com.hw.config.InternalForwardHelper;
 import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.hw.aggregate.endpoint.BizEndpointRepo;
-import com.hw.shared.BadRequestException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,7 +28,7 @@ public class BizRootBizEndpointApplicationServiceTest {
     @Mock
     InternalForwardHelper internalForwardHelper;
 
-    @Test(expected = BadRequestException.class)
+    @Test(expected = DuplicateEndpointException.class)
     public void same_profile_can_not_be_added_twice() {
         BizEndpoint stored = getSecurityProfile();
         Mockito.doReturn(Arrays.asList(stored)).when(securityProfileRepo).findByResourceId(any(String.class));
