@@ -1,4 +1,4 @@
-package com.hw.aggregate.endpoint;
+package com.hw.aggregate.endpoint.representation;
 
 import com.hw.aggregate.endpoint.model.BizEndpoint;
 import lombok.Data;

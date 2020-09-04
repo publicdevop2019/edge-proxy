@@ -22,33 +22,32 @@ public class BizEndpointController {
     RootBizEndpointApplicationService securityProfileService;
 
     @PostMapping("root")
-    public ResponseEntity createForRoot(@RequestBody CreateBizEndpointCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
-        return ResponseEntity.ok().header("Location", String.valueOf(securityProfileService.createForRoot(command, changeId, request).getId())).build();
+    public ResponseEntity createForRoot(@RequestBody CreateBizEndpointCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        return ResponseEntity.ok().header("Location", String.valueOf(securityProfileService.create(command, changeId).getId())).build();
     }
 
     @GetMapping("root")
     public SumPagedRep<RootBizEndpointCardRep> readForRootByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam,
                                                                   @RequestParam(value = HTTP_PARAM_PAGE, required = false) String pageParam,
-                                                                  @RequestParam(value = HTTP_PARAM_SKIP_COUNT, required = false) String config,
-                                                                  HttpServletRequest request) {
-        return securityProfileService.readAll(request, queryParam, pageParam, config);
+                                                                  @RequestParam(value = HTTP_PARAM_SKIP_COUNT, required = false) String config) {
+        return securityProfileService.readByQuery(queryParam, pageParam, config);
     }
 
     @GetMapping("root/{id}")
     public RootBizEndpointRep readForRootById(@PathVariable Long id,
                                               HttpServletRequest request) {
-        return securityProfileService.readById(id, request);
+        return securityProfileService.readById(id);
     }
 
     @PutMapping("root/{id}")
-    public ResponseEntity<?> replaceForRootById(@RequestBody UpdateBizEndpointCommand command, @PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
-        securityProfileService.replace(command, id, changeId, request);
+    public ResponseEntity<?> replaceForRootById(@RequestBody UpdateBizEndpointCommand command, @PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        securityProfileService.replaceById(id, command, changeId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("root/{id}")
-    public ResponseEntity<?> deleteForRootById(@PathVariable Long id, HttpServletRequest request) {
-        securityProfileService.delete(id, request);
+    public ResponseEntity<?> deleteForRootById(@PathVariable Long id) {
+        securityProfileService.deleteById(id);
         return ResponseEntity.ok().build();
     }
 

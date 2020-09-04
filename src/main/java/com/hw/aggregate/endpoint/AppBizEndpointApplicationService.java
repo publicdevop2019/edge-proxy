@@ -3,6 +3,7 @@ package com.hw.aggregate.endpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.hw.aggregate.endpoint.model.BizEndpointQueryRegistry;
+import com.hw.aggregate.endpoint.representation.AppBizEndpointCardRep;
 import com.hw.shared.IdGenerator;
 import com.hw.shared.idempotent.ChangeRepository;
 import com.hw.shared.rest.DefaultRoleBasedRestfulService;

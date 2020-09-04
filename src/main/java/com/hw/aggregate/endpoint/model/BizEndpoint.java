@@ -1,12 +1,10 @@
 package com.hw.aggregate.endpoint.model;
 
 import com.hw.aggregate.endpoint.AppBizEndpointApplicationService;
-import com.hw.aggregate.endpoint.AppBizEndpointCardRep;
-import com.hw.aggregate.endpoint.RootBizEndpointApplicationService;
+import com.hw.aggregate.endpoint.representation.AppBizEndpointCardRep;
 import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
 import com.hw.aggregate.endpoint.command.UpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.exception.DuplicateEndpointException;
-import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.shared.Auditable;
 import com.hw.shared.rest.IdBasedEntity;
 import com.hw.shared.sql.SumPagedRep;

@@ -5,6 +5,7 @@ import com.hw.aggregate.revoke_token.RevokeTokenRepo;
 import com.hw.aggregate.revoke_token.model.RevokeToken;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
+import com.netflix.zuul.exception.ZuulException;
 import com.netflix.zuul.http.HttpServletRequestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.hw.config.Constant.EDGE_PROXY_TOKEN_REVOKED;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
@@ -46,7 +46,7 @@ public class RevokeFilter extends ZuulFilter {
     }
 
     @Override
-    public Object run() {
+    public Object run() throws ZuulException {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
         HttpServletRequestWrapper httpServletRequestWrapper = (HttpServletRequestWrapper) request;
@@ -86,13 +86,13 @@ public class RevokeFilter extends ZuulFilter {
         return null;
     }
 
-    private void checkToken(Long id, RequestContext ctx, Integer iat) {
+    private void checkToken(Long id, RequestContext ctx, Integer iat) throws ZuulException {
         Optional<RevokeToken> byId = revokeTokenRepo.findById(id);
         if (byId.isPresent() && byId.get().getIssuedAt() >= iat) {
             // reject request, for internal forwarding, set attribute */
-            ctx.getRequest().setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
             ctx.setSendZuulResponse(false);
             ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
+            throw new ZuulException("not authorized", 401, "not authorized");
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.hw.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.hw.aggregate.endpoint.BizEndpointRepo;
+import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.hw.config.Constant.EDGE_PROXY_UNAUTHORIZED_ACCESS;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
@@ -95,7 +94,7 @@ public class SecurityProfileFilter extends ZuulFilter {
              * check endpoint url, method first then check resourceId and security rule
              */
             Jwt jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
-            Map<String,Object> claims;
+            Map<String, Object> claims;
             try {
                 claims = mapper.readValue(jwt.getClaims(), Map.class);
             } catch (IOException e) {
@@ -126,9 +125,9 @@ public class SecurityProfileFilter extends ZuulFilter {
             }
 
             if (mostSpecificSecurityProfile.isEmpty() || !passed) {
-                request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
+                throw new ZuulException("forbidden", 403, "forbidden");
             }
         } else {
             /** un-registered endpoints */

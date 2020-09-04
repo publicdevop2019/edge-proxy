@@ -1,12 +1,9 @@
 package com.hw.aggregate.revoke_token;
 
-import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
 import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 import static com.hw.shared.AppConstant.HTTP_HEADER_CHANGE_ID;
 
@@ -26,18 +23,20 @@ public class RevokeTokenController {
     private AdminRevokeTokenApplicationService adminRevokeTokenApplicationService;
 
     @PostMapping("root")
-    public ResponseEntity<?> createForRoot(@RequestBody CreateRevokeTokenCommand command, HttpServletRequest request, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
-        rootRevokeTokenApplicationService.create(command, request, changeId);
+    public ResponseEntity<?> createForRoot(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        rootRevokeTokenApplicationService.create(command, changeId);
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("app")
-    public ResponseEntity<?> createForApp(@RequestBody CreateRevokeTokenCommand command, HttpServletRequest request, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
-        appRevokeTokenApplicationService.create(command, request, changeId);
+    public ResponseEntity<?> createForApp(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        appRevokeTokenApplicationService.create(command, changeId);
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("admin")
-    public ResponseEntity<?> createForAdmin(@RequestBody CreateRevokeTokenCommand command, HttpServletRequest request, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
-        adminRevokeTokenApplicationService.create(command, request, changeId);
+    public ResponseEntity<?> createForAdmin(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        adminRevokeTokenApplicationService.create(command, changeId);
         return ResponseEntity.ok().build();
     }
 }

@@ -1,11 +1,9 @@
 package com.hw.aggregate.revoke_token;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
 import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
 import com.hw.aggregate.revoke_token.model.RevokeToken;
 import com.hw.aggregate.revoke_token.model.RevokeTokenQueryRegistry;
-import com.hw.config.InternalForwardHelper;
 import com.hw.shared.IdGenerator;
 import com.hw.shared.idempotent.ChangeRepository;
 import com.hw.shared.rest.DefaultRoleBasedRestfulService;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulService<RevokeToken, Void, Void, VoidTypedClass> {
@@ -29,8 +26,6 @@ public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulSe
     private ObjectMapper objectMapper;
     @Autowired
     private RevokeTokenRepo repo2;
-    @Autowired
-    private InternalForwardHelper internalForwardHelper;
 
     @PostConstruct
     private void setUp() {
@@ -63,8 +58,4 @@ public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulSe
         return RevokeToken.create((CreateRevokeTokenCommand) command, repo2);
     }
 
-    public void create(CreateRevokeTokenCommand command, HttpServletRequest request, String changeId) {
-        internalForwardHelper.forwardCheck(request);
-        super.create(command, changeId);
-    }
 }
