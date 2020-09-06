@@ -1,11 +1,10 @@
 package com.hw.shared.sql.builder;
 
+import com.hw.shared.Auditable;
 import com.hw.shared.sql.clause.SelectFieldIdWhereClause;
+import com.hw.shared.sql.clause.SelectNotDeletedClause;
 import com.hw.shared.sql.clause.WhereClause;
-import com.hw.shared.sql.exception.EmptyQueryValueException;
-import com.hw.shared.sql.exception.EmptyWhereClauseException;
-import com.hw.shared.sql.exception.MaxPageSizeExceedException;
-import com.hw.shared.sql.exception.UnsupportedQueryException;
+import com.hw.shared.sql.exception.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.hw.shared.AppConstant.COMMON_ENTITY_ID;
 
-public abstract class SelectQueryBuilder<T> {
+public abstract class SelectQueryBuilder<T extends Auditable> {
     protected Integer DEFAULT_PAGE_SIZE = 10;
     protected Integer MAX_PAGE_SIZE = 20;
     protected Integer DEFAULT_PAGE_NUM = 0;
@@ -41,31 +40,7 @@ public abstract class SelectQueryBuilder<T> {
         Root<T> root = query.from(clazz);
         query.select(root);
         PageRequest pageRequest = getPageRequest(page);
-
-        List<Predicate> results = new ArrayList<>();
-        if (search == null) {
-            if (!allowEmptyClause)
-                throw new EmptyWhereClauseException();
-        } else {
-            String[] queryParams = search.split(",");
-            for (String param : queryParams) {
-                String[] split = param.split(":");
-                if (split.length == 2) {
-                    if (supportedWhereField.get(split[0]) != null && !split[1].isBlank()) {
-                        WhereClause<T> tWhereClause = supportedWhereField.get(split[0]);
-                        Predicate whereClause = tWhereClause.getWhereClause(split[1], cb, root);
-                        results.add(whereClause);
-                    }
-                } else {
-                    throw new EmptyQueryValueException();
-                }
-            }
-        }
-        if (defaultWhereField.size() != 0) {
-            Set<Predicate> collect = defaultWhereField.stream().map(e -> e.getWhereClause(null, cb, root)).distinct().collect(Collectors.toSet());
-            results.addAll(collect);
-        }
-        Predicate and = cb.and(results.toArray(new Predicate[0]));
+        Predicate and = getPredicate(search, cb, root);
         if (and != null)
             query.where(and);
         Set<Order> collect = pageRequest.getSort().get().map(e -> {
@@ -83,11 +58,7 @@ public abstract class SelectQueryBuilder<T> {
         return query1.getResultList();
     }
 
-    public Long selectCount(String search, Class<T> clazz) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Long> query = cb.createQuery(Long.class);
-        Root<T> root = query.from(clazz);
-        query.select(cb.count(root));
+    private Predicate getPredicate(String search, CriteriaBuilder cb, Root<T> root) {
         List<Predicate> results = new ArrayList<>();
         if (search == null) {
             if (!allowEmptyClause)
@@ -97,19 +68,34 @@ public abstract class SelectQueryBuilder<T> {
             for (String param : queryParams) {
                 String[] split = param.split(":");
                 if (split.length == 2) {
+                    if (supportedWhereField.get(split[0]) == null)
+                        throw new UnknownWhereClauseException();
                     if (supportedWhereField.get(split[0]) != null && !split[1].isBlank()) {
                         WhereClause<T> tWhereClause = supportedWhereField.get(split[0]);
                         Predicate whereClause = tWhereClause.getWhereClause(split[1], cb, root);
                         results.add(whereClause);
                     }
+                } else {
+                    throw new EmptyQueryValueException();
                 }
             }
         }
         if (defaultWhereField.size() != 0) {
-            Set<Predicate> collect = defaultWhereField.stream().map(e -> e.getWhereClause(null, cb, root)).distinct().collect(Collectors.toSet());
+            Set<Predicate> collect = defaultWhereField.stream().map(e -> e.getWhereClause(null, cb, root)).collect(Collectors.toSet());
             results.addAll(collect);
         }
-        Predicate and = cb.and(results.toArray(new Predicate[0]));
+        //force to select only not deleted entity
+        Predicate notSoftDeleted = new SelectNotDeletedClause<T>().getWhereClause(cb, root);
+        results.add(notSoftDeleted);
+        return cb.and(results.toArray(new Predicate[0]));
+    }
+
+    public Long selectCount(String search, Class<T> clazz) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<T> root = query.from(clazz);
+        query.select(cb.count(root));
+        Predicate and = getPredicate(search, cb, root);
         if (and != null)
             query.where(and);
         return em.createQuery(query).getSingleResult();

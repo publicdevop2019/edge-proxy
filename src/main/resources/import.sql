@@ -1,5 +1,5 @@
 -- *** manually insert below record if you running it in development mode for fist time***
-INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(1,'838330249904134','/auth-svc/clients/user','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''write'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(1,'838330249904134','/auth-svc/clients/app','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''write'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(0,'838330249904134','/auth-svc/clients/root','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(2,'838330249904134','/auth-svc/clients/root','POST','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(125,'838330249904134','/auth-svc/clients/root/**','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
@@ -23,6 +23,9 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method) VALUES(15,'838330249904134
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(16,'838330249904141','/proxy/revoke-tokens/root','POST','(hasRole(''ROLE_ROOT'')) and #oauth2.hasScope(''trust'')');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(17,'838330249904141','/proxy/revoke-tokens/admin','POST','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'')');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(129,'838330249904141','/proxy/revoke-tokens/app','POST','hasRole(''ROLE_BACKEND'') and #oauth2.hasScope(''trust'')');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(138,'838330249904141','/product-svc/products/change/root/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(139,'838330249904141','/product-svc/products/change/admin/**','DELETE','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(140,'838330249904141','/product-svc/products/change/app/**','DELETE','hasRole(''ROLE_BACKEND'') and #oauth2.hasScope(''trust'') and #oauth2.isClient()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(18,'838330249904141','/proxy/endpoints/root','POST','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'')');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(19,'838330249904141','/proxy/endpoints/root','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'')');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(128,'838330249904141','/proxy/endpoints/root/**','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'')');

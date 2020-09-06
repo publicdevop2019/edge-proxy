@@ -56,7 +56,7 @@ public class AdminRevokeTokenApplicationService extends DefaultRoleBasedRestfulS
 
     @Override
     protected RevokeToken createEntity(long id, Object command) {
-        return RevokeToken.createForAdmin((CreateRevokeTokenCommand) command, repo2);
+        return RevokeToken.createForAdmin(id, (CreateRevokeTokenCommand) command);
     }
 
     @Override

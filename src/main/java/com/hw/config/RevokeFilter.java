@@ -1,8 +1,9 @@
 package com.hw.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.aggregate.revoke_token.RevokeTokenRepo;
-import com.hw.aggregate.revoke_token.model.RevokeToken;
+import com.hw.aggregate.revoke_token.AppRevokeTokenApplicationService;
+import com.hw.aggregate.revoke_token.representation.AppRevokeTokenCardRep;
+import com.hw.shared.sql.SumPagedRep;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -16,8 +17,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
+import static com.hw.aggregate.revoke_token.model.RevokeToken.ENTITY_ISSUE_AT;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
@@ -25,7 +26,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class RevokeFilter extends ZuulFilter {
 
     @Autowired
-    private RevokeTokenRepo revokeTokenRepo;
+    private AppRevokeTokenApplicationService revokeTokenRepo;
 
     @Autowired
     private ObjectMapper mapper;
@@ -87,12 +88,14 @@ public class RevokeFilter extends ZuulFilter {
     }
 
     private void checkToken(Long id, RequestContext ctx, Integer iat) throws ZuulException {
-        Optional<RevokeToken> byId = revokeTokenRepo.findById(id);
-        if (byId.isPresent() && byId.get().getIssuedAt() >= iat) {
-            // reject request, for internal forwarding, set attribute */
-            ctx.setSendZuulResponse(false);
-            ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-            throw new ZuulException("not authorized", 401, "not authorized");
+        SumPagedRep<AppRevokeTokenCardRep> appRevokeTokenCardRepSumPagedRep = revokeTokenRepo.readByQuery("targetId:" + id, "by:" + ENTITY_ISSUE_AT + ",order:desc", null);
+        if (appRevokeTokenCardRepSumPagedRep.getData().size() != 0) {
+            if (appRevokeTokenCardRepSumPagedRep.getData().get(0).getIssuedAt() >= iat) {
+                // reject request, for internal forwarding, set attribute */
+                ctx.setSendZuulResponse(false);
+                ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
+                throw new ZuulException("not authorized", 401, "not authorized");
+            }
         }
     }
 }

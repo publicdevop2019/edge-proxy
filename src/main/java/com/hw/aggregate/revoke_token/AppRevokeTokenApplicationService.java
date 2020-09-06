@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
 import com.hw.aggregate.revoke_token.model.RevokeToken;
 import com.hw.aggregate.revoke_token.model.RevokeTokenQueryRegistry;
+import com.hw.aggregate.revoke_token.representation.AppRevokeTokenCardRep;
 import com.hw.shared.IdGenerator;
 import com.hw.shared.idempotent.ChangeRepository;
 import com.hw.shared.rest.DefaultRoleBasedRestfulService;
@@ -16,7 +17,7 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Service
-public class AppRevokeTokenApplicationService extends DefaultRoleBasedRestfulService<RevokeToken, Void, Void, VoidTypedClass> {
+public class AppRevokeTokenApplicationService extends DefaultRoleBasedRestfulService<RevokeToken, AppRevokeTokenCardRep, Void, VoidTypedClass> {
     @Autowired
     private RevokeTokenQueryRegistry registry;
     @Autowired
@@ -33,7 +34,7 @@ public class AppRevokeTokenApplicationService extends DefaultRoleBasedRestfulSer
         repo = repo2;
         queryRegistry = registry;
         entityClass = RevokeToken.class;
-        role = RestfulQueryRegistry.RoleEnum.ROOT;
+        role = RestfulQueryRegistry.RoleEnum.APP;
         idGenerator = idGenerator2;
         changeRepository = changeRepository2;
         om = objectMapper;
@@ -45,8 +46,8 @@ public class AppRevokeTokenApplicationService extends DefaultRoleBasedRestfulSer
     }
 
     @Override
-    public Void getEntitySumRepresentation(RevokeToken revokeToken) {
-        return null;
+    public AppRevokeTokenCardRep getEntitySumRepresentation(RevokeToken revokeToken) {
+        return new AppRevokeTokenCardRep(revokeToken);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class AppRevokeTokenApplicationService extends DefaultRoleBasedRestfulSer
 
     @Override
     protected RevokeToken createEntity(long id, Object command) {
-        return RevokeToken.create((CreateRevokeTokenCommand) command, repo2);
+        return RevokeToken.create(id,(CreateRevokeTokenCommand) command);
     }
 
     @Override

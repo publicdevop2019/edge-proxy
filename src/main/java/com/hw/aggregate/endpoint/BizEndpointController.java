@@ -47,14 +47,14 @@ public class BizEndpointController {
     }
 
     @DeleteMapping("root/{id}")
-    public ResponseEntity<?> deleteForRootById(@PathVariable Long id) {
-        securityProfileService.deleteById(id);
+    public ResponseEntity<?> deleteForRootById(@PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        securityProfileService.deleteById(id,changeId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("root")
-    public ResponseEntity<?> deleteForAdminByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam) {
-        securityProfileService.deleteByQuery(queryParam);
+    public ResponseEntity<?> deleteForAdminByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        securityProfileService.deleteByQuery(queryParam,changeId);
         return ResponseEntity.ok().build();
     }
 

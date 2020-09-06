@@ -56,7 +56,7 @@ public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulSe
 
     @Override
     protected RevokeToken createEntity(long id, Object command) {
-        return RevokeToken.create((CreateRevokeTokenCommand) command, repo2);
+        return RevokeToken.create(id, (CreateRevokeTokenCommand) command);
     }
 
     @Override
