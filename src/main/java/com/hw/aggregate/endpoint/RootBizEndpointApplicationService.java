@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Map;
 
 @Service
 public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulService<BizEndpoint, RootBizEndpointCardRep, RootBizEndpointRep, RootBizEndpointPatchMiddleLayer> {
@@ -65,6 +66,26 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
     @Override
     protected BizEndpoint createEntity(long id, Object command) {
         return BizEndpoint.create(id, (CreateBizEndpointCommand) command, appBizEndpointApplicationService);
+    }
+
+    @Override
+    public void preDelete(BizEndpoint bizEndpoint) {
+
+    }
+
+    @Override
+    public void postDelete(BizEndpoint bizEndpoint) {
+
+    }
+
+    @Override
+    protected void prePatch(BizEndpoint bizEndpoint, Map<String, Object> params, RootBizEndpointPatchMiddleLayer middleLayer) {
+
+    }
+
+    @Override
+    protected void postPatch(BizEndpoint bizEndpoint, Map<String, Object> params, RootBizEndpointPatchMiddleLayer middleLayer) {
+
     }
 
 }

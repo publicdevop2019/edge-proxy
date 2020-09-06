@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Map;
 
 @Service
 public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulService<RevokeToken, Void, Void, VoidTypedClass> {
@@ -56,6 +57,26 @@ public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulSe
     @Override
     protected RevokeToken createEntity(long id, Object command) {
         return RevokeToken.create((CreateRevokeTokenCommand) command, repo2);
+    }
+
+    @Override
+    public void preDelete(RevokeToken revokeToken) {
+
+    }
+
+    @Override
+    public void postDelete(RevokeToken revokeToken) {
+
+    }
+
+    @Override
+    protected void prePatch(RevokeToken revokeToken, Map<String, Object> params, VoidTypedClass middleLayer) {
+
+    }
+
+    @Override
+    protected void postPatch(RevokeToken revokeToken, Map<String, Object> params, VoidTypedClass middleLayer) {
+
     }
 
 }

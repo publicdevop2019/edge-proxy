@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 import static com.hw.shared.AppConstant.*;
 
@@ -59,7 +60,9 @@ public class BizEndpointController {
 
     @PatchMapping(path = "root/{id}", consumes = "application/json-patch+json")
     public ResponseEntity<?> patchForRootById(@PathVariable(name = "id") Long id, @RequestBody JsonPatch patch, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
-        securityProfileService.patchById(id, patch, changeId);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put(HTTP_HEADER_CHANGE_ID, changeId);
+        securityProfileService.patchById(id, patch, params);
         return ResponseEntity.ok().build();
     }
 }
