@@ -28,11 +28,11 @@ public class RevokeTokenController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("change/root/{id}")
-    public ResponseEntity<?> rollbackChangeForRoot(@PathVariable String id) {
-        rootRevokeTokenApplicationService.rollbackCreateOrDelete(id);
-        return ResponseEntity.ok().build();
-    }
+//    @DeleteMapping("change/root/{id}")
+//    public ResponseEntity<?> rollbackChangeForRoot(@PathVariable String id) {
+//        rootRevokeTokenApplicationService.rollback(id);
+//        return ResponseEntity.ok().build();
+//    }
 
     @PostMapping("app")
     public ResponseEntity<?> createForApp(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
@@ -40,11 +40,11 @@ public class RevokeTokenController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("change/app/{id}")
-    public ResponseEntity<?> rollbackChangeForApp(@PathVariable String id) {
-        appRevokeTokenApplicationService.rollbackCreateOrDelete(id);
-        return ResponseEntity.ok().build();
-    }
+//    @DeleteMapping("change/app/{id}")
+//    public ResponseEntity<?> rollbackChangeForApp(@PathVariable String id) {
+//        appRevokeTokenApplicationService.rollback(id);
+//        return ResponseEntity.ok().build();
+//    }
 
     @PostMapping("admin")
     public ResponseEntity<?> createForAdmin(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
@@ -52,9 +52,9 @@ public class RevokeTokenController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("change/admin/{id}")
-    public ResponseEntity<?> rollbackChangeForAdmin(@PathVariable String id) {
-        adminRevokeTokenApplicationService.rollbackCreateOrDelete(id);
-        return ResponseEntity.ok().build();
-    }
+//    @DeleteMapping("change/admin/{id}")
+//    public ResponseEntity<?> rollbackChangeForAdmin(@PathVariable String id) {
+//        adminRevokeTokenApplicationService.rollback(id);
+//        return ResponseEntity.ok().build();
+//    }
 }
