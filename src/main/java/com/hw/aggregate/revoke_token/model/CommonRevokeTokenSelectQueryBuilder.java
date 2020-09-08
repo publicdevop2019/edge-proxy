@@ -15,6 +15,7 @@ public class CommonRevokeTokenSelectQueryBuilder extends SelectQueryBuilder<Revo
     CommonRevokeTokenSelectQueryBuilder() {
         mappedSortBy.put(ENTITY_ISSUE_AT, ENTITY_ISSUE_AT);
         supportedWhereField.put("targetId", new SelectFieldLongEqualClause<>(ENTITY_TARGET_ID));
+        allowEmptyClause = true;
     }
 
     @Autowired

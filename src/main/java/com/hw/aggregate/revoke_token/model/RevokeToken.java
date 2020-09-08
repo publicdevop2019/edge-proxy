@@ -30,8 +30,8 @@ public class RevokeToken extends Auditable implements IdBasedEntity {
     private TokenTypeEnum type;
 
     public enum TokenTypeEnum {
-        Client,
-        User;
+        CLIENT,
+        USER;
 
         public static class DBConverter extends EnumDBConverter {
             public DBConverter() {
@@ -49,7 +49,7 @@ public class RevokeToken extends Auditable implements IdBasedEntity {
     public static RevokeToken createForAdmin(Long id, CreateRevokeTokenCommand command) {
         if (command.getId() == null)
             throw new IllegalArgumentException("id should not be empty");
-        if (command.getType().equals(TokenTypeEnum.Client))
+        if (command.getType().equals(TokenTypeEnum.CLIENT))
             throw new IllegalArgumentException("type can only be user");
         return new RevokeToken(id, command);
     }

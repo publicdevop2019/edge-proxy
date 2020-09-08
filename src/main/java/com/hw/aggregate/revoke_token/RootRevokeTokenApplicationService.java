@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
 import com.hw.aggregate.revoke_token.model.RevokeToken;
 import com.hw.aggregate.revoke_token.model.RevokeTokenQueryRegistry;
+import com.hw.aggregate.revoke_token.representation.RootRevokeTokenCardRep;
 import com.hw.shared.IdGenerator;
 import com.hw.shared.idempotent.ChangeRepository;
 import com.hw.shared.rest.DefaultRoleBasedRestfulService;
@@ -16,7 +17,7 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Service
-public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulService<RevokeToken, Void, Void, VoidTypedClass> {
+public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulService<RevokeToken, RootRevokeTokenCardRep, Void, VoidTypedClass> {
     @Autowired
     private RevokeTokenQueryRegistry registry;
     @Autowired
@@ -45,8 +46,8 @@ public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulSe
     }
 
     @Override
-    public Void getEntitySumRepresentation(RevokeToken revokeToken) {
-        return null;
+    public RootRevokeTokenCardRep getEntitySumRepresentation(RevokeToken revokeToken) {
+        return new RootRevokeTokenCardRep(revokeToken);
     }
 
     @Override

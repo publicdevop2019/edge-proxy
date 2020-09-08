@@ -1,11 +1,13 @@
 package com.hw.aggregate.revoke_token;
 
 import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
+import com.hw.aggregate.revoke_token.representation.RootRevokeTokenCardRep;
+import com.hw.shared.sql.SumPagedRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.hw.shared.AppConstant.HTTP_HEADER_CHANGE_ID;
+import static com.hw.shared.AppConstant.*;
 
 /**
  * zuul own endpoints are getting internal forward,
@@ -28,11 +30,13 @@ public class RevokeTokenController {
         return ResponseEntity.ok().build();
     }
 
-//    @DeleteMapping("change/root/{id}")
-//    public ResponseEntity<?> rollbackChangeForRoot(@PathVariable String id) {
-//        rootRevokeTokenApplicationService.rollback(id);
-//        return ResponseEntity.ok().build();
-//    }
+    @GetMapping("root")
+    public SumPagedRep<RootRevokeTokenCardRep> readForRootByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam,
+                                                                  @RequestParam(value = HTTP_PARAM_PAGE, required = false) String pageParam,
+                                                                  @RequestParam(value = HTTP_PARAM_SKIP_COUNT, required = false) String config) {
+        return rootRevokeTokenApplicationService.readByQuery(queryParam, pageParam, config);
+    }
+
 
     @PostMapping("app")
     public ResponseEntity<?> createForApp(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
@@ -40,21 +44,10 @@ public class RevokeTokenController {
         return ResponseEntity.ok().build();
     }
 
-//    @DeleteMapping("change/app/{id}")
-//    public ResponseEntity<?> rollbackChangeForApp(@PathVariable String id) {
-//        appRevokeTokenApplicationService.rollback(id);
-//        return ResponseEntity.ok().build();
-//    }
 
     @PostMapping("admin")
     public ResponseEntity<?> createForAdmin(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
         adminRevokeTokenApplicationService.create(command, changeId);
         return ResponseEntity.ok().build();
     }
-
-//    @DeleteMapping("change/admin/{id}")
-//    public ResponseEntity<?> rollbackChangeForAdmin(@PathVariable String id) {
-//        adminRevokeTokenApplicationService.rollback(id);
-//        return ResponseEntity.ok().build();
-//    }
 }

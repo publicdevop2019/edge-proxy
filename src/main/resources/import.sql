@@ -6,10 +6,8 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(125,'838
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(126,'838330249904134','/auth-svc/clients/root/**','PATCH','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(3,'838330249904134','/auth-svc/clients/root/**','PUT','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(4,'838330249904134','/auth-svc/clients/root/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
---INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(142,'838330249904134','/auth-svc/changes/root/**','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(141,'838330249904134','/auth-svc/changes/root/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(143,'838330249904134','/auth-svc/changes/root','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
---INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(144,'838330249904134','/auth-svc/changes/root','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(145,'838330249904141','/proxy/changes/root/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(146,'838330249904141','/proxy/changes/root','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(5,'838330249904134','/auth-svc/users/public','POST','hasRole(''ROLE_FRONTEND'') and hasRole(''ROLE_FIRST_PARTY'') and #oauth2.hasScope(''write'') and #oauth2.isClient()');
@@ -27,6 +25,7 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(13,'8383
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(14,'838330249904134','/auth-svc/users/public/resetPwd','POST','hasRole(''ROLE_FRONTEND'') and hasRole(''ROLE_FIRST_PARTY'') and #oauth2.hasScope(''write'') and #oauth2.isClient()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method) VALUES(15,'838330249904134','/auth-svc/oauth/token','POST');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(16,'838330249904141','/proxy/revoke-tokens/root','POST','(hasRole(''ROLE_ROOT'')) and #oauth2.hasScope(''trust'')');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(149,'838330249904141','/proxy/revoke-tokens/root','GET','(hasRole(''ROLE_ROOT'')) and #oauth2.hasScope(''trust'')');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(17,'838330249904141','/proxy/revoke-tokens/admin','POST','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'')');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(129,'838330249904141','/proxy/revoke-tokens/app','POST','hasRole(''ROLE_BACKEND'') and #oauth2.hasScope(''trust'')');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(138,'838330249904141','/product-svc/products/change/root/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
@@ -102,6 +101,8 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(98,'8383
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(99,'838330249904145','/profile-svc/profiles/orders/id','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(100,'838330249904145','/profile-svc/profiles/orders/scheduler/resubmit','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(42,'838330249904146','/product-svc/catalogs/admin','POST','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(147,'838330249904146','/product-svc/changes/root','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(148,'838330249904146','/product-svc/changes/root/**','DELETE','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(43,'838330249904146','/product-svc/catalogs/admin/**','PUT','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(44,'838330249904146','/product-svc/catalogs/admin/**','DELETE','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(133,'838330249904146','/product-svc/catalogs/admin','DELETE','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''trust'') and #oauth2.isUser()');
