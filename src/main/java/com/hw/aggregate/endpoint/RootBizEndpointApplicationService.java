@@ -9,6 +9,7 @@ import com.hw.aggregate.endpoint.model.RootBizEndpointPatchMiddleLayer;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointRep;
 import com.hw.shared.IdGenerator;
+import com.hw.shared.idempotent.AppChangeRecordApplicationService;
 import com.hw.shared.idempotent.ChangeRepository;
 import com.hw.shared.rest.DefaultRoleBasedRestfulService;
 import com.hw.shared.sql.RestfulQueryRegistry;
@@ -29,7 +30,7 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
     @Autowired
     private IdGenerator idGenerator2;
     @Autowired
-    private ChangeRepository changeRepository2;
+    private AppChangeRecordApplicationService changeRepository2;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -43,7 +44,7 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
         entityClass = BizEndpoint.class;
         role = RestfulQueryRegistry.RoleEnum.ROOT;
         idGenerator = idGenerator2;
-        changeRepository = changeRepository2;
+        appChangeRecordApplicationService = changeRepository2;
         om = objectMapper;
         entityPatchSupplier = RootBizEndpointPatchMiddleLayer::new;
     }

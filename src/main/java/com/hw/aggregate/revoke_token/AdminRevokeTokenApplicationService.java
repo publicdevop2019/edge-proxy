@@ -5,6 +5,7 @@ import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
 import com.hw.aggregate.revoke_token.model.RevokeToken;
 import com.hw.aggregate.revoke_token.model.RevokeTokenQueryRegistry;
 import com.hw.shared.IdGenerator;
+import com.hw.shared.idempotent.AppChangeRecordApplicationService;
 import com.hw.shared.idempotent.ChangeRepository;
 import com.hw.shared.rest.DefaultRoleBasedRestfulService;
 import com.hw.shared.rest.VoidTypedClass;
@@ -22,7 +23,7 @@ public class AdminRevokeTokenApplicationService extends DefaultRoleBasedRestfulS
     @Autowired
     private IdGenerator idGenerator2;
     @Autowired
-    private ChangeRepository changeRepository2;
+    private AppChangeRecordApplicationService changeRepository2;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -35,7 +36,7 @@ public class AdminRevokeTokenApplicationService extends DefaultRoleBasedRestfulS
         entityClass = RevokeToken.class;
         role = RestfulQueryRegistry.RoleEnum.ROOT;
         idGenerator = idGenerator2;
-        changeRepository = changeRepository2;
+        appChangeRecordApplicationService = changeRepository2;
         om = objectMapper;
     }
 
