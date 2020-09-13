@@ -1,8 +1,9 @@
-package com.hw.config;
+package com.hw.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.aggregate.endpoint.BizEndpointRepo;
 import com.hw.aggregate.endpoint.model.BizEndpoint;
+import com.hw.config.SecurityProfileMatcher;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;

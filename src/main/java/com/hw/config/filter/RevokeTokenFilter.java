@@ -1,4 +1,4 @@
-package com.hw.config;
+package com.hw.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.aggregate.revoke_token.AppRevokeTokenApplicationService;
@@ -23,7 +23,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
 @Component
-public class RevokeFilter extends ZuulFilter {
+public class RevokeTokenFilter extends ZuulFilter {
 
     @Autowired
     private AppRevokeTokenApplicationService revokeTokenRepo;

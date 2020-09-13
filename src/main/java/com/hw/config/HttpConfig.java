@@ -1,5 +1,7 @@
 package com.hw.config;
 
+import com.hw.config.filter.CachedETagHeaderFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,9 +9,10 @@ import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 @Configuration
-public class CORSConfig {
+public class HttpConfig {
 
     @Bean
     public FilterRegistrationBean<CorsFilter> corsConfiguration() {
@@ -33,7 +36,7 @@ public class CORSConfig {
         configuration.addAllowedMethod("DELETE");
         configuration.addAllowedMethod("PUT");
         configuration.addAllowedMethod("OPTIONS");
-        configuration.setMaxAge(3600L);
+        configuration.setMaxAge(86400L); // permission may be cached for 1 day (86400 seconds)
         source.registerCorsConfiguration("/**/**/**", configuration);
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         /**
@@ -43,5 +46,12 @@ public class CORSConfig {
         return bean;
     }
 
+    @Bean
+    public FilterRegistrationBean<ShallowEtagHeaderFilter> shallowETagHeaderFilter(CachedETagHeaderFilter filter) {
+        FilterRegistrationBean<ShallowEtagHeaderFilter> bean
+                = new FilterRegistrationBean<>(filter);
+        bean.setOrder(Ordered.LOWEST_PRECEDENCE);
+        return bean;
+    }
 
 }

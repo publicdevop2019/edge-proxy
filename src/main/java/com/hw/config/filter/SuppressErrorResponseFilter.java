@@ -1,4 +1,4 @@
-package com.hw.config;
+package com.hw.config.filter;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -16,7 +16,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
  * this prevent unwanted system details from leaking outside
  */
 @Component
-public class ResponseErrorFilter extends ZuulFilter {
+public class SuppressErrorResponseFilter extends ZuulFilter {
     private static final Integer[] errorCodes = {500, 503};
     private static final List<Integer> integers = Arrays.asList(errorCodes);
 
