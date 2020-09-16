@@ -34,7 +34,7 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 public class SecurityProfileFilter extends ZuulFilter {
 
     private static Method triggerCheckMethod;
-    private static SpelExpressionParser parser;
+    private static final SpelExpressionParser parser;
 
     static {
         try {

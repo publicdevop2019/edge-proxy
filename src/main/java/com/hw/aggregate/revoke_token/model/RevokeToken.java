@@ -17,27 +17,23 @@ import java.time.Instant;
 @Slf4j
 @NoArgsConstructor
 public class RevokeToken extends Auditable implements IdBasedEntity {
+    public static final String ENTITY_TARGET_ID = "targetId";
+    public static final String ENTITY_ISSUE_AT = "issuedAt";
     @Id
     private Long id;
     @Column(nullable = false)
     private Long targetId;
-    public static final String ENTITY_TARGET_ID = "targetId";
     @Column(nullable = false)
     private Long issuedAt;
-    public static final String ENTITY_ISSUE_AT = "issuedAt";
     @Convert(converter = TokenTypeEnum.DBConverter.class)
     @Column(nullable = false)
     private TokenTypeEnum type;
 
-    public enum TokenTypeEnum {
-        CLIENT,
-        USER;
-
-        public static class DBConverter extends EnumDBConverter {
-            public DBConverter() {
-                super(TokenTypeEnum.class);
-            }
-        }
+    public RevokeToken(Long id, CreateRevokeTokenCommand command) {
+        this.id = id;
+        this.issuedAt = Instant.now().getEpochSecond();
+        this.type = command.getType();
+        this.targetId = command.getId();
     }
 
     public static RevokeToken create(Long id, CreateRevokeTokenCommand command) {
@@ -54,10 +50,14 @@ public class RevokeToken extends Auditable implements IdBasedEntity {
         return new RevokeToken(id, command);
     }
 
-    public RevokeToken(Long id, CreateRevokeTokenCommand command) {
-        this.id = id;
-        this.issuedAt = Instant.now().getEpochSecond();
-        this.type = command.getType();
-        this.targetId = command.getId();
+    public enum TokenTypeEnum {
+        CLIENT,
+        USER;
+
+        public static class DBConverter extends EnumDBConverter<TokenTypeEnum> {
+            public DBConverter() {
+                super(TokenTypeEnum.class);
+            }
+        }
     }
 }

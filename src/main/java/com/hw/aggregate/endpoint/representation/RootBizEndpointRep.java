@@ -15,13 +15,14 @@ public class RootBizEndpointRep {
     private Long createdAt;
     private String modifiedBy;
     private Long modifiedAt;
+
     public RootBizEndpointRep(BizEndpoint bizEndpoint) {
         this.expression = bizEndpoint.getExpression();
         this.resourceId = bizEndpoint.getResourceId();
         this.path = bizEndpoint.getPath();
         this.method = bizEndpoint.getMethod();
         this.id = bizEndpoint.getId();
-        this.description=bizEndpoint.getDescription();
+        this.description = bizEndpoint.getDescription();
         this.createdBy = bizEndpoint.getCreatedBy();
         this.createdAt = bizEndpoint.getCreatedAt() != null ? bizEndpoint.getCreatedAt().getTime() : null;
         this.modifiedBy = bizEndpoint.getModifiedBy();

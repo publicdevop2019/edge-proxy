@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 @Profile("shared-hw")
 public class H2Config extends ResourceServerConfigurerAdapter {
 
-    private String[] ignoredPaths = {"/h2-console/**"};
+    private final String[] ignoredPaths = {"/h2-console/**"};
 
     @Override
     public void configure(HttpSecurity http) throws Exception {

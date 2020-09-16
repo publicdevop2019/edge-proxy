@@ -17,13 +17,13 @@ import static org.springframework.cloud.netflix.zuul.filters.support.FilterConst
 
 @Component
 public class HttpCachedETagFilter extends ZuulFilter {
+    @Autowired
+    private ETagStore eTagStore;
+
     @Override
     public String filterType() {
         return PRE_TYPE;
     }
-
-    @Autowired
-    private ETagStore eTagStore;
 
     @Override
     public int filterOrder() {

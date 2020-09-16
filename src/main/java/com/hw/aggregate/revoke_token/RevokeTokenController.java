@@ -25,28 +25,28 @@ public class RevokeTokenController {
     private AdminRevokeTokenApplicationService adminRevokeTokenApplicationService;
 
     @PostMapping("root")
-    public ResponseEntity<?> createForRoot(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+    public ResponseEntity<Void> createForRoot(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
         rootRevokeTokenApplicationService.create(command, changeId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("root")
-    public SumPagedRep<RootRevokeTokenCardRep> readForRootByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam,
-                                                                  @RequestParam(value = HTTP_PARAM_PAGE, required = false) String pageParam,
-                                                                  @RequestParam(value = HTTP_PARAM_SKIP_COUNT, required = false) String config) {
-        return rootRevokeTokenApplicationService.readByQuery(queryParam, pageParam, config);
+    public ResponseEntity<SumPagedRep<RootRevokeTokenCardRep>> readForRootByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam,
+                                                                                  @RequestParam(value = HTTP_PARAM_PAGE, required = false) String pageParam,
+                                                                                  @RequestParam(value = HTTP_PARAM_SKIP_COUNT, required = false) String config) {
+        return ResponseEntity.ok(rootRevokeTokenApplicationService.readByQuery(queryParam, pageParam, config));
     }
 
 
     @PostMapping("app")
-    public ResponseEntity<?> createForApp(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+    public ResponseEntity<Void> createForApp(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
         appRevokeTokenApplicationService.create(command, changeId);
         return ResponseEntity.ok().build();
     }
 
 
     @PostMapping("admin")
-    public ResponseEntity<?> createForAdmin(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+    public ResponseEntity<Void> createForAdmin(@RequestBody CreateRevokeTokenCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
         adminRevokeTokenApplicationService.create(command, changeId);
         return ResponseEntity.ok().build();
     }

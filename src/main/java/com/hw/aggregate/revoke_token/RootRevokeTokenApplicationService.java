@@ -7,7 +7,6 @@ import com.hw.aggregate.revoke_token.model.RevokeTokenQueryRegistry;
 import com.hw.aggregate.revoke_token.representation.RootRevokeTokenCardRep;
 import com.hw.shared.IdGenerator;
 import com.hw.shared.idempotent.AppChangeRecordApplicationService;
-import com.hw.shared.idempotent.ChangeRepository;
 import com.hw.shared.rest.DefaultRoleBasedRestfulService;
 import com.hw.shared.rest.VoidTypedClass;
 import com.hw.shared.sql.RestfulQueryRegistry;
@@ -43,7 +42,7 @@ public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulSe
 
     @Override
     public RevokeToken replaceEntity(RevokeToken revokeToken, Object command) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -53,7 +52,7 @@ public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulSe
 
     @Override
     public Void getEntityRepresentation(RevokeToken revokeToken) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -63,22 +62,22 @@ public class RootRevokeTokenApplicationService extends DefaultRoleBasedRestfulSe
 
     @Override
     public void preDelete(RevokeToken revokeToken) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void postDelete(RevokeToken revokeToken) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected void prePatch(RevokeToken revokeToken, Map<String, Object> params, VoidTypedClass middleLayer) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected void postPatch(RevokeToken revokeToken, Map<String, Object> params, VoidTypedClass middleLayer) {
-
+        throw new UnsupportedOperationException();
     }
 
 }

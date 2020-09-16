@@ -23,43 +23,43 @@ public class BizEndpointController {
     RootBizEndpointApplicationService securityProfileService;
 
     @PostMapping("root")
-    public ResponseEntity createForRoot(@RequestBody CreateBizEndpointCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+    public ResponseEntity<Void> createForRoot(@RequestBody CreateBizEndpointCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
         return ResponseEntity.ok().header("Location", String.valueOf(securityProfileService.create(command, changeId).getId())).build();
     }
 
     @GetMapping("root")
-    public SumPagedRep<RootBizEndpointCardRep> readForRootByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam,
-                                                                  @RequestParam(value = HTTP_PARAM_PAGE, required = false) String pageParam,
-                                                                  @RequestParam(value = HTTP_PARAM_SKIP_COUNT, required = false) String config) {
-        return securityProfileService.readByQuery(queryParam, pageParam, config);
+    public ResponseEntity<SumPagedRep<RootBizEndpointCardRep>> readForRootByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam,
+                                                                                  @RequestParam(value = HTTP_PARAM_PAGE, required = false) String pageParam,
+                                                                                  @RequestParam(value = HTTP_PARAM_SKIP_COUNT, required = false) String config) {
+        return ResponseEntity.ok(securityProfileService.readByQuery(queryParam, pageParam, config));
     }
 
     @GetMapping("root/{id}")
-    public RootBizEndpointRep readForRootById(@PathVariable Long id,
-                                              HttpServletRequest request) {
-        return securityProfileService.readById(id);
+    public ResponseEntity<RootBizEndpointRep> readForRootById(@PathVariable Long id,
+                                                              HttpServletRequest request) {
+        return ResponseEntity.ok(securityProfileService.readById(id));
     }
 
     @PutMapping("root/{id}")
-    public ResponseEntity<?> replaceForRootById(@RequestBody UpdateBizEndpointCommand command, @PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+    public ResponseEntity<Void> replaceForRootById(@RequestBody UpdateBizEndpointCommand command, @PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
         securityProfileService.replaceById(id, command, changeId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("root/{id}")
-    public ResponseEntity<?> deleteForRootById(@PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
-        securityProfileService.deleteById(id,changeId);
+    public ResponseEntity<Void> deleteForRootById(@PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        securityProfileService.deleteById(id, changeId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("root")
-    public ResponseEntity<?> deleteForAdminByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
-        securityProfileService.deleteByQuery(queryParam,changeId);
+    public ResponseEntity<Void> deleteForAdminByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+        securityProfileService.deleteByQuery(queryParam, changeId);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping(path = "root/{id}", consumes = "application/json-patch+json")
-    public ResponseEntity<?> patchForRootById(@PathVariable(name = "id") Long id, @RequestBody JsonPatch patch, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
+    public ResponseEntity<Void> patchForRootById(@PathVariable(name = "id") Long id, @RequestBody JsonPatch patch, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId) {
         HashMap<String, Object> params = new HashMap<>();
         params.put(HTTP_HEADER_CHANGE_ID, changeId);
         securityProfileService.patchById(id, patch, params);

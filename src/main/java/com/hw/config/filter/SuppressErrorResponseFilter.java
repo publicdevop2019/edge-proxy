@@ -39,7 +39,7 @@ public class SuppressErrorResponseFilter extends ZuulFilter {
     public Object run() {
         RequestContext context = RequestContext.getCurrentContext();
         HttpServletResponse servletResponse = context.getResponse();
-        if (integers.contains(servletResponse.getStatus())){
+        if (integers.contains(servletResponse.getStatus())) {
             context.setResponseBody("");
         }
         return null;
