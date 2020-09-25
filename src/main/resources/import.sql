@@ -1,5 +1,5 @@
 -- *** manually insert below record if you running it in development mode for fist time***
-INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(1,'838330249904134','/auth-svc/clients/app','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''WRITE'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(1,'838330249904134','/auth-svc/clients/user','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''WRITE'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(0,'838330249904134','/auth-svc/clients/root','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(2,'838330249904134','/auth-svc/clients/root','POST','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(125,'838330249904134','/auth-svc/clients/root/**','GET','hasRole(''ROLE_ROOT'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
@@ -48,6 +48,10 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(31,'8383
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(161,'838330249904145','/profile-svc/orders/admin/**','GET','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(162,'838330249904145','/profile-svc/orders/user','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(32,'838330249904145','/profile-svc/orders/user/**','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(165,'838330249904145','/profile-svc/orders/app/validate','POST','hasRole(''ROLE_BACKEND'') and hasRole(''ROLE_FIRST_PARTY'') and #oauth2.hasScope(''TRUST'') and #oauth2.isClient()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(169,'838330249904145','/profile-svc/orders/app','POST','hasRole(''ROLE_BACKEND'') and hasRole(''ROLE_FIRST_PARTY'') and #oauth2.hasScope(''TRUST'') and #oauth2.isClient()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(166,'838330249904145','/profile-svc/orders/app/**','PUT','hasRole(''ROLE_BACKEND'') and hasRole(''ROLE_FIRST_PARTY'') and #oauth2.hasScope(''TRUST'') and #oauth2.isClient()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(167,'838330249904145','/profile-svc/orders/user/**','PUT','hasRole(''ROLE_USER'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(33,'838330249904145','/profile-svc/orders/user/**','POST','hasRole(''ROLE_USER'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(30,'838330249904145','/profile-svc/orders/user/**/confirm','PUT','hasRole(''ROLE_USER'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(41,'838330249904145','/profile-svc/orders/user/**/reserve','PUT','hasRole(''ROLE_USER'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
@@ -145,3 +149,4 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(154,'838
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(155,'838330249904146','/product-svc/skus/admin/**','DELETE','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(156,'838330249904146','/product-svc/skus/admin','DELETE','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(157,'838330249904146','/product-svc/skus/admin/**','PUT','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(168,'838330249904152','/saga-svc/sm/app','POST','hasRole(''ROLE_BACKEND'') and hasRole(''ROLE_FIRST_PARTY'') and #oauth2.hasScope(''TRUST'') and #oauth2.isClient()');
