@@ -65,6 +65,7 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(59,'8383
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(60,'838330249904148','/file-upload-svc/files','POST','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.hasScope(''WRITE'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method) VALUES(61,'838330249904148','/file-upload-svc/files/**','GET');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(62,'838330249904149','/payment-svc/paymentLink','POST','hasRole(''ROLE_BACKEND'') and #oauth2.hasScope(''TRUST'') and #oauth2.isClient()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(173,'838330249904149','/payment-svc/changes/app','DELETE','hasRole(''ROLE_BACKEND'') and #oauth2.hasScope(''TRUST'') and #oauth2.isClient()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(63,'838330249904149','/payment-svc/paymentStatus/**','GET','hasRole(''ROLE_BACKEND'') and #oauth2.hasScope(''TRUST'') and #oauth2.isClient()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(65,'838330249904151','/bbs-svc/private/comments','GET','hasRole(''ROLE_USER'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method) VALUES(66,'838330249904151','/bbs-svc/public/posts/**/comments','GET');
