@@ -87,8 +87,10 @@ public class SecurityProfileFilter extends ZuulFilter {
             List<SecurityProfile> collect1 = publicEpsProfiles.stream().filter(e -> antPathMatcher.match(e.getLookupPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             if (collect1.size() == 0) {
                 /** un-registered public endpoints */
+                request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
+                return null;
             }
 
         } else if (authHeader.contains("Bearer")) {
@@ -133,6 +135,7 @@ public class SecurityProfileFilter extends ZuulFilter {
             }
         } else {
             /** un-registered endpoints */
+            request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
             ctx.setSendZuulResponse(false);
             ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
         }
