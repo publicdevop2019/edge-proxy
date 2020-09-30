@@ -111,6 +111,11 @@ public class SecurityProfileFilter extends ZuulFilter {
             /**
              * fetch security profile
              */
+            if (resourceIds == null || resourceIds.isEmpty()) {
+                ctx.setSendZuulResponse(false);
+                ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
+                return null;
+            }
             List<BizEndpoint> collect = resourceIds.stream().map(e -> securityProfileRepo.findByResourceId(e)).flatMap(Collection::stream).collect(Collectors.toList());
 
             /**
@@ -128,7 +133,7 @@ public class SecurityProfileFilter extends ZuulFilter {
             if (mostSpecificSecurityProfile.isEmpty() || !passed) {
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
-                throw new ZuulException("forbidden", 403, "forbidden");
+                return null;
             }
         } else {
             /** un-registered endpoints */
