@@ -6,6 +6,7 @@ import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import com.netflix.zuul.http.HttpServletRequestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,11 @@ public class HttpCachedETagFilter extends ZuulFilter {
         return true;
     }
 
+    @Value("${app.product-svc.product.name}")
+    private String productName;
+    @Value("${app.product-svc.skus.name}")
+    private String skuName;
+
     @Override
     public Object run() throws ZuulException {
         RequestContext ctx = RequestContext.getCurrentContext();
@@ -43,15 +49,22 @@ public class HttpCachedETagFilter extends ZuulFilter {
         String header = httpServletRequestWrapper.getRequest().getHeader(HttpHeaders.IF_NONE_MATCH);
         String uri = httpServletRequestWrapper.getRequest().getRequestURI();
         String queryString = httpServletRequestWrapper.getRequest().getQueryString();
-        String fullUri = uri + "?" + queryString;
+        String fullUri = uri;
+        if (queryString != null) {
+            fullUri = uri + "?" + queryString;
+        }
         if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name()) && eTagStore.getETags(fullUri) != null && eTagStore.getETags(fullUri).equals(header)) {
             ctx.setSendZuulResponse(false);
             ctx.setResponseStatusCode(HttpStatus.NOT_MODIFIED.value());
         } else {
-            if (!request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.name())) {
+            if (!request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.name()) && !request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
                 // POST PUT PATCH DELETE
                 String[] split = request.getRequestURI().split("/");
                 String s = split[1] + "/" + split[2];
+                if (s.contains(productName)) {
+                    // invalid sku cache when product change
+                    eTagStore.clearResourceETag(skuName);
+                }
                 eTagStore.clearResourceETag(s);
             }
         }
