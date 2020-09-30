@@ -31,6 +31,8 @@ public class RevokeTokenFilter extends ZuulFilter {
     @Autowired
     private ObjectMapper mapper;
 
+    public static final String EDGE_PROXY_TOKEN_REVOKED = "token check failed";
+
     @Override
     public String filterType() {
         return PRE_TYPE;
@@ -92,6 +94,7 @@ public class RevokeTokenFilter extends ZuulFilter {
         if (appRevokeTokenCardRepSumPagedRep.getData().size() != 0) {
             if (appRevokeTokenCardRepSumPagedRep.getData().get(0).getIssuedAt() >= iat) {
                 // reject request, for internal forwarding, set attribute */
+                ctx.getRequest().setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
                 throw new ZuulException("not authorized", 401, "not authorized");
