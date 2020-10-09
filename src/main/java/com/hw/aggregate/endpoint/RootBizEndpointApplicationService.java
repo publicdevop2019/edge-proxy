@@ -70,22 +70,22 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
 
     @Override
     public void preDelete(BizEndpoint bizEndpoint) {
-        throw new UnsupportedOperationException();
+        //do nothing
     }
 
     @Override
     public void postDelete(BizEndpoint bizEndpoint) {
-        throw new UnsupportedOperationException();
+        //do nothing
     }
 
     @Override
     protected void prePatch(BizEndpoint bizEndpoint, Map<String, Object> params, RootBizEndpointPatchMiddleLayer middleLayer) {
-        throw new UnsupportedOperationException();
+        //do nothing
     }
 
     @Override
     protected void postPatch(BizEndpoint bizEndpoint, Map<String, Object> params, RootBizEndpointPatchMiddleLayer middleLayer) {
-        throw new UnsupportedOperationException();
+        //do nothing
     }
 
 }
