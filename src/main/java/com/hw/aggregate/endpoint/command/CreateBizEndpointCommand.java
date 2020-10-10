@@ -2,8 +2,11 @@ package com.hw.aggregate.endpoint.command;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class CreateBizEndpointCommand {
+public class CreateBizEndpointCommand implements Serializable {
+    private static final long serialVersionUID = 1;
     private String expression;
     private String description;
 

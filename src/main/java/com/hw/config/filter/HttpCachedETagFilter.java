@@ -53,7 +53,11 @@ public class HttpCachedETagFilter extends ZuulFilter {
         if (queryString != null) {
             fullUri = uri + "?" + queryString;
         }
-        if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name()) && eTagStore.getETags(fullUri) != null && eTagStore.getETags(fullUri).equals(header)) {
+        if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())
+                && eTagStore.getETags(fullUri) != null
+                && eTagStore.getETags(fullUri).equals(header)
+                && !request.getRequestURI().contains("changes")
+        ) {
             ctx.setSendZuulResponse(false);
             ctx.setResponseStatusCode(HttpStatus.NOT_MODIFIED.value());
         } else {
