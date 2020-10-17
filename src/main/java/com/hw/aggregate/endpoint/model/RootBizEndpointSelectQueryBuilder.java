@@ -22,8 +22,4 @@ public class RootBizEndpointSelectQueryBuilder extends SelectQueryBuilder<BizEnd
         allowEmptyClause = true;
     }
 
-    @Autowired
-    private void setEntityManager(EntityManager entityManager) {
-        em = entityManager;
-    }
 }

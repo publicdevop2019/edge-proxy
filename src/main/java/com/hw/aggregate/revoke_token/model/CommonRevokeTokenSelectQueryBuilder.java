@@ -18,8 +18,4 @@ public class CommonRevokeTokenSelectQueryBuilder extends SelectQueryBuilder<Revo
         allowEmptyClause = true;
     }
 
-    @Autowired
-    private void setEntityManager(EntityManager entityManager) {
-        em = entityManager;
-    }
 }

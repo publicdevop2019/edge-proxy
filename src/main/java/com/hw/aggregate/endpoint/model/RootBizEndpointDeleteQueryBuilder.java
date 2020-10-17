@@ -8,8 +8,4 @@ import javax.persistence.EntityManager;
 
 @Component
 public class RootBizEndpointDeleteQueryBuilder extends SoftDeleteQueryBuilder<BizEndpoint> {
-    @Autowired
-    private void setEntityManager(EntityManager entityManager) {
-        em = entityManager;
-    }
 }

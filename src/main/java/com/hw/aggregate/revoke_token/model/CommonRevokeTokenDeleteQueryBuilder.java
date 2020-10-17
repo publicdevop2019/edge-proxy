@@ -8,8 +8,4 @@ import javax.persistence.EntityManager;
 
 @Component
 public class CommonRevokeTokenDeleteQueryBuilder extends SoftDeleteQueryBuilder<RevokeToken> {
-    @Autowired
-    private void setEntityManager(EntityManager entityManager) {
-        em = entityManager;
-    }
 }

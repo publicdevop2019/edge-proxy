@@ -19,8 +19,4 @@ public class AppBizEndpointSelectQueryBuilder extends SelectQueryBuilder<BizEndp
         supportedWhereField.put("path", new SelectFieldStringEqualClause<>(ENTITY_PATH));
     }
 
-    @Autowired
-    private void setEntityManager(EntityManager entityManager) {
-        em = entityManager;
-    }
 }
