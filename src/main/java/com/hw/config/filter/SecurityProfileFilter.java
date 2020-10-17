@@ -35,7 +35,7 @@ public class SecurityProfileFilter extends ZuulFilter {
 
     private static Method triggerCheckMethod;
     private static final SpelExpressionParser parser;
-    public static final String EDGE_PROXY_UNAUTHORIZED_ACCESS="internal forward check failed";
+    public static final String EDGE_PROXY_UNAUTHORIZED_ACCESS = "internal forward check failed";
 
     static {
         try {
@@ -82,7 +82,7 @@ public class SecurityProfileFilter extends ZuulFilter {
              * permit all token endpoints,
              * we could apply security to token endpoint as well, however we don't want to increase DB query
              */
-        } else if (authHeader == null || !authHeader.contains("Bearer")) {
+        } else if (authHeader == null || !authHeader.contains("Bearer") || requestURI.contains("/public")) {
             List<BizEndpoint> publicEpsProfiles = securityProfileRepo.findAll().stream().filter(e -> e.getExpression() == null).collect(Collectors.toList());
             List<BizEndpoint> collect1 = publicEpsProfiles.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             if (collect1.size() == 0) {
