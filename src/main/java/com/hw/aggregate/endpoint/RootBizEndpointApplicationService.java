@@ -1,15 +1,11 @@
 package com.hw.aggregate.endpoint;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
 import com.hw.aggregate.endpoint.command.UpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.model.BizEndpoint;
-import com.hw.aggregate.endpoint.model.BizEndpointQueryRegistry;
 import com.hw.aggregate.endpoint.model.RootBizEndpointPatchMiddleLayer;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointRep;
-import com.hw.shared.IdGenerator;
-import com.hw.shared.idempotent.AppChangeRecordApplicationService;
 import com.hw.shared.rest.DefaultRoleBasedRestfulService;
 import com.hw.shared.sql.RestfulQueryRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,27 +20,10 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
     @Autowired
     private AppBizEndpointApplicationService appBizEndpointApplicationService;
 
-    @Autowired
-    private BizEndpointQueryRegistry registry;
-    @Autowired
-    private IdGenerator idGenerator2;
-    @Autowired
-    private AppChangeRecordApplicationService changeRepository2;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private BizEndpointRepo repo2;
-
-
     @PostConstruct
     private void setUp() {
-        repo = repo2;
-        queryRegistry = registry;
         entityClass = BizEndpoint.class;
         role = RestfulQueryRegistry.RoleEnum.ROOT;
-        idGenerator = idGenerator2;
-        appChangeRecordApplicationService = changeRepository2;
-        om = objectMapper;
         entityPatchSupplier = RootBizEndpointPatchMiddleLayer::new;
     }
 

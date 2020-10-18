@@ -2,10 +2,7 @@ package com.hw.aggregate.revoke_token.model;
 
 import com.hw.shared.sql.builder.SelectQueryBuilder;
 import com.hw.shared.sql.clause.SelectFieldLongEqualClause;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.EntityManager;
 
 import static com.hw.aggregate.revoke_token.model.RevokeToken.ENTITY_ISSUE_AT;
 import static com.hw.aggregate.revoke_token.model.RevokeToken.ENTITY_TARGET_ID;
