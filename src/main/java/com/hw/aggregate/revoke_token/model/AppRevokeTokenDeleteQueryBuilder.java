@@ -4,5 +4,5 @@ import com.hw.shared.sql.builder.SoftDeleteQueryBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CommonRevokeTokenDeleteQueryBuilder extends SoftDeleteQueryBuilder<RevokeToken> {
+public class AppRevokeTokenDeleteQueryBuilder extends SoftDeleteQueryBuilder<RevokeToken> {
 }
