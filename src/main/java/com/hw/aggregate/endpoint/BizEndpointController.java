@@ -1,8 +1,8 @@
 package com.hw.aggregate.endpoint;
 
 import com.github.fge.jsonpatch.JsonPatch;
-import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
-import com.hw.aggregate.endpoint.command.UpdateBizEndpointCommand;
+import com.hw.aggregate.endpoint.command.RootCreateBizEndpointCommand;
+import com.hw.aggregate.endpoint.command.RootUpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointRep;
 import com.hw.config.InternalForwardHelper;
@@ -26,7 +26,7 @@ public class BizEndpointController {
     InternalForwardHelper internalForwardHelper;
 
     @PostMapping("root")
-    public ResponseEntity<Void> createForRoot(@RequestBody CreateBizEndpointCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
+    public ResponseEntity<Void> createForRoot(@RequestBody RootCreateBizEndpointCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
         return ResponseEntity.ok().header("Location", String.valueOf(securityProfileService.create(command, changeId).getId())).build();
     }
@@ -47,7 +47,7 @@ public class BizEndpointController {
     }
 
     @PutMapping("root/{id}")
-    public ResponseEntity<Void> replaceForRootById(@RequestBody UpdateBizEndpointCommand command, @PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
+    public ResponseEntity<Void> replaceForRootById(@RequestBody RootUpdateBizEndpointCommand command, @PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
         securityProfileService.replaceById(id, command, changeId);
         return ResponseEntity.ok().build();

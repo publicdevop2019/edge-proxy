@@ -1,8 +1,8 @@
 package com.hw.aggregate.endpoint.model;
 
 import com.hw.aggregate.endpoint.AppBizEndpointApplicationService;
-import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
-import com.hw.aggregate.endpoint.command.UpdateBizEndpointCommand;
+import com.hw.aggregate.endpoint.command.RootCreateBizEndpointCommand;
+import com.hw.aggregate.endpoint.command.RootUpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.exception.DuplicateEndpointException;
 import com.hw.aggregate.endpoint.representation.AppBizEndpointCardRep;
 import com.hw.shared.Auditable;
@@ -48,7 +48,7 @@ public class BizEndpoint extends Auditable implements IdBasedEntity {
     @Id
     private Long id;
 
-    private BizEndpoint(Long id, CreateBizEndpointCommand command) {
+    private BizEndpoint(Long id, RootCreateBizEndpointCommand command) {
         this.id = id;
         this.expression = command.getExpression();
         this.resourceId = command.getResourceId();
@@ -61,7 +61,7 @@ public class BizEndpoint extends Auditable implements IdBasedEntity {
      * duplicated profiles are not allow bcz find most specific profile will fail
      * check if same profile exist, reject if exist
      */
-    public static BizEndpoint create(long id, CreateBizEndpointCommand command, AppBizEndpointApplicationService service) {
+    public static BizEndpoint create(long id, RootCreateBizEndpointCommand command, AppBizEndpointApplicationService service) {
         String s = "resourceId:" + command.getResourceId() + ",path:" + command.getPath() + ",method:" + command.getMethod();
         SumPagedRep<AppBizEndpointCardRep> appBizEndpointCardRepSumPagedRep = service.readByQuery(s, null, null);
         if (!appBizEndpointCardRepSumPagedRep.getData().isEmpty())
@@ -69,7 +69,7 @@ public class BizEndpoint extends Auditable implements IdBasedEntity {
         return new BizEndpoint(id, command);
     }
 
-    public BizEndpoint replace(UpdateBizEndpointCommand command) {
+    public BizEndpoint replace(RootUpdateBizEndpointCommand command) {
         BeanUtils.copyProperties(command, this);
         return this;
     }

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class UpdateBizEndpointCommand implements Serializable {
+public class RootCreateBizEndpointCommand implements Serializable {
     private static final long serialVersionUID = 1;
     private String expression;
     private String description;

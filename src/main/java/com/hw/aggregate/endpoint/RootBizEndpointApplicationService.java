@@ -1,7 +1,7 @@
 package com.hw.aggregate.endpoint;
 
-import com.hw.aggregate.endpoint.command.CreateBizEndpointCommand;
-import com.hw.aggregate.endpoint.command.UpdateBizEndpointCommand;
+import com.hw.aggregate.endpoint.command.RootCreateBizEndpointCommand;
+import com.hw.aggregate.endpoint.command.RootUpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.hw.aggregate.endpoint.model.RootBizEndpointPatchMiddleLayer;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
@@ -29,7 +29,7 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
 
     @Override
     public BizEndpoint replaceEntity(BizEndpoint bizEndpoint, Object command) {
-        return bizEndpoint.replace((UpdateBizEndpointCommand) command);
+        return bizEndpoint.replace((RootUpdateBizEndpointCommand) command);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
 
     @Override
     protected BizEndpoint createEntity(long id, Object command) {
-        return BizEndpoint.create(id, (CreateBizEndpointCommand) command, appBizEndpointApplicationService);
+        return BizEndpoint.create(id, (RootCreateBizEndpointCommand) command, appBizEndpointApplicationService);
     }
 
     @Override
