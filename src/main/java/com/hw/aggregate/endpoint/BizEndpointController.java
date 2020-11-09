@@ -7,6 +7,7 @@ import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointRep;
 import com.hw.config.InternalForwardHelper;
 import com.hw.shared.sql.SumPagedRep;
+import com.hw.shared.validation.BizValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,11 @@ public class BizEndpointController {
     RootBizEndpointApplicationService securityProfileService;
     @Autowired
     InternalForwardHelper internalForwardHelper;
-
+    @Autowired
+    BizValidator validator;
     @PostMapping("root")
     public ResponseEntity<Void> createForRoot(@RequestBody RootCreateBizEndpointCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
+        validator.validate("rootCreateBizEndpointCommand",command);
         internalForwardHelper.forwardCheck(request);
         return ResponseEntity.ok().header("Location", String.valueOf(securityProfileService.create(command, changeId).getId())).build();
     }
@@ -48,6 +51,7 @@ public class BizEndpointController {
 
     @PutMapping("root/{id}")
     public ResponseEntity<Void> replaceForRootById(@RequestBody RootUpdateBizEndpointCommand command, @PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
+        validator.validate("rootUpdateBizEndpointCommand",command);
         internalForwardHelper.forwardCheck(request);
         securityProfileService.replaceById(id, command, changeId);
         return ResponseEntity.ok().build();
