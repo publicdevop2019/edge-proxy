@@ -158,4 +158,4 @@ INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(175,'838
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(176,'841551895330816','/event-svc/events/admin/**','POST','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(177,'841551895330816','/event-svc/events/admin/**','GET','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
 INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(178,'841551895330816','/event-svc/events/admin/**','PUT','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
-INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(179,'841551895330816','/event-svc/events/admin','DELETE','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
+INSERT INTO biz_endpoint (ID,resource_Id,path,method,expression) VALUES(179,'841551895330816','/event-svc/events/admin/**','DELETE','hasRole(''ROLE_ADMIN'') and #oauth2.hasScope(''TRUST'') and #oauth2.isUser()');
