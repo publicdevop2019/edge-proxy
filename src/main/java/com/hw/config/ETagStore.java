@@ -12,14 +12,19 @@ public class ETagStore {
     @Autowired
     StringRedisTemplate redisTemplate;
     private static final String E_TAG = "ETag";
+    private static final String EMPTY_QUERY = "emptyQuery";
 
     public void setETags(String uri, String query, String etageValue) {
         String resourceName = getResourceName(uri);
+        if (query == null)
+            query = EMPTY_QUERY;
         redisTemplate.opsForValue().set(E_TAG + "-" + resourceName + ":" + query.hashCode(), etageValue);
     }
 
     public String getETags(String uri, String query) {
         String resourceName = getResourceName(uri);
+        if (query == null)
+            query = EMPTY_QUERY;
         return redisTemplate.opsForValue().get(E_TAG + "-" + resourceName + ":" + query.hashCode());
     }
 
