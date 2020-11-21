@@ -28,7 +28,7 @@ public class CachedETagHeaderFilter extends ShallowEtagHeaderFilter {
 
         String eTagHeaderValue = super.generateETagHeaderValue(inputStream, isWeak);
 
-        eTagStore.setETags(uri + "?" + queryString, eTagHeaderValue);
+        eTagStore.setETags(uri, queryString, eTagHeaderValue);
         return eTagHeaderValue;
     }
 

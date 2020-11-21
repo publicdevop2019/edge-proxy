@@ -1,26 +1,38 @@
 package com.hw.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Component
 public class ETagStore {
-    private final Map<String, String> eTags = new ConcurrentHashMap<>();
+    @Autowired
+    StringRedisTemplate redisTemplate;
+    private static final String E_TAG = "ETag";
 
-    public void setETags(String url, String etageValue) {
-        eTags.put(url, etageValue);
+    public void setETags(String uri, String query, String etageValue) {
+        String resourceName = getResourceName(uri);
+        redisTemplate.opsForValue().set(E_TAG + "-" + resourceName + ":" + query.hashCode(), etageValue);
     }
 
-    public String getETags(String url) {
-        return eTags.get(url);
+    public String getETags(String uri, String query) {
+        String resourceName = getResourceName(uri);
+        return redisTemplate.opsForValue().get(E_TAG + "-" + resourceName + ":" + query.hashCode());
     }
 
-    public void clearResourceETag(String resourceName) {
-        Set<String> collect = eTags.keySet().stream().filter(e -> e.contains(resourceName)).collect(Collectors.toSet());
-        collect.forEach(eTags::remove);
+    public void clearResourceETag(String uri) {
+        String resourceName = getResourceName(uri);
+        Set<String> keys = redisTemplate.keys(E_TAG + "-" + resourceName + ":" + "*");
+        if (!CollectionUtils.isEmpty(keys)) {
+            redisTemplate.delete(keys);
+        }
+    }
+
+    public static String getResourceName(String uri) {
+        String[] split = uri.split("/");
+        return split[1] + "/" + split[2];
     }
 }

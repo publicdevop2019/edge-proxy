@@ -49,13 +49,9 @@ public class HttpCachedETagFilter extends ZuulFilter {
         String header = httpServletRequestWrapper.getRequest().getHeader(HttpHeaders.IF_NONE_MATCH);
         String uri = httpServletRequestWrapper.getRequest().getRequestURI();
         String queryString = httpServletRequestWrapper.getRequest().getQueryString();
-        String fullUri = uri;
-        if (queryString != null) {
-            fullUri = uri + "?" + queryString;
-        }
         if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())
-                && eTagStore.getETags(fullUri) != null
-                && eTagStore.getETags(fullUri).equals(header)
+                && eTagStore.getETags(uri, queryString) != null
+                && eTagStore.getETags(uri, queryString).equals(header)
                 && !request.getRequestURI().contains("changes")
         ) {
             ctx.setSendZuulResponse(false);
@@ -63,13 +59,11 @@ public class HttpCachedETagFilter extends ZuulFilter {
         } else {
             if (!request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.name()) && !request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
                 // POST PUT PATCH DELETE
-                String[] split = request.getRequestURI().split("/");
-                String s = split[1] + "/" + split[2];
-                if (s.contains(productName)) {
+                if (request.getRequestURI().contains(productName)) {
                     // invalid sku cache when product change
                     eTagStore.clearResourceETag(skuName);
                 }
-                eTagStore.clearResourceETag(s);
+                eTagStore.clearResourceETag(request.getRequestURI());
             }
         }
         return null;
