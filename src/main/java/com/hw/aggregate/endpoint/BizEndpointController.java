@@ -22,7 +22,7 @@ import static com.hw.shared.AppConstant.*;
 public class BizEndpointController {
 
     @Autowired
-    RootBizEndpointApplicationService securityProfileService;
+    RootBizEndpointApplicationService rootBizEndpointApplicationService;
     @Autowired
     InternalForwardHelper internalForwardHelper;
     @Autowired
@@ -31,7 +31,7 @@ public class BizEndpointController {
     public ResponseEntity<Void> createForRoot(@RequestBody RootCreateBizEndpointCommand command, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
         validator.validate("rootCreateBizEndpointCommand",command);
         internalForwardHelper.forwardCheck(request);
-        return ResponseEntity.ok().header("Location", String.valueOf(securityProfileService.create(command, changeId).getId())).build();
+        return ResponseEntity.ok().header("Location", String.valueOf(rootBizEndpointApplicationService.create(command, changeId).getId())).build();
     }
 
     @GetMapping("root")
@@ -39,35 +39,35 @@ public class BizEndpointController {
                                                                                   @RequestParam(value = HTTP_PARAM_PAGE, required = false) String pageParam,
                                                                                   @RequestParam(value = HTTP_PARAM_SKIP_COUNT, required = false) String config, HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
-        return ResponseEntity.ok(securityProfileService.readByQuery(queryParam, pageParam, config));
+        return ResponseEntity.ok(rootBizEndpointApplicationService.readByQuery(queryParam, pageParam, config));
     }
 
     @GetMapping("root/{id}")
     public ResponseEntity<RootBizEndpointRep> readForRootById(@PathVariable Long id,
                                                               HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
-        return ResponseEntity.ok(securityProfileService.readById(id));
+        return ResponseEntity.ok(rootBizEndpointApplicationService.readById(id));
     }
 
     @PutMapping("root/{id}")
     public ResponseEntity<Void> replaceForRootById(@RequestBody RootUpdateBizEndpointCommand command, @PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
         validator.validate("rootUpdateBizEndpointCommand",command);
         internalForwardHelper.forwardCheck(request);
-        securityProfileService.replaceById(id, command, changeId);
+        rootBizEndpointApplicationService.replaceById(id, command, changeId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("root/{id}")
     public ResponseEntity<Void> deleteForRootById(@PathVariable Long id, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
-        securityProfileService.deleteById(id, changeId);
+        rootBizEndpointApplicationService.deleteById(id, changeId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("root")
     public ResponseEntity<Void> deleteForAdminByQuery(@RequestParam(value = HTTP_PARAM_QUERY, required = false) String queryParam, @RequestHeader(HTTP_HEADER_CHANGE_ID) String changeId, HttpServletRequest request) {
         internalForwardHelper.forwardCheck(request);
-        securityProfileService.deleteByQuery(queryParam, changeId);
+        rootBizEndpointApplicationService.deleteByQuery(queryParam, changeId);
         return ResponseEntity.ok().build();
     }
 
@@ -76,7 +76,7 @@ public class BizEndpointController {
         internalForwardHelper.forwardCheck(request);
         HashMap<String, Object> params = new HashMap<>();
         params.put(HTTP_HEADER_CHANGE_ID, changeId);
-        securityProfileService.patchById(id, patch, params);
+        rootBizEndpointApplicationService.patchById(id, patch, params);
         return ResponseEntity.ok().build();
     }
 }

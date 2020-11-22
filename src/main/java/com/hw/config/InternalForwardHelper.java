@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 
 import static com.hw.config.filter.RevokeTokenFilter.EDGE_PROXY_TOKEN_REVOKED;
-import static com.hw.config.filter.SecurityProfileFilter.EDGE_PROXY_UNAUTHORIZED_ACCESS;
+import static com.hw.config.filter.EndpointFilter.EDGE_PROXY_UNAUTHORIZED_ACCESS;
 
 /**
  * secure internal forward helper

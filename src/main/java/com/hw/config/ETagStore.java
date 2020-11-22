@@ -38,6 +38,8 @@ public class ETagStore {
 
     public static String getResourceName(String uri) {
         String[] split = uri.split("/");
+        if (split.length != 3)
+            return "";
         return split[1] + "/" + split[2];
     }
 }
