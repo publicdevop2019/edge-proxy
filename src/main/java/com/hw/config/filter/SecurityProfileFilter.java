@@ -1,13 +1,16 @@
 package com.hw.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.aggregate.endpoint.BizEndpointRepo;
-import com.hw.aggregate.endpoint.model.BizEndpoint;
+import com.hw.aggregate.endpoint.AppBizEndpointApplicationService;
+import com.hw.aggregate.endpoint.representation.AppBizEndpointCardRep;
 import com.hw.config.SecurityProfileMatcher;
+import com.hw.shared.RecordElapseTime;
+import com.hw.shared.sql.SumPagedRep;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import com.netflix.zuul.http.HttpServletRequestWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -24,12 +27,16 @@ import org.springframework.util.AntPathMatcher;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hw.aggregate.endpoint.model.BizEndpoint.ENTITY_EXPRESSION;
+import static com.hw.aggregate.endpoint.model.BizEndpoint.ENTITY_RESOURCE_ID;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
+@Slf4j
 @Component
 public class SecurityProfileFilter extends ZuulFilter {
 
@@ -49,7 +56,7 @@ public class SecurityProfileFilter extends ZuulFilter {
     ObjectMapper mapper;
 
     @Autowired
-    BizEndpointRepo securityProfileRepo;
+    AppBizEndpointApplicationService appBizEndpointApplicationService;
 
     @Autowired
     AntPathMatcher antPathMatcher;
@@ -70,7 +77,9 @@ public class SecurityProfileFilter extends ZuulFilter {
     }
 
     @Override
+    @RecordElapseTime
     public Object run() throws ZuulException {
+        long startTime = System.currentTimeMillis();
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
         HttpServletRequestWrapper httpServletRequestWrapper = (HttpServletRequestWrapper) request;
@@ -83,8 +92,8 @@ public class SecurityProfileFilter extends ZuulFilter {
              * we could apply security to token endpoint as well, however we don't want to increase DB query
              */
         } else if (authHeader == null || !authHeader.contains("Bearer") || requestURI.contains("/public")) {
-            List<BizEndpoint> publicEpsProfiles = securityProfileRepo.findAll().stream().filter(e -> e.getExpression() == null).collect(Collectors.toList());
-            List<BizEndpoint> collect1 = publicEpsProfiles.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+            List<AppBizEndpointCardRep> all = getAll(ENTITY_EXPRESSION + ":null");
+            List<AppBizEndpointCardRep> collect1 = all.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             if (collect1.size() == 0) {
                 /** un-registered public endpoints */
                 ctx.setSendZuulResponse(false);
@@ -120,14 +129,14 @@ public class SecurityProfileFilter extends ZuulFilter {
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 return null;
             }
-            List<BizEndpoint> collect = resourceIds.stream().map(e -> securityProfileRepo.findByResourceId(e)).flatMap(Collection::stream).collect(Collectors.toList());
+            List<AppBizEndpointCardRep> collect = resourceIds.stream().map(e -> getAll(ENTITY_RESOURCE_ID + ":" + e)).flatMap(Collection::stream).collect(Collectors.toList());
 
             /**
              * fetch security rule by endpoint & method
              */
-            List<BizEndpoint> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+            List<AppBizEndpointCardRep> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
 
-            Optional<BizEndpoint> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
+            Optional<AppBizEndpointCardRep> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
 
             boolean passed = false;
             if (mostSpecificSecurityProfile.isPresent()) {
@@ -140,6 +149,7 @@ public class SecurityProfileFilter extends ZuulFilter {
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 return null;
             }
+            log.info("elapse in security filter::" + (System.currentTimeMillis() - startTime));
         } else {
             /** un-registered endpoints */
             ctx.setSendZuulResponse(false);
@@ -152,5 +162,20 @@ public class SecurityProfileFilter extends ZuulFilter {
 
     private static class SecurityObject {
         public void triggerCheck() { /*NOP*/ }
+    }
+
+    private List<AppBizEndpointCardRep> getAll(String query) {
+        int pageNum = 0;
+        SumPagedRep<AppBizEndpointCardRep> appBizEndpointCardRepSumPagedRep = appBizEndpointApplicationService.readByQuery(query, "num:" + pageNum, null);
+        if (appBizEndpointCardRepSumPagedRep.getData().size() == 0)
+            return new ArrayList<>();
+        double l = (double) appBizEndpointCardRepSumPagedRep.getTotalItemCount() / appBizEndpointCardRepSumPagedRep.getData().size();
+        double ceil = Math.ceil(l);
+        int i = BigDecimal.valueOf(ceil).intValue();
+        List<AppBizEndpointCardRep> data = new ArrayList<>(appBizEndpointCardRepSumPagedRep.getData());
+        for (int a = 1; a < i; a++) {
+            data.addAll(appBizEndpointApplicationService.readByQuery(query, "num:" + a, null).getData());
+        }
+        return data;
     }
 }

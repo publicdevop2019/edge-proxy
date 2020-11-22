@@ -1,6 +1,7 @@
 package com.hw.unit;
 
 import com.hw.aggregate.endpoint.model.BizEndpoint;
+import com.hw.aggregate.endpoint.representation.AppBizEndpointCardRep;
 import com.hw.config.SecurityProfileMatcher;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,9 +15,11 @@ public class BizEndpointMatcherTest {
     public void getSecurityProfileWhenMultipleSecurityProfileFound() {
         BizEndpoint securityProfile = new BizEndpoint();
         securityProfile.setPath("/api/profiles/100");
+        AppBizEndpointCardRep appBizEndpointCardRep = new AppBizEndpointCardRep(securityProfile);
         BizEndpoint securityProfile2 = new BizEndpoint();
         securityProfile2.setPath("/api/profiles/**");
-        Optional<BizEndpoint> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile2, securityProfile));
+        AppBizEndpointCardRep appBizEndpointCardRep2 = new AppBizEndpointCardRep(securityProfile2);
+        Optional<AppBizEndpointCardRep> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(appBizEndpointCardRep, appBizEndpointCardRep2));
         Assert.assertEquals("/api/profiles/100", mostSpecificSecurityProfile.get().getPath());
     }
 
@@ -24,7 +27,8 @@ public class BizEndpointMatcherTest {
     public void getSecurityProfileWhenOneFound() {
         BizEndpoint securityProfile = new BizEndpoint();
         securityProfile.setPath("/api/profiles/**/addresses");
-        Optional<BizEndpoint> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile));
+        AppBizEndpointCardRep appBizEndpointCardRep = new AppBizEndpointCardRep(securityProfile);
+        Optional<AppBizEndpointCardRep> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(appBizEndpointCardRep));
         Assert.assertEquals("/api/profiles/**/addresses", mostSpecificSecurityProfile.get().getPath());
     }
 
@@ -32,9 +36,11 @@ public class BizEndpointMatcherTest {
     public void getSecurityProfileWhenTwoFound() {
         BizEndpoint securityProfile = new BizEndpoint();
         securityProfile.setPath("/api/profiles/**/addresses");
+        AppBizEndpointCardRep appBizEndpointCardRep = new AppBizEndpointCardRep(securityProfile);
         BizEndpoint securityProfile2 = new BizEndpoint();
         securityProfile2.setPath("/api/profiles/**/addresses/**");
-        Optional<BizEndpoint> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(securityProfile2, securityProfile));
+        AppBizEndpointCardRep appBizEndpointCardRep2 = new AppBizEndpointCardRep(securityProfile2);
+        Optional<AppBizEndpointCardRep> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(List.of(appBizEndpointCardRep, appBizEndpointCardRep2));
         Assert.assertEquals("/api/profiles/**/addresses", mostSpecificSecurityProfile.get().getPath());
     }
 }

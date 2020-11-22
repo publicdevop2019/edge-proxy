@@ -6,5 +6,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface BizEndpointRepo extends JpaRepository<BizEndpoint, Long> {
-    List<BizEndpoint> findByResourceId(String resourceID);
 }

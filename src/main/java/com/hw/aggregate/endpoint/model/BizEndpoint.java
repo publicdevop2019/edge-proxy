@@ -28,6 +28,7 @@ public class BizEndpoint extends Auditable implements IdBasedEntity {
     public static final String ENTITY_RESOURCE_ID = "resourceId";
     public static final String ENTITY_PATH = "path";
     public static final String ENTITY_METHOD = "method";
+    public static final String ENTITY_EXPRESSION = "expression";
     /**
      * spring security style expression e.g. "hasRole('ROLE_USER') and #oauth2.hasScope('trust') and #oauth2.isUser()"
      * for public access this filed can be null
