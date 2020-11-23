@@ -22,6 +22,7 @@ import java.util.Map;
 import static com.hw.aggregate.revoke_token.model.RevokeToken.ENTITY_ISSUE_AT;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
+
 @Slf4j
 @Component
 public class RevokeTokenFilter extends ZuulFilter {
@@ -82,7 +83,7 @@ public class RevokeTokenFilter extends ZuulFilter {
                 if (clientId != null) {
                     checkToken(Long.parseLong(clientId), ctx, iat);
                 }
-                log.debug("elapse in token filter::" + (System.currentTimeMillis() - startTime));
+                log.info("elapse in token filter::" + (System.currentTimeMillis() - startTime));
             } catch (IOException e) {
                 // this block is left blank on purpose*/
             }
@@ -92,7 +93,7 @@ public class RevokeTokenFilter extends ZuulFilter {
     }
 
     private void checkToken(Long id, RequestContext ctx, Integer iat) throws ZuulException {
-        SumPagedRep<AppRevokeTokenCardRep> appRevokeTokenCardRepSumPagedRep = revokeTokenRepo.readByQuery("targetId:" + id, "by:" + ENTITY_ISSUE_AT + ",order:desc", null);
+        SumPagedRep<AppRevokeTokenCardRep> appRevokeTokenCardRepSumPagedRep = revokeTokenRepo.readByQuery("targetId:" + id, "num:0,size:1,by:" + ENTITY_ISSUE_AT + ",order:desc", null);
         if (appRevokeTokenCardRepSumPagedRep.getData().size() != 0) {
             if (appRevokeTokenCardRepSumPagedRep.getData().get(0).getIssuedAt() >= iat) {
                 // reject request, for internal forwarding, set attribute */

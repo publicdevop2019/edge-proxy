@@ -107,6 +107,7 @@ public class EndpointFilter extends ZuulFilter {
     @Override
     @RecordElapseTime
     public Object run() throws ZuulException {
+        long startTime = System.currentTimeMillis();
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
         HttpServletRequestWrapper httpServletRequestWrapper = (HttpServletRequestWrapper) request;
@@ -174,6 +175,7 @@ public class EndpointFilter extends ZuulFilter {
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 return null;
             }
+            log.info("elapse in endpoint filter::" + (System.currentTimeMillis() - startTime));
         } else {
             /** un-registered endpoints */
             ctx.setSendZuulResponse(false);
