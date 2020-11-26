@@ -11,6 +11,7 @@ public class RootBizEndpointCardRep {
     private String path;
     private String method;
     private Long id;
+    private Integer version;
 
     public RootBizEndpointCardRep(BizEndpoint bizEndpoint) {
         this.expression = bizEndpoint.getExpression();
@@ -19,5 +20,6 @@ public class RootBizEndpointCardRep {
         this.path = bizEndpoint.getPath();
         this.method = bizEndpoint.getMethod();
         this.id = bizEndpoint.getId();
+        this.version = bizEndpoint.getVersion();
     }
 }

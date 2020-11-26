@@ -3,9 +3,11 @@ package com.hw.aggregate.revoke_token.model;
 import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
 import com.hw.shared.Auditable;
 import com.hw.shared.EnumDBConverter;
-import com.hw.shared.rest.IdBasedEntity;
+import com.hw.shared.rest.Aggregate;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -16,7 +18,7 @@ import java.time.Instant;
 @Data
 @Slf4j
 @NoArgsConstructor
-public class RevokeToken extends Auditable implements IdBasedEntity {
+public class RevokeToken extends Auditable implements Aggregate {
     public static final String ENTITY_TARGET_ID = "targetId";
     public static final String ENTITY_ISSUE_AT = "issuedAt";
     @Id
@@ -28,6 +30,9 @@ public class RevokeToken extends Auditable implements IdBasedEntity {
     @Convert(converter = TokenTypeEnum.DBConverter.class)
     @Column(nullable = false)
     private TokenTypeEnum type;
+    @Version
+    @Setter(AccessLevel.NONE)
+    private Integer version;
 
     public RevokeToken(Long id, CreateRevokeTokenCommand command) {
         this.id = id;

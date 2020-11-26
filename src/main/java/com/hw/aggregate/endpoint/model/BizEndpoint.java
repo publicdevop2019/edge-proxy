@@ -6,10 +6,12 @@ import com.hw.aggregate.endpoint.command.RootUpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.exception.DuplicateEndpointException;
 import com.hw.aggregate.endpoint.representation.AppBizEndpointCardRep;
 import com.hw.shared.Auditable;
-import com.hw.shared.rest.IdBasedEntity;
+import com.hw.shared.rest.Aggregate;
 import com.hw.shared.sql.SumPagedRep;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
@@ -21,7 +23,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Slf4j
 @NoArgsConstructor
-public class BizEndpoint extends Auditable implements IdBasedEntity {
+public class BizEndpoint extends Auditable implements Aggregate {
     public static final String ENTITY_RESOURCE_ID = "resourceId";
     public static final String ENTITY_PATH = "path";
     public static final String ENTITY_METHOD = "method";
@@ -45,6 +47,9 @@ public class BizEndpoint extends Auditable implements IdBasedEntity {
     private String method;
     @Id
     private Long id;
+    @Version
+    @Setter(AccessLevel.NONE)
+    private Integer version;
 
     private BizEndpoint(Long id, RootCreateBizEndpointCommand command) {
         this.id = id;
@@ -68,7 +73,7 @@ public class BizEndpoint extends Auditable implements IdBasedEntity {
     }
 
     public BizEndpoint replace(RootUpdateBizEndpointCommand command) {
-        BeanUtils.copyProperties(command, this);
+        BeanUtils.copyProperties(command, this, "version");
         return this;
     }
 }

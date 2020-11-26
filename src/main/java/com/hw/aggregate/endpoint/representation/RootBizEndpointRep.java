@@ -15,6 +15,7 @@ public class RootBizEndpointRep {
     private Long createdAt;
     private String modifiedBy;
     private Long modifiedAt;
+    private Integer version;
 
     public RootBizEndpointRep(BizEndpoint bizEndpoint) {
         this.expression = bizEndpoint.getExpression();
@@ -27,5 +28,6 @@ public class RootBizEndpointRep {
         this.createdAt = bizEndpoint.getCreatedAt() != null ? bizEndpoint.getCreatedAt().getTime() : null;
         this.modifiedBy = bizEndpoint.getModifiedBy();
         this.modifiedAt = bizEndpoint.getModifiedAt() != null ? bizEndpoint.getModifiedAt().getTime() : null;
+        this.version = bizEndpoint.getVersion();
     }
 }
