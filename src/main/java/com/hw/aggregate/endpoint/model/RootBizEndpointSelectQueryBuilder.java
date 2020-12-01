@@ -8,7 +8,7 @@ import static com.hw.aggregate.endpoint.model.BizEndpoint.*;
 
 @Component
 public class RootBizEndpointSelectQueryBuilder extends SelectQueryBuilder<BizEndpoint> {
-    RootBizEndpointSelectQueryBuilder() {
+    {
         DEFAULT_PAGE_SIZE = 20;
         MAX_PAGE_SIZE = 50;
         mappedSortBy.put("resourceId", ENTITY_RESOURCE_ID);

@@ -8,7 +8,7 @@ import static com.hw.aggregate.endpoint.model.BizEndpoint.*;
 
 @Component
 public class AppBizEndpointSelectQueryBuilder extends SelectQueryBuilder<BizEndpoint> {
-    AppBizEndpointSelectQueryBuilder() {
+    {
         DEFAULT_PAGE_SIZE = 10;
         MAX_PAGE_SIZE = 20;
         allowEmptyClause = true;

@@ -6,7 +6,7 @@ import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.hw.aggregate.endpoint.model.RootBizEndpointPatchMiddleLayer;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointRep;
-import com.hw.shared.rest.DefaultRoleBasedRestfulService;
+import com.hw.shared.rest.RoleBasedRestfulService;
 import com.hw.shared.sql.RestfulQueryRegistry;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -24,17 +24,14 @@ import static com.hw.config.filter.EndpointFilter.EXCHANGE_RELOAD_EP_CACHE;
 
 @Slf4j
 @Service
-public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulService<BizEndpoint, RootBizEndpointCardRep, RootBizEndpointRep, RootBizEndpointPatchMiddleLayer> {
-
-    @Autowired
-    private AppBizEndpointApplicationService appBizEndpointApplicationService;
-
-    @PostConstruct
-    private void setUp() {
+public class RootBizEndpointApplicationService extends RoleBasedRestfulService<BizEndpoint, RootBizEndpointCardRep, RootBizEndpointRep, RootBizEndpointPatchMiddleLayer> {
+    {
         entityClass = BizEndpoint.class;
         role = RestfulQueryRegistry.RoleEnum.ROOT;
         entityPatchSupplier = RootBizEndpointPatchMiddleLayer::new;
     }
+    @Autowired
+    AppBizEndpointApplicationService appBizEndpointApplicationService;
 
     @Override
     public BizEndpoint replaceEntity(BizEndpoint bizEndpoint, Object command) {
@@ -54,26 +51,6 @@ public class RootBizEndpointApplicationService extends DefaultRoleBasedRestfulSe
     @Override
     protected BizEndpoint createEntity(long id, Object command) {
         return BizEndpoint.create(id, (RootCreateBizEndpointCommand) command, appBizEndpointApplicationService);
-    }
-
-    @Override
-    public void preDelete(BizEndpoint bizEndpoint) {
-        //do nothing
-    }
-
-    @Override
-    public void postDelete(BizEndpoint bizEndpoint) {
-        //do nothing
-    }
-
-    @Override
-    protected void prePatch(BizEndpoint bizEndpoint, Map<String, Object> params, RootBizEndpointPatchMiddleLayer middleLayer) {
-        //do nothing
-    }
-
-    @Override
-    protected void postPatch(BizEndpoint bizEndpoint, Map<String, Object> params, RootBizEndpointPatchMiddleLayer middleLayer) {
-        //do nothing
     }
 
     @Override
