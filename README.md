@@ -10,6 +10,8 @@
 - Proxy with Eureka registry
 - Request & Response centralized logging
 - Http compression
+- Cache
+- ETag
 # 中文
 - 统一API鉴权
 - JWT (与 mt1-proxy一起使用) 主动以及被动回收
@@ -18,3 +20,4 @@
 - 统一请求，响应日志记录（logbook）?
 - Gzip
 - 缓存
+- ETag缓存
