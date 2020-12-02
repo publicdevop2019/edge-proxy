@@ -2,6 +2,7 @@ package com.hw.aggregate.endpoint.representation;
 
 import com.hw.aggregate.endpoint.model.BizEndpoint;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 @Data
 public class RootBizEndpointRep {
@@ -18,16 +19,8 @@ public class RootBizEndpointRep {
     private Integer version;
 
     public RootBizEndpointRep(BizEndpoint bizEndpoint) {
-        this.expression = bizEndpoint.getExpression();
-        this.resourceId = bizEndpoint.getResourceId();
-        this.path = bizEndpoint.getPath();
-        this.method = bizEndpoint.getMethod();
-        this.id = bizEndpoint.getId();
-        this.description = bizEndpoint.getDescription();
-        this.createdBy = bizEndpoint.getCreatedBy();
+        BeanUtils.copyProperties(bizEndpoint, this);
         this.createdAt = bizEndpoint.getCreatedAt() != null ? bizEndpoint.getCreatedAt().getTime() : null;
-        this.modifiedBy = bizEndpoint.getModifiedBy();
         this.modifiedAt = bizEndpoint.getModifiedAt() != null ? bizEndpoint.getModifiedAt().getTime() : null;
-        this.version = bizEndpoint.getVersion();
     }
 }

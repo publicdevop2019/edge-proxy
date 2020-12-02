@@ -2,6 +2,7 @@ package com.hw.aggregate.endpoint.representation;
 
 import com.hw.aggregate.endpoint.model.BizEndpoint;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 @Data
 public class AppBizEndpointCardRep {
@@ -15,12 +16,7 @@ public class AppBizEndpointCardRep {
     private String method;
 
     public AppBizEndpointCardRep(BizEndpoint bizEndpoint) {
-        this.id = bizEndpoint.getId();
-        this.expression = bizEndpoint.getExpression();
-        this.resourceId = bizEndpoint.getResourceId();
-        this.path = bizEndpoint.getPath();
-        this.method = bizEndpoint.getMethod();
-
+        BeanUtils.copyProperties(bizEndpoint, this);
     }
 
 }

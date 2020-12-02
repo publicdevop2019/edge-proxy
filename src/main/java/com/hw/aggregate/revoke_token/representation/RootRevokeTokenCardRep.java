@@ -2,6 +2,7 @@ package com.hw.aggregate.revoke_token.representation;
 
 import com.hw.aggregate.revoke_token.model.RevokeToken;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 @Data
 public class RootRevokeTokenCardRep {
@@ -11,9 +12,6 @@ public class RootRevokeTokenCardRep {
     private RevokeToken.TokenTypeEnum type;
 
     public RootRevokeTokenCardRep(RevokeToken revokeToken) {
-        this.id = revokeToken.getId();
-        this.targetId = revokeToken.getTargetId();
-        this.issuedAt = revokeToken.getIssuedAt();
-        this.type = revokeToken.getType();
+        BeanUtils.copyProperties(revokeToken, this);
     }
 }
