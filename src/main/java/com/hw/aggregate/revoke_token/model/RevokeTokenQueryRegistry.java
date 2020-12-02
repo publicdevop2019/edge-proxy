@@ -12,12 +12,4 @@ public class RevokeTokenQueryRegistry extends RestfulQueryRegistry<RevokeToken> 
     public Class<RevokeToken> getEntityClass() {
         return RevokeToken.class;
     }
-    @PostConstruct
-    private void setUp() {
-        cacheable.put(RoleEnum.USER, true);
-        cacheable.put(RoleEnum.ADMIN, true);
-        cacheable.put(RoleEnum.APP, true);
-        cacheable.put(RoleEnum.PUBLIC, true);
-        cacheable.put(RoleEnum.ROOT, true);
-    }
 }

@@ -49,9 +49,10 @@ public class HttpCachedETagFilter extends ZuulFilter {
         String header = httpServletRequestWrapper.getRequest().getHeader(HttpHeaders.IF_NONE_MATCH);
         String uri = httpServletRequestWrapper.getRequest().getRequestURI();
         String queryString = httpServletRequestWrapper.getRequest().getQueryString();
+        String eTags = eTagStore.getETags(uri, queryString);//save retrieved etag, as this operation is not idempotent
         if (request.getMethod().equalsIgnoreCase(HttpMethod.GET.name())
-                && eTagStore.getETags(uri, queryString) != null
-                && eTagStore.getETags(uri, queryString).equals(header)
+                && eTags != null
+                && eTags.equals(header)
                 && !request.getRequestURI().contains("changes")
         ) {
             ctx.setSendZuulResponse(false);
