@@ -3,6 +3,7 @@ package com.hw.config.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.aggregate.revoke_token.AppRevokeTokenApplicationService;
 import com.hw.aggregate.revoke_token.representation.AppRevokeTokenCardRep;
+import com.hw.shared.IllegalJwtException;
 import com.hw.shared.sql.SumPagedRep;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -16,6 +17,7 @@ import org.springframework.security.jwt.JwtHelper;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
@@ -65,10 +67,14 @@ public class RevokeTokenFilter extends ZuulFilter {
                 (requestURI.contains("/oauth/token") && httpServletRequestWrapper.getRequest().getParameter("refresh_token") != null)
         ) {
             Jwt jwt;
-            if (authHeader != null && authHeader.contains("Bearer")) {
-                jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
-            } else {
-                jwt = JwtHelper.decode(httpServletRequestWrapper.getRequest().getParameter("refresh_token"));
+            try {
+                if (authHeader != null && authHeader.contains("Bearer")) {
+                    jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
+                } else {
+                    jwt = JwtHelper.decode(httpServletRequestWrapper.getRequest().getParameter("refresh_token"));
+                }
+            } catch (IllegalArgumentException ex) {
+                throw new ZuulException("not authorized", 401, "not authorized");
             }
             Map<String, Object> claims;
             try {
