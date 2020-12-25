@@ -1,6 +1,6 @@
 package com.hw.aggregate.endpoint.command;
 
-import com.hw.shared.rest.AggregateUpdateCommand;
+import com.mt.common.rest.AggregateUpdateCommand;
 import lombok.Data;
 
 import java.io.Serializable;

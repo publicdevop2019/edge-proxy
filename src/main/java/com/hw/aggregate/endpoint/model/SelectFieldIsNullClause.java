@@ -1,6 +1,6 @@
 package com.hw.aggregate.endpoint.model;
 
-import com.hw.shared.sql.clause.SelectFieldStringLikeClause;
+import com.mt.common.sql.clause.SelectFieldStringLikeClause;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;

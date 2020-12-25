@@ -1,7 +1,7 @@
 package com.hw.aggregate.endpoint.model;
 
-import com.hw.shared.sql.builder.SelectQueryBuilder;
-import com.hw.shared.sql.clause.SelectFieldStringEqualClause;
+import com.mt.common.sql.builder.SelectQueryBuilder;
+import com.mt.common.sql.clause.SelectFieldStringEqualClause;
 import org.springframework.stereotype.Component;
 
 import static com.hw.aggregate.endpoint.model.BizEndpoint.*;

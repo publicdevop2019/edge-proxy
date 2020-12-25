@@ -1,9 +1,9 @@
 package com.hw.aggregate.revoke_token.model;
 
 import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
-import com.hw.shared.Auditable;
-import com.hw.shared.EnumDBConverter;
-import com.hw.shared.rest.Aggregate;
+import com.mt.common.Auditable;
+import com.mt.common.EnumDBConverter;
+import com.mt.common.rest.Aggregate;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +24,7 @@ public class RevokeToken extends Auditable implements Aggregate {
     @Id
     private Long id;
     @Column(nullable = false)
-    private Long targetId;
+    private String targetId;
     @Column(nullable = false)
     private Long issuedAt;
     @Convert(converter = TokenTypeEnum.DBConverter.class)

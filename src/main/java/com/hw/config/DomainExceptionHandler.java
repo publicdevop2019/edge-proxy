@@ -1,7 +1,7 @@
 package com.hw.config;
 
 import com.hw.aggregate.endpoint.exception.DuplicateEndpointException;
-import com.hw.shared.ErrorMessage;
+import com.mt.common.ErrorMessage;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;

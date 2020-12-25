@@ -1,6 +1,6 @@
 package com.hw.aggregate.endpoint.model;
 
-import com.hw.shared.rest.TypedClass;
+import com.mt.common.rest.TypedClass;
 import lombok.Data;
 
 @Data

@@ -10,7 +10,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class CreateRevokeTokenCommand implements Serializable {
     private static final long serialVersionUID = 1;
-    private Long id;
+    private String id;
     private RevokeToken.TokenTypeEnum type;
 
 

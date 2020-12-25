@@ -6,8 +6,8 @@ import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.hw.aggregate.endpoint.model.RootBizEndpointPatchMiddleLayer;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointRep;
-import com.hw.shared.rest.RoleBasedRestfulService;
-import com.hw.shared.sql.RestfulQueryRegistry;
+import com.mt.common.rest.RoleBasedRestfulService;
+import com.mt.common.sql.RestfulQueryRegistry;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -15,9 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import static com.hw.config.filter.EndpointFilter.EXCHANGE_RELOAD_EP_CACHE;

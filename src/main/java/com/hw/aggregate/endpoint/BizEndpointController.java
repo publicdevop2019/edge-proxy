@@ -6,8 +6,8 @@ import com.hw.aggregate.endpoint.command.RootUpdateBizEndpointCommand;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointCardRep;
 import com.hw.aggregate.endpoint.representation.RootBizEndpointRep;
 import com.hw.config.InternalForwardHelper;
-import com.hw.shared.sql.SumPagedRep;
-import com.hw.shared.validation.BizValidator;
+import com.mt.common.sql.SumPagedRep;
+import com.mt.common.validation.BizValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
-import static com.hw.shared.AppConstant.*;
+import static com.mt.common.AppConstant.*;
 
 @RestController
 @RequestMapping(produces = "application/json", path = "proxy/endpoints")

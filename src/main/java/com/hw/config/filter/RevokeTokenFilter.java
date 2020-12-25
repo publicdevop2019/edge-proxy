@@ -3,8 +3,7 @@ package com.hw.config.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.aggregate.revoke_token.AppRevokeTokenApplicationService;
 import com.hw.aggregate.revoke_token.representation.AppRevokeTokenCardRep;
-import com.hw.shared.IllegalJwtException;
-import com.hw.shared.sql.SumPagedRep;
+import com.mt.common.sql.SumPagedRep;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -17,7 +16,6 @@ import org.springframework.security.jwt.JwtHelper;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
@@ -84,10 +82,10 @@ public class RevokeTokenFilter extends ZuulFilter {
                 String userId = (String) claims.get("uid");
                 String clientId = (String) claims.get("client_id");
                 if (userId != null) {
-                    checkToken(Long.parseLong(userId), ctx, iat);
+                    checkToken(userId, ctx, iat);
                 }
                 if (clientId != null) {
-                    checkToken(Long.parseLong(clientId), ctx, iat);
+                    checkToken(clientId, ctx, iat);
                 }
                 log.info("elapse in token filter::" + (System.currentTimeMillis() - startTime));
             } catch (IOException e) {
@@ -98,7 +96,7 @@ public class RevokeTokenFilter extends ZuulFilter {
         return null;
     }
 
-    private void checkToken(Long id, RequestContext ctx, Integer iat) throws ZuulException {
+    private void checkToken(String id, RequestContext ctx, Integer iat) throws ZuulException {
         SumPagedRep<AppRevokeTokenCardRep> appRevokeTokenCardRepSumPagedRep = revokeTokenRepo.readByQuery("targetId:" + id, "num:0,size:1,by:" + ENTITY_ISSUE_AT + ",order:desc", null);
         if (appRevokeTokenCardRepSumPagedRep.getData().size() != 0) {
             if (appRevokeTokenCardRepSumPagedRep.getData().get(0).getIssuedAt() >= iat) {

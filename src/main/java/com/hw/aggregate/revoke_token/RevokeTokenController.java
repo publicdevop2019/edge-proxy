@@ -3,14 +3,14 @@ package com.hw.aggregate.revoke_token;
 import com.hw.aggregate.revoke_token.command.CreateRevokeTokenCommand;
 import com.hw.aggregate.revoke_token.representation.RootRevokeTokenCardRep;
 import com.hw.config.InternalForwardHelper;
-import com.hw.shared.sql.SumPagedRep;
+import com.mt.common.sql.SumPagedRep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.hw.shared.AppConstant.*;
+import static com.mt.common.AppConstant.*;
 
 /**
  * zuul own endpoints are getting internal forward,

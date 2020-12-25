@@ -2,9 +2,9 @@ package com.hw.aggregate.endpoint;
 
 import com.hw.aggregate.endpoint.model.BizEndpoint;
 import com.hw.aggregate.endpoint.representation.AppBizEndpointCardRep;
-import com.hw.shared.rest.RoleBasedRestfulService;
-import com.hw.shared.rest.VoidTypedClass;
-import com.hw.shared.sql.RestfulQueryRegistry;
+import com.mt.common.rest.RoleBasedRestfulService;
+import com.mt.common.rest.VoidTypedClass;
+import com.mt.common.sql.RestfulQueryRegistry;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
