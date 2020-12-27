@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Where;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Slf4j
 @NoArgsConstructor
+@Where(clause = "deleted=0")
 public class BizEndpoint extends Auditable implements Aggregate {
     public static final String ENTITY_RESOURCE_ID = "resourceId";
     public static final String ENTITY_PATH = "path";
