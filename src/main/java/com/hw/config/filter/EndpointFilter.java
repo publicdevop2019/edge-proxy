@@ -1,8 +1,6 @@
 package com.hw.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hw.aggregate.endpoint.AppBizEndpointApplicationService;
-import com.hw.aggregate.endpoint.representation.AppBizEndpointCardRep;
 import com.hw.config.SecurityProfileMatcher;
 import com.mt.common.RecordElapseTime;
 import com.mt.common.sql.SumPagedRep;
@@ -14,11 +12,18 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.expression.ExpressionUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.jwt.Jwt;
@@ -27,6 +32,7 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
 import org.springframework.security.util.SimpleMethodInvocation;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +54,7 @@ public class EndpointFilter extends ZuulFilter {
     private static final SpelExpressionParser parser;
     public static final String EDGE_PROXY_UNAUTHORIZED_ACCESS = "internal forward check failed";
     public static final String EXCHANGE_RELOAD_EP_CACHE = "reloadEpCache";
-    private List<AppBizEndpointCardRep> cached;
+    private List<EndpointCardRep> cached;
 
     static {
         try {
@@ -61,11 +67,13 @@ public class EndpointFilter extends ZuulFilter {
     @Autowired
     ObjectMapper mapper;
 
-    @Autowired
-    AppBizEndpointApplicationService appBizEndpointApplicationService;
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Autowired
-    AntPathMatcher antPathMatcher;
+    RestTemplate restTemplate;
+
+    @Value("${url.endpoint}")
+    String endpointUrl;
 
     @Override
     public String filterType() {
@@ -82,9 +90,10 @@ public class EndpointFilter extends ZuulFilter {
         return true;
     }
 
+
     @PostConstruct
     private void load() {
-        cached = getAll(null);
+        cached = getAll();
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         try {
@@ -95,7 +104,7 @@ public class EndpointFilter extends ZuulFilter {
             channel.queueBind(queueName, EXCHANGE_RELOAD_EP_CACHE, "");
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 log.info("received clean filter cache message");
-                cached = getAll(null);
+                cached = getAll();
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });
@@ -120,7 +129,7 @@ public class EndpointFilter extends ZuulFilter {
              * we could apply security to token endpoint as well, however we don't want to increase DB query
              */
         } else if (authHeader == null || !authHeader.contains("Bearer") || requestURI.contains("/public")) {
-            List<AppBizEndpointCardRep> collect1 = cached.stream().filter(e -> e.getExpression() == null).filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+            List<EndpointCardRep> collect1 = cached.stream().filter(e -> e.getExpression() == null).filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             if (collect1.size() == 0) {
                 /** un-registered public endpoints */
                 ctx.setSendZuulResponse(false);
@@ -156,13 +165,13 @@ public class EndpointFilter extends ZuulFilter {
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 return null;
             }
-            List<AppBizEndpointCardRep> collect = cached.stream().filter(e -> resourceIds.contains(e.getResourceId())).collect(Collectors.toList());
+            List<EndpointCardRep> collect = cached.stream().filter(e -> resourceIds.contains(e.getResourceId())).collect(Collectors.toList());
             /**
              * fetch security rule by endpoint & method
              */
-            List<AppBizEndpointCardRep> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+            List<EndpointCardRep> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
 
-            Optional<AppBizEndpointCardRep> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
+            Optional<EndpointCardRep> mostSpecificSecurityProfile = SecurityProfileMatcher.getMostSpecificSecurityProfile(collect1);
 
             boolean passed = false;
             if (mostSpecificSecurityProfile.isPresent()) {
@@ -190,18 +199,41 @@ public class EndpointFilter extends ZuulFilter {
         public void triggerCheck() { /*NOP*/ }
     }
 
-    private List<AppBizEndpointCardRep> getAll(String query) {
-        int pageNum = 0;
-        SumPagedRep<AppBizEndpointCardRep> appBizEndpointCardRepSumPagedRep = appBizEndpointApplicationService.readByQuery(query, "num:" + pageNum, null);
-        if (appBizEndpointCardRepSumPagedRep.getData().size() == 0)
-            return new ArrayList<>();
-        double l = (double) appBizEndpointCardRepSumPagedRep.getTotalItemCount() / appBizEndpointCardRepSumPagedRep.getData().size();
-        double ceil = Math.ceil(l);
-        int i = BigDecimal.valueOf(ceil).intValue();
-        List<AppBizEndpointCardRep> data = new ArrayList<>(appBizEndpointCardRepSumPagedRep.getData());
-        for (int a = 1; a < i; a++) {
-            data.addAll(appBizEndpointApplicationService.readByQuery(query, "num:" + a, null).getData());
+    private List<EndpointCardRep> getAll() {
+        List<EndpointCardRep> data = new ArrayList<>();
+        ResponseEntity<SumPagedRep<EndpointCardRep>> exchange = restTemplate.exchange(endpointUrl + "?page=num:0", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
+        if (exchange.getStatusCode().is2xxSuccessful()) {
+            SumPagedRep<EndpointCardRep> body = exchange.getBody();
+            if (body == null || body.getData().size() == 0)
+                throw new IllegalStateException("unable to load endpoint profile from remote");
+            data.addAll(body.getData());
+            double l = (double) body.getTotalItemCount() / body.getData().size();
+            double ceil = Math.ceil(l);
+            int i = BigDecimal.valueOf(ceil).intValue();
+            for (int a = 1; a < i; a++) {
+                ResponseEntity<SumPagedRep<EndpointCardRep>> exchange2 = restTemplate.exchange(endpointUrl + "?page=num:" + a, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                });
+                SumPagedRep<EndpointCardRep> body2 = exchange2.getBody();
+                if (body2 == null || body2.getData().size() == 0)
+                    throw new IllegalStateException("unable to load endpoint profile from remote");
+                data.addAll(body2.getData());
+            }
         }
         return data;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class EndpointCardRep {
+        private String id;
+        private String expression;
+
+        private String resourceId;
+
+        private String path;
+
+        private String method;
     }
 }
