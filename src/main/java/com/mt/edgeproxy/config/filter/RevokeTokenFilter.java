@@ -75,7 +75,7 @@ public class RevokeTokenFilter extends ZuulFilter {
             try {
                 claims = mapper.readValue(jwt.getClaims(), Map.class);
 
-                Integer iat = (Integer) claims.get("iat");
+                Long iat = (Long) claims.get("iat");
                 String userId = (String) claims.get("uid");
                 String clientId = (String) claims.get("client_id");
                 if (userId != null) {
@@ -93,7 +93,7 @@ public class RevokeTokenFilter extends ZuulFilter {
         return null;
     }
 
-    private void checkToken(String id, RequestContext ctx, Integer iat) throws ZuulException {
+    private void checkToken(String id, RequestContext ctx, Long iat) throws ZuulException {
         SumPagedRep<RevokeToken> revokeTokenSumPagedRep = ApplicationServiceRegistry.revokeTokenApplicationService().revokeTokens("targetId:" + id, "num:0,size:1,by:" + ENTITY_ISSUE_AT + ",order:desc", "sc:1");
         if (revokeTokenSumPagedRep.getData().size() != 0) {
             if (revokeTokenSumPagedRep.getData().get(0).getIssuedAt() >= iat) {
