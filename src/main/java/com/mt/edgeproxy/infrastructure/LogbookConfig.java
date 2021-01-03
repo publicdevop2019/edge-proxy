@@ -1,4 +1,4 @@
-package com.mt.edgeproxy.config;
+package com.mt.edgeproxy.infrastructure;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

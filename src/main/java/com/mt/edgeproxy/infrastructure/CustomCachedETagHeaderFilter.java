@@ -1,6 +1,6 @@
-package com.mt.edgeproxy.config.filter;
+package com.mt.edgeproxy.infrastructure;
 
-import com.mt.edgeproxy.config.ETagStore;
+import com.mt.edgeproxy.infrastructure.ETagStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.Optional;
 
 @Component
-public class CachedETagHeaderFilter extends ShallowEtagHeaderFilter {
+public class CustomCachedETagHeaderFilter extends ShallowEtagHeaderFilter {
     @Autowired
     private ETagStore eTagStore;
 

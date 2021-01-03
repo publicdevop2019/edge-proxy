@@ -1,6 +1,6 @@
 package com.mt.unit;
 
-import com.mt.edgeproxy.config.filter.EndpointFilter;
+import com.mt.edgeproxy.infrastructure.EndpointFilter;
 import org.junit.Assert;
 import org.junit.Test;
 

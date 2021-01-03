@@ -1,6 +1,5 @@
-package com.mt.edgeproxy.config;
+package com.mt.edgeproxy.infrastructure;
 
-import com.mt.edgeproxy.config.filter.CachedETagHeaderFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +10,7 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 @Configuration
-public class HttpConfig {
+public class CustomHttpConfig {
 
     @Bean
     public FilterRegistrationBean<CorsFilter> corsConfiguration() {
@@ -46,7 +45,7 @@ public class HttpConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<ShallowEtagHeaderFilter> shallowETagHeaderFilter(CachedETagHeaderFilter filter) {
+    public FilterRegistrationBean<ShallowEtagHeaderFilter> shallowETagHeaderFilter(CustomCachedETagHeaderFilter filter) {
         FilterRegistrationBean<ShallowEtagHeaderFilter> bean
                 = new FilterRegistrationBean<>(filter);
         bean.setOrder(Ordered.LOWEST_PRECEDENCE);

@@ -1,6 +1,6 @@
 package com.mt.edgeproxy.domain;
 
-import com.mt.common.Auditable;
+import com.mt.common.audit.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

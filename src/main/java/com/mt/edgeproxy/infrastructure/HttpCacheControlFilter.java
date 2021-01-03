@@ -1,4 +1,4 @@
-package com.mt.edgeproxy.config.filter;
+package com.mt.edgeproxy.infrastructure;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;

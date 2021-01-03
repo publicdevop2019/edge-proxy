@@ -1,4 +1,4 @@
-package com.mt.edgeproxy.config.filter;
+package com.mt.edgeproxy.infrastructure;
 
 import com.google.json.JsonSanitizer;
 import com.netflix.util.Pair;

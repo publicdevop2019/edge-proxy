@@ -1,6 +1,6 @@
-package com.mt.edgeproxy.config;
+package com.mt.edgeproxy.infrastructure;
 
-import com.mt.common.ErrorMessage;
+import com.mt.common.logging.ErrorMessage;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
