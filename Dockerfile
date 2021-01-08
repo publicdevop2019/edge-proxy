@@ -1,4 +1,4 @@
-FROM maven:3.6.0-jdk-11 AS maven
+FROM maven:3.6.3-jdk-11 AS maven
 
 COPY ./src ./src
 
