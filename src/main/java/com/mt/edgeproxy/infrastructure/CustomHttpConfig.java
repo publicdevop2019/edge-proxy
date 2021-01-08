@@ -16,18 +16,20 @@ public class CustomHttpConfig {
     public FilterRegistrationBean<CorsFilter> corsConfiguration() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOrigin("http://localhost:4300");
+        configuration.setAllowCredentials(true);
         configuration.addAllowedHeader("Authorization");
         configuration.addAllowedHeader("lastupdateat");
         configuration.addAllowedHeader("uuid");
         configuration.addAllowedHeader("changeId");
-        configuration.addExposedHeader("location");
-        configuration.addExposedHeader("lastupdateat");
-        configuration.addExposedHeader("uuid");
+        configuration.addAllowedHeader("X-XSRF-TOKEN");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Accept");
         configuration.addAllowedHeader("Access-Control-Request-Method");
         configuration.addAllowedHeader("x-requested-with");
+        configuration.addExposedHeader("location");
+        configuration.addExposedHeader("lastupdateat");
+        configuration.addExposedHeader("uuid");
         configuration.addAllowedMethod("POST");
         configuration.addAllowedMethod("PATCH");
         configuration.addAllowedMethod("GET");
