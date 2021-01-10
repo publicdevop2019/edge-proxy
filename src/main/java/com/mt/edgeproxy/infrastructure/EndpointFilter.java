@@ -102,8 +102,9 @@ public class EndpointFilter extends ZuulFilter {
             String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, EXCHANGE_RELOAD_EP_CACHE, "");
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                log.info("received clean filter cache message");
+                log.debug("start refresh cached endpoints");
                 cached = getAll();
+                log.debug("cached endpoints refreshed");
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
             });
