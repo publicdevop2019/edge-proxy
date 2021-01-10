@@ -1,6 +1,5 @@
 package com.mt.edgeproxy.infrastructure;
 
-import com.mt.common.logging.ErrorMessage;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -26,5 +25,4 @@ public class EdgeProxyExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<?> handle403Exception(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, new ErrorMessage(ex), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
-
 }

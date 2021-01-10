@@ -1,9 +1,7 @@
 package com.mt.edgeproxy.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mt.common.sql.SumPagedRep;
-import com.mt.edgeproxy.application.ApplicationServiceRegistry;
-import com.mt.edgeproxy.domain.RevokeToken;
+import com.mt.edgeproxy.domain.DomainRegistry;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -19,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.mt.edgeproxy.domain.RevokeToken.ENTITY_ISSUE_AT;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_DECORATION_FILTER_ORDER;
 import static org.springframework.cloud.netflix.zuul.filters.support.FilterConstants.PRE_TYPE;
 
@@ -94,15 +91,11 @@ public class RevokeTokenFilter extends ZuulFilter {
     }
 
     private void checkToken(String id, RequestContext ctx, Long iat) throws ZuulException {
-        SumPagedRep<RevokeToken> revokeTokenSumPagedRep = ApplicationServiceRegistry.revokeTokenApplicationService().revokeTokens("targetId:" + id, "num:0,size:1,by:" + ENTITY_ISSUE_AT + ",order:desc", "sc:1");
-        if (revokeTokenSumPagedRep.getData().size() != 0) {
-            if (revokeTokenSumPagedRep.getData().get(0).getIssuedAt() >= iat) {
-                // reject request, for internal forwarding, set attribute */
-                ctx.getRequest().setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
-                ctx.setSendZuulResponse(false);
-                ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-                throw new ZuulException("not authorized", 401, "not authorized");
-            }
+        if (DomainRegistry.revokeTokenService().isBlocked(id, iat)) {
+            ctx.getRequest().setAttribute(EDGE_PROXY_TOKEN_REVOKED, Boolean.TRUE);
+            ctx.setSendZuulResponse(false);
+            ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
+            throw new ZuulException("not authorized", 401, "not authorized");
         }
     }
 }
