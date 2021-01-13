@@ -83,9 +83,10 @@ public class EndpointFilter extends ZuulFilter {
         try {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            channel.exchangeDeclare(EXCHANGE_RELOAD_EP_CACHE, "fanout");
+            channel.exchangeDeclare("mt_global_exchange", "topic");
             String queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, EXCHANGE_RELOAD_EP_CACHE, "");
+            channel.queueBind(queueName, "mt_global_exchange", "oauth.external.system");
+            channel.queueBind(queueName, "mt_global_exchange", "oauth.external.endpoint");
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 log.debug("start refresh cached endpoints");
                 cached = DomainRegistry.roadEndpointService().loadAllEndpoints();
@@ -97,6 +98,7 @@ public class EndpointFilter extends ZuulFilter {
             log.error("error in mq", e);
         }
     }
+
 
     @Override
     public Object run() throws ZuulException {
