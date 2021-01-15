@@ -117,7 +117,7 @@ public class EndpointFilter extends ZuulFilter {
         } else if (authHeader == null || !authHeader.contains("Bearer") || requestURI.contains("/public")) {
             List<Endpoint> collect1 = cached.stream().filter(e -> e.getExpression() == null).filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             if (collect1.size() == 0) {
-                /** un-registered public endpoints */
+                log.debug("return 403 due to un-registered public endpoints");
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
@@ -125,16 +125,14 @@ public class EndpointFilter extends ZuulFilter {
             }
 
         } else if (authHeader.contains("Bearer")) {
-            /**
-             * check endpoint url, method first then check resourceId and security rule
-             */
+            //check endpoint url, method first then check resourceId and security rule
             Jwt jwt = JwtHelper.decode(authHeader.replace("Bearer ", ""));
             Map<String, Object> claims;
             try {
                 claims = mapper.readValue(jwt.getClaims(), Map.class);
             } catch (IOException e) {
+                //this block is purposely left blank
                 claims = new HashMap<>();
-                /** this block is purposely left blank */
             }
             ArrayList<String> resourceIds = (ArrayList<String>) claims.get("aud");
             SecurityObject securityObject = new SecurityObject();
@@ -146,6 +144,7 @@ public class EndpointFilter extends ZuulFilter {
              * fetch security profile
              */
             if (resourceIds == null || resourceIds.isEmpty()) {
+                log.debug("return 403 due to resourceIds is null or empty");
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
@@ -165,6 +164,7 @@ public class EndpointFilter extends ZuulFilter {
             }
 
             if (mostSpecificSecurityProfile.isEmpty() || !passed) {
+                log.debug("return 403 due to expression is empty or not pass check");
                 ctx.setSendZuulResponse(false);
                 ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
@@ -172,7 +172,7 @@ public class EndpointFilter extends ZuulFilter {
             }
             log.info("elapse in endpoint filter::" + (System.currentTimeMillis() - startTime));
         } else {
-            /** un-registered endpoints */
+            log.debug("return 403 due to un-registered endpoints");
             ctx.setSendZuulResponse(false);
             ctx.setResponseStatusCode(HttpStatus.FORBIDDEN.value());
             request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
