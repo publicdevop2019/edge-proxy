@@ -35,7 +35,7 @@ public class HttpEndpointAdapter implements EndpointAdapter {
     @Override
     public Set<Endpoint> fetchAllEndpoints() {
         Set<Endpoint> data = new HashSet<>();
-        ResponseEntity<SumPagedRep<Endpoint>> exchange = restTemplate.exchange(endpointUrl + "?page=num:0", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        ResponseEntity<SumPagedRep<Endpoint>> exchange = restTemplate.exchange(endpointUrl + "?page=size:40,num:0", HttpMethod.GET, null, new ParameterizedTypeReference<>() {
         });
         if (exchange.getStatusCode().is2xxSuccessful()) {
             SumPagedRep<Endpoint> body = exchange.getBody();
@@ -46,7 +46,7 @@ public class HttpEndpointAdapter implements EndpointAdapter {
             double ceil = Math.ceil(l);
             int i = BigDecimal.valueOf(ceil).intValue();
             for (int a = 1; a < i; a++) {
-                ResponseEntity<SumPagedRep<Endpoint>> exchange2 = restTemplate.exchange(endpointUrl + "?page=num:" + a, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                ResponseEntity<SumPagedRep<Endpoint>> exchange2 = restTemplate.exchange(endpointUrl + "?page=size:40,num:" + a, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
                 });
                 SumPagedRep<Endpoint> body2 = exchange2.getBody();
                 if (body2 == null || body2.getData().size() == 0)
