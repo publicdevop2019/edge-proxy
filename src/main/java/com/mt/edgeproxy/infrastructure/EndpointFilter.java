@@ -170,7 +170,7 @@ public class EndpointFilter extends ZuulFilter {
                 request.setAttribute(EDGE_PROXY_UNAUTHORIZED_ACCESS, Boolean.TRUE);
                 return null;
             }
-            log.info("elapse in endpoint filter::" + (System.currentTimeMillis() - startTime));
+            log.debug("elapse in endpoint filter::" + (System.currentTimeMillis() - startTime));
         } else {
             log.debug("return 403 due to un-registered endpoints");
             ctx.setSendZuulResponse(false);

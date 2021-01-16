@@ -81,7 +81,7 @@ public class RevokeTokenFilter extends ZuulFilter {
                 if (clientId != null) {
                     checkToken(clientId, ctx, iat);
                 }
-                log.info("elapse in token filter::" + (System.currentTimeMillis() - startTime));
+                log.debug("elapse in token filter::" + (System.currentTimeMillis() - startTime));
             } catch (IOException e) {
                 // this block is left blank on purpose*/
             }
