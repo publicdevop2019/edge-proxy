@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: shared
+  cloud:
+    gateway:
+      routes:
+        - id: rewritepath_route
+          uri: http://localhost:8080
+          predicates:
+            - Path=/auth-svc/**
+          filters:
+            - RewritePath=/auth-svc(?<segment>/?.*), $\{segment}
+service:
+  url:
+    oauth2: http://localhost:8080
+url:
+  endpoint: ${service.url.oauth2}/endpoints/root
