@@ -19,31 +19,54 @@
             <artifactId>logbook-spring-boot-starter</artifactId>
             <version>2.4.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.cloud</groupId>-->
+        <!--            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>-->
+        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.security</groupId>-->
+        <!--            <artifactId>spring-security-core</artifactId>-->
+        <!--            <version>5.4.2</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-jwt</artifactId>
-            <version>1.0.10.RELEASE</version>
+            <artifactId>spring-security-oauth2-resource-server</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security.oauth</groupId>-->
-<!--            <artifactId>spring-security-oauth2</artifactId>-->
-<!--            <version>2.3.5.RELEASE</version>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <artifactId>spring-boot-starter-web</artifactId>-->
-<!--                    <groupId>org.springframework.boot</groupId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security.oauth.boot</groupId>-->
-<!--            <artifactId>spring-security-oauth2-autoconfigure</artifactId>-->
-<!--            <version>2.1.4.RELEASE</version>-->
-<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-jwt -->
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>8.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.security.oauth</groupId>-->
+        <!--            <artifactId>spring-security-oauth2</artifactId>-->
+        <!--            <version>2.3.5.RELEASE</version>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <artifactId>spring-boot-starter-web</artifactId>-->
+        <!--                    <groupId>org.springframework.boot</groupId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.security.oauth.boot</groupId>-->
+        <!--            <artifactId>spring-security-oauth2-autoconfigure</artifactId>-->
+        <!--            <version>2.1.4.RELEASE</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

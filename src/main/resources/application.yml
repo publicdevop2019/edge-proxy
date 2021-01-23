@@ -1,3 +1,6 @@
+service:
+  url:
+    oauth2: http://localhost:8080
 spring:
   application:
     name: proxy
@@ -5,7 +8,6 @@ spring:
     active: shared
   cloud:
     gateway:
-      discovery:
       routes:
         - id: identityAccessModule
           uri: lb://oauth
@@ -13,9 +15,31 @@ spring:
             - Path=/auth-svc/**
           filters:
             - RewritePath=/auth-svc(?<segment>/?.*), $\{segment}
-service:
-  url:
-    oauth2: http://localhost:8080
+  security:
+    oauth2:
+      client:
+        registration:
+          manytree:
+            client-id: 0C8AZYTQ5W5C
+            client-secret: root
+            authorization-grant-type: client_credentials
+        provider:
+          manytree:
+            authorization-uri: ${service.url.oauth2}/authorize
+            token-uri: ${service.url.oauth2}/oauth/token
+            user-info-uri: ${service.url.oauth2}/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: ${service.url.oauth2}/.well-known/jwks.json
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${service.url.oauth2}/.well-known/jwks.json
+
+
+security:
+  oauth2:
+    client:
+      clientSecret: root
+      clientId: 0C8AZYTQ5W5C
 url:
   endpoint: ${service.url.oauth2}/endpoints/root
 ribbon:
@@ -27,15 +51,15 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 35000
-security:
-  oauth2:
-    client:
-      clientId: 0C8AZYTQ5W5C
-      clientSecret: root
-      accessTokenUri: ${service.url.oauth2}/oauth/token
-    resource:
-      jwt:
-        key-uri: ${service.url.oauth2}/oauth/token_key
+#security:
+#  oauth2:
+#    client:
+#      clientId: 0C8AZYTQ5W5C
+#      clientSecret: root
+#      accessTokenUri: ${service.url.oauth2}/oauth/token
+#    resource:
+#      jwt:
+#        key-uri: ${service.url.oauth2}/oauth/token_key
 logbook:
   obfuscate:
     headers: Authorization,cookie

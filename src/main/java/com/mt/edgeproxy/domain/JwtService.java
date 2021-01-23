@@ -1,21 +1,18 @@
 package com.mt.edgeproxy.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.jwt.Jwt;
-import org.springframework.security.jwt.JwtHelper;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Slf4j
 @Service
 public class JwtService {
-    @Autowired
-    ObjectMapper mapper;
 
     public List<String> getResourceIds(String jwtRaw) {
         return getClaims(jwtRaw, "aud");
@@ -35,15 +32,27 @@ public class JwtService {
     }
 
     private List<String> getClaims(String jwtRaw, String field) {
-        Jwt jwt = JwtHelper.decode(jwtRaw);
-        Map<String, Object> claims;
+        JWT jwt;
         try {
-            claims = mapper.readValue(jwt.getClaims(), Map.class);
-        } catch (IOException e) {
-            //this block is purposely left blank
-            claims = new HashMap<>();
+            jwt = JWTParser.parse(jwtRaw);
+        } catch (ParseException e) {
+            log.error("error during parse jwt", e);
+            throw new JwtParseException();
         }
-        List<String> resourceIds = (ArrayList<String>) claims.get(field);
+        JWTClaimsSet jwtClaimsSet;
+        try {
+            jwtClaimsSet = jwt.getJWTClaimsSet();
+        } catch (ParseException e) {
+            log.error("error during parse jwt claim", e);
+            throw new JwtParseClaimException();
+        }
+        List<String> resourceIds = (List<String>)jwtClaimsSet.getClaim(field);
         return resourceIds;
+    }
+
+    private static class JwtParseException extends RuntimeException {
+    }
+
+    private static class JwtParseClaimException extends RuntimeException {
     }
 }
