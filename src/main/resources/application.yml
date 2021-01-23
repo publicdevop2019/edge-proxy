@@ -1,11 +1,14 @@
 spring:
+  application:
+    name: proxy
   profiles:
     active: shared
   cloud:
     gateway:
+      discovery:
       routes:
-        - id: rewritepath_route
-          uri: http://localhost:8080
+        - id: identityAccessModule
+          uri: lb://oauth
           predicates:
             - Path=/auth-svc/**
           filters:
@@ -15,3 +18,44 @@ service:
     oauth2: http://localhost:8080
 url:
   endpoint: ${service.url.oauth2}/endpoints/root
+ribbon:
+  ReadTimeout: 15000
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 35000
+security:
+  oauth2:
+    client:
+      clientId: 0C8AZYTQ5W5C
+      clientSecret: root
+      accessTokenUri: ${service.url.oauth2}/oauth/token
+    resource:
+      jwt:
+        key-uri: ${service.url.oauth2}/oauth/token_key
+logbook:
+  obfuscate:
+    headers: Authorization,cookie
+    parameters: access_token,password
+  write:
+    category: http.wire-log
+    level: DEBUG
+    max-body-size: 100
+  exclude:
+    - '**/v2/api-docs'
+    - '**/swagger-ui.html'
+    - '**/webjars/**'
+    - '**/swagger-resources/**'
+    - '**/csrf'
+    - '**/'
+    - '**/auth-svc/oauth/token'
+logging:
+  level:
+    http:
+      wire-log: DEBUG
+    org:
+      zalando:
+        logbook: TRACE

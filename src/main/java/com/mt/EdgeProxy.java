@@ -7,7 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 //@EnableZuulProxy
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 public class EdgeProxy {
     public static void main(String[] args) {
         SpringApplication.run(EdgeProxy.class, args);
