@@ -1,13 +1,10 @@
-package com.mt.edgeproxy.infrastructure.zuul;
+package com.mt.edgeproxy.infrastructure;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
-import org.springframework.security.oauth2.client.web.server.UnAuthenticatedServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
@@ -15,7 +12,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -23,11 +19,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * zuul proxy resource server can not set resourceId,
- * overwrite default resource id also required
- * if set then forwarded request will be force to check against this resource
- */
 @Configuration
 @EnableWebFluxSecurity
 public class ResourceServerConfig {
@@ -80,38 +71,7 @@ public class ResourceServerConfig {
         source.registerCorsConfiguration("/**/**/**", configuration);
         return source;
     }
-//    @Bean
-//    public WebClient webClient(ReactiveClientRegistrationRepository clientRegistrations) {
-//        ServerOAuth2AuthorizedClientExchangeFilterFunction oauth =
-//                new ServerOAuth2AuthorizedClientExchangeFilterFunction(
-//                        clientRegistrations,
-//                        new UnAuthenticatedServerOAuth2AuthorizedClientRepository());
-//        oauth.setDefaultClientRegistrationId("manytree");
-//        return WebClient.builder()
-//                .filter(oauth)
-//                .build();
-//    }
-    //    @Override
-//    public void configure(ResourceServerSecurityConfigurer resources) {
-//        resources.resourceId(null);
-//    }
-//
-//    @Override
-//    public void configure(HttpSecurity http) throws Exception {
-//        CookieCsrfTokenRepository cookieCsrfTokenRepository = new CookieCsrfTokenRepository();
-//        cookieCsrfTokenRepository.setCookieHttpOnly(false);
-//        cookieCsrfTokenRepository.setCookiePath("/");
-//        http.authorizeRequests()
-//                .antMatchers("/auth-svc/oauth/token").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .csrf().ignoringAntMatchers("/auth-svc/oauth/token")
-//                .csrfTokenRepository(cookieCsrfTokenRepository)
-//        ;
-//    }
+
     private static class AllExceptAntMatcher implements ServerWebExchangeMatcher {
         private static final Set<HttpMethod> ALLOWED_METHODS = new HashSet<>(
                 Arrays.asList(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.TRACE, HttpMethod.OPTIONS));

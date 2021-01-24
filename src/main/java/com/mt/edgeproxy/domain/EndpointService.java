@@ -38,7 +38,7 @@ public class EndpointService {
         cached = DomainRegistry.retrieveEndpointService().loadAllEndpoints();
     }
 
-    public void checkAccess(String requestURI, String method, @Nullable String authHeader, Consumer<Void> onReject) {
+    public boolean checkAccess(String requestURI, String method, @Nullable String authHeader) {
         long startTime = System.currentTimeMillis();
         if (requestURI.contains("/oauth/token") || requestURI.contains("/oauth/token_key")) {
             //permit all token endpoints,
@@ -46,7 +46,7 @@ public class EndpointService {
             List<Endpoint> collect1 = cached.stream().filter(Endpoint::isSecured).filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             if (collect1.size() == 0) {
                 log.debug("return 403 due to un-registered public endpoints");
-                onReject.accept(null);
+                return false;
             }
 
         } else if (authHeader.contains("Bearer")) {
@@ -57,8 +57,7 @@ public class EndpointService {
             //fetch security profile
             if (resourceIds == null || resourceIds.isEmpty()) {
                 log.debug("return 403 due to resourceIds is null or empty");
-                onReject.accept(null);
-                return;
+                return false;
             }
             List<Endpoint> collect = cached.stream().filter(e -> resourceIds.contains(e.getResourceId())).collect(Collectors.toList());
             //fetch security rule by endpoint & method
@@ -71,18 +70,17 @@ public class EndpointService {
                 passed = mostSpecificSecurityProfile.get().allowAccess(jwtRaw);
             } else {
                 log.debug("return 403 due to expression is empty");
-                onReject.accept(null);
-                return;
+                return false;
             }
             if (!passed) {
                 log.debug("return 403 due to expression is empty or not pass check");
-                onReject.accept(null);
-                return;
+                return false;
             }
             log.debug("elapse in endpoint filter::" + (System.currentTimeMillis() - startTime));
         } else {
             log.debug("return 403 due to un-registered endpoints");
-            onReject.accept(null);
+            return false;
         }
+        return true;
     }
 }

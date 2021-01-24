@@ -20,24 +20,22 @@ public class Endpoint {
     private String resourceId;
 
     private String path;
-    private String expression;
 
     private String method;
 
     public boolean allowAccess(String jwtRaw) {
-        return true;
-//        boolean user = DomainRegistry.jwtService().isUser(jwtRaw);
-//        if (isClientOnly() && user) {
-//            return false;
-//        }
-//        if (isUserOnly() && !user) {
-//            return false;
-//        }
-//        List<String> roles = DomainRegistry.jwtService().getRoles(jwtRaw);
-//        if (!roles.equals(getRoles()))
-//            return false;
-//        List<String> scopes = DomainRegistry.jwtService().getScopes(jwtRaw);
-//        return scopes.equals(getScope());
+        boolean user = DomainRegistry.jwtService().isUser(jwtRaw);
+        if (isClientOnly() && user) {
+            return false;
+        }
+        if (isUserOnly() && !user) {
+            return false;
+        }
+        List<String> roles = DomainRegistry.jwtService().getRoles(jwtRaw);
+        if (!roles.equals(getRoles()))
+            return false;
+        List<String> scopes = DomainRegistry.jwtService().getScopes(jwtRaw);
+        return scopes.equals(getScope());
     }
 
     @Override

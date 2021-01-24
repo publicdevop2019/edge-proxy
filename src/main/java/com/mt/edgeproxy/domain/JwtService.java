@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -46,13 +45,16 @@ public class JwtService {
             log.error("error during parse jwt claim", e);
             throw new JwtParseClaimException();
         }
-        List<String> resourceIds = (List<String>)jwtClaimsSet.getClaim(field);
+        log.trace("getting clain for {}", field);
+        if (jwtClaimsSet.getClaim(field) instanceof String)
+            return List.of((String) jwtClaimsSet.getClaim(field));
+        List<String> resourceIds = (List<String>) jwtClaimsSet.getClaim(field);
         return resourceIds;
     }
 
-    private static class JwtParseException extends RuntimeException {
+    public static class JwtParseException extends RuntimeException {
     }
 
-    private static class JwtParseClaimException extends RuntimeException {
+    public static class JwtParseClaimException extends RuntimeException {
     }
 }
