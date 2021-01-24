@@ -7,30 +7,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class JwtService {
 
-    public List<String> getResourceIds(String jwtRaw) {
+    public Set<String> getResourceIds(String jwtRaw) {
         return getClaims(jwtRaw, "aud");
     }
 
-    public List<String> getScopes(String jwtRaw) {
+    public Set<String> getScopes(String jwtRaw) {
         return getClaims(jwtRaw, "scope");
     }
 
-    public List<String> getRoles(String jwtRaw) {
+    public Set<String> getRoles(String jwtRaw) {
         return getClaims(jwtRaw, "authorities");
     }
 
     public boolean isUser(String jwtRaw) {
-        List<String> uid = getClaims(jwtRaw, "uid");
-        return uid != null && !uid.isEmpty() && uid.get(0) != null;
+        Set<String> uid = getClaims(jwtRaw, "uid");
+        return !uid.isEmpty() && !uid.contains(null);
     }
 
-    private List<String> getClaims(String jwtRaw, String field) {
+    private Set<String> getClaims(String jwtRaw, String field) {
         JWT jwt;
         try {
             jwt = JWTParser.parse(jwtRaw);
@@ -46,10 +48,15 @@ public class JwtService {
             throw new JwtParseClaimException();
         }
         log.trace("getting clain for {}", field);
-        if (jwtClaimsSet.getClaim(field) instanceof String)
-            return List.of((String) jwtClaimsSet.getClaim(field));
+        if (jwtClaimsSet.getClaim(field) instanceof String) {
+            String claim = (String) jwtClaimsSet.getClaim(field);
+            Set<String> objects = new HashSet<>();
+            objects.add(claim);
+            return objects;
+        }
         List<String> resourceIds = (List<String>) jwtClaimsSet.getClaim(field);
-        return resourceIds;
+        Set<String> strings = new HashSet<>(resourceIds);
+        return strings;
     }
 
     public static class JwtParseException extends RuntimeException {

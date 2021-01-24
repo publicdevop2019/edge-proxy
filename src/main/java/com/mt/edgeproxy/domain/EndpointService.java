@@ -52,7 +52,7 @@ public class EndpointService {
         } else if (authHeader.contains("Bearer")) {
             //check endpoint url, method first then check resourceId and security rule
             String jwtRaw = authHeader.replace("Bearer ", "");
-            List<String> resourceIds = DomainRegistry.jwtService().getResourceIds(jwtRaw);
+            Set<String> resourceIds = DomainRegistry.jwtService().getResourceIds(jwtRaw);
 
             //fetch security profile
             if (resourceIds == null || resourceIds.isEmpty()) {
@@ -65,7 +65,7 @@ public class EndpointService {
 
             Optional<Endpoint> mostSpecificSecurityProfile = getMostSpecificSecurityProfile(collect1);
 
-            boolean passed = false;
+            boolean passed;
             if (mostSpecificSecurityProfile.isPresent()) {
                 passed = mostSpecificSecurityProfile.get().allowAccess(jwtRaw);
             } else {
@@ -73,7 +73,7 @@ public class EndpointService {
                 return false;
             }
             if (!passed) {
-                log.debug("return 403 due to expression is empty or not pass check");
+                log.debug("return 403 due to not pass check");
                 return false;
             }
             log.debug("elapse in endpoint filter::" + (System.currentTimeMillis() - startTime));

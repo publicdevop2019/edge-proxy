@@ -5,14 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class Endpoint {
-    private List<String> roles;
-    private List<String> scope;
+    private Set<String> clientRoles;
+    private Set<String> userRoles;
+    private Set<String> clientScopes;
     private boolean secured;
     private boolean userOnly;
     private boolean clientOnly;
@@ -31,11 +32,13 @@ public class Endpoint {
         if (isUserOnly() && !user) {
             return false;
         }
-        List<String> roles = DomainRegistry.jwtService().getRoles(jwtRaw);
-        if (!roles.equals(getRoles()))
+        Set<String> roles = DomainRegistry.jwtService().getRoles(jwtRaw);
+        if (user && !roles.containsAll(getUserRoles()))
             return false;
-        List<String> scopes = DomainRegistry.jwtService().getScopes(jwtRaw);
-        return scopes.equals(getScope());
+        if (!user && !roles.containsAll(getClientRoles()))
+            return false;
+        Set<String> scopes = DomainRegistry.jwtService().getScopes(jwtRaw);
+        return scopes.containsAll(getClientScopes());
     }
 
     @Override
