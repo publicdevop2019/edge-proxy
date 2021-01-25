@@ -1,6 +1,7 @@
 package com.mt.edgeproxy.infrastructure.springcloudgateway;
 
 import com.mt.edgeproxy.domain.DomainRegistry;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -40,7 +41,32 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         }
         //due to netty performance issue
         if (request.getPath().toString().contains("/oauth/token")) {
-            Mono<String> modifiedBody = resolveBodyFromRequest(exchange, chain);
+            GatewayContext gatewayContext = new GatewayContext();
+//            boolean shouldBlock;
+//            ServerRequest serverRequest = ServerRequest.create(exchange, HandlerStrategies.withDefaults().messageReaders());
+//            Mono<String> stringMono = serverRequest.bodyToMono(String.class);
+//            return stringMono.flatMap(e -> {
+//                if (true) {
+//                    HttpHeaders headers = new HttpHeaders();
+//                    headers.putAll(exchange.getRequest().getHeaders());
+//                    CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
+//                    ServerHttpRequest decorator = this.decorate(exchange, headers, outputMessage);
+//                    return chain.filter(exchange.mutate().request(decorator).build());
+//                } else {
+//                    ServerHttpResponse response = exchange.getResponse();
+//                    response.setStatusCode(HttpStatus.FORBIDDEN);
+//                    return response.setComplete();
+//                }
+//            });
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.putAll(exchange.getRequest().getHeaders());
+//            CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
+            Mono<String> modifiedBody = resolveBodyFromRequest(exchange, chain, gatewayContext);
+//            return modifiedBody.then(Mono.defer(() -> {
+//                ServerHttpRequest decorator = this.decorate(exchange, headers, outputMessage);
+//                return chain.filter(exchange.mutate().request(decorator).build());
+//            }));
+//                return chain.filter(exchange.mutate().request(request).build());
 //            String finalAuthHeader = authHeader;
 //            return requestBody.map(body -> {
 //                Map<String, String> stringStringMap = convertToMap(body);
@@ -61,12 +87,19 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
 ////                }
 //            });
             BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
+
             HttpHeaders headers = new HttpHeaders();
             headers.putAll(exchange.getRequest().getHeaders());
             CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
             return bodyInserter.insert(outputMessage, new BodyInserterContext()).then(Mono.defer(() -> {
                 ServerHttpRequest decorator = this.decorate(exchange, headers, outputMessage);
-                return chain.filter(exchange.mutate().request(decorator).build());
+                if (gatewayContext.shouldBlock) {
+                    ServerHttpResponse response = exchange.getResponse();
+                    response.setStatusCode(HttpStatus.FORBIDDEN);
+                    return response.setComplete();
+                } else {
+                    return chain.filter(exchange.mutate().request(decorator).build());
+                }
             }));
         } else {
             if (!DomainRegistry.revokeTokenService().checkAccess(authHeader, request.getPath().toString(), null)) {
@@ -97,10 +130,11 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         return -101;
     }
 
-    private Mono<String> resolveBodyFromRequest(ServerWebExchange exchange, GatewayFilterChain chain) {
+    private Mono<String> resolveBodyFromRequest(ServerWebExchange exchange, GatewayFilterChain chain, GatewayContext gatewayContext) {
         ServerRequest serverRequest = ServerRequest.create(exchange, HandlerStrategies.withDefaults().messageReaders());
         return serverRequest.bodyToMono(String.class).map(body -> {
             log.debug("body {}", body);
+            gatewayContext.setShouldBlock(true);
             return body;
         });
     }
@@ -150,4 +184,8 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         }
     }
 
+    @Data
+    public class GatewayContext {
+        private boolean shouldBlock;
+    }
 }
