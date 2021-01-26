@@ -3,6 +3,10 @@ package com.mt.edgeproxy.infrastructure.springcloudgateway;
 import com.mt.edgeproxy.domain.DomainRegistry;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUpload;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -25,7 +29,12 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -42,52 +51,8 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         //due to netty performance issue
         if (request.getPath().toString().contains("/oauth/token")) {
             GatewayContext gatewayContext = new GatewayContext();
-//            boolean shouldBlock;
-//            ServerRequest serverRequest = ServerRequest.create(exchange, HandlerStrategies.withDefaults().messageReaders());
-//            Mono<String> stringMono = serverRequest.bodyToMono(String.class);
-//            return stringMono.flatMap(e -> {
-//                if (true) {
-//                    HttpHeaders headers = new HttpHeaders();
-//                    headers.putAll(exchange.getRequest().getHeaders());
-//                    CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
-//                    ServerHttpRequest decorator = this.decorate(exchange, headers, outputMessage);
-//                    return chain.filter(exchange.mutate().request(decorator).build());
-//                } else {
-//                    ServerHttpResponse response = exchange.getResponse();
-//                    response.setStatusCode(HttpStatus.FORBIDDEN);
-//                    return response.setComplete();
-//                }
-//            });
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.putAll(exchange.getRequest().getHeaders());
-//            CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
-            Mono<String> modifiedBody = resolveBodyFromRequest(exchange, chain, gatewayContext);
-//            return modifiedBody.then(Mono.defer(() -> {
-//                ServerHttpRequest decorator = this.decorate(exchange, headers, outputMessage);
-//                return chain.filter(exchange.mutate().request(decorator).build());
-//            }));
-//                return chain.filter(exchange.mutate().request(request).build());
-//            String finalAuthHeader = authHeader;
-//            return requestBody.map(body -> {
-//                Map<String, String> stringStringMap = convertToMap(body);
-//                boolean allow = DomainRegistry.revokeTokenService().checkAccess(finalAuthHeader, request.getPath().toString(), stringStringMap);
-//                if(!allow){
-//                    ServerHttpResponse response = exchange.getResponse();
-//                    response.setStatusCode(HttpStatus.FORBIDDEN);
-//                    response.setComplete();
-//                }
-//                return null;
-////                if (!allow) {
-////                    ServerHttpResponse response = exchange.getResponse();
-////                    response.setStatusCode(HttpStatus.FORBIDDEN);
-////                    return response.setComplete();
-////                }else{
-////                    ServerWebExchange newExchange = getServerWebExchange(exchange, request);
-////                    return chain.filter(newExchange);
-////                }
-//            });
+            Mono<String> modifiedBody = readFormDataFromRequest(exchange, authHeader, request.getPath().toString(), gatewayContext);
             BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
-
             HttpHeaders headers = new HttpHeaders();
             headers.putAll(exchange.getRequest().getHeaders());
             CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
@@ -95,7 +60,7 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
                 ServerHttpRequest decorator = this.decorate(exchange, headers, outputMessage);
                 if (gatewayContext.shouldBlock) {
                     ServerHttpResponse response = exchange.getResponse();
-                    response.setStatusCode(HttpStatus.FORBIDDEN);
+                    response.setStatusCode(HttpStatus.UNAUTHORIZED);
                     return response.setComplete();
                 } else {
                     return chain.filter(exchange.mutate().request(decorator).build());
@@ -104,7 +69,7 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         } else {
             if (!DomainRegistry.revokeTokenService().checkAccess(authHeader, request.getPath().toString(), null)) {
                 ServerHttpResponse response = exchange.getResponse();
-                response.setStatusCode(HttpStatus.FORBIDDEN);
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
             return chain.filter(exchange);
@@ -130,11 +95,19 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         return -101;
     }
 
-    private Mono<String> resolveBodyFromRequest(ServerWebExchange exchange, GatewayFilterChain chain, GatewayContext gatewayContext) {
+    private Mono<String> readFormDataFromRequest(ServerWebExchange exchange, String authHeader, String requestURI, GatewayContext gatewayContext) {
         ServerRequest serverRequest = ServerRequest.create(exchange, HandlerStrategies.withDefaults().messageReaders());
         return serverRequest.bodyToMono(String.class).map(body -> {
-            log.debug("body {}", body);
-            gatewayContext.setShouldBlock(true);
+            try {
+                MultiPartStringParser multiPartStringParser = new MultiPartStringParser(body);
+                Map<String, String> parameters = multiPartStringParser.getParameters();
+                if (!DomainRegistry.revokeTokenService().checkAccess(authHeader, requestURI, parameters)) {
+                    gatewayContext.setShouldBlock(true);
+                }
+            } catch (Exception e) {
+                log.error("error during parse form data", e);
+                gatewayContext.setShouldBlock(true);
+            }
             return body;
         });
     }
@@ -186,6 +159,61 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
 
     @Data
     public class GatewayContext {
-        private boolean shouldBlock;
+        private boolean shouldBlock = false;
+    }
+
+    public static class MultiPartStringParser implements org.apache.commons.fileupload.UploadContext {
+
+        private String postBody;
+        private String boundary;
+        private Map<String, String> parameters = new HashMap<String, String>();
+
+        public MultiPartStringParser(String postBody) throws Exception {
+            this.postBody = postBody;
+            // Sniff out the multpart boundary.
+            this.boundary = postBody.substring(2, postBody.indexOf('\n')).trim();
+            // Parse out the parameters.
+            final FileItemFactory factory = new DiskFileItemFactory();
+            FileUpload upload = new FileUpload(factory);
+            List<FileItem> fileItems = upload.parseRequest(this);
+            for (FileItem fileItem : fileItems) {
+                if (fileItem.isFormField()) {
+                    parameters.put(fileItem.getFieldName(), fileItem.getString());
+                } // else it is an uploaded file
+            }
+        }
+
+        public Map<String, String> getParameters() {
+            return parameters;
+        }
+
+        // The methods below here are to implement the UploadContext interface.
+        @Override
+        public String getCharacterEncoding() {
+            return "UTF-8"; // You should know the actual encoding.
+        }
+
+        // This is the deprecated method from RequestContext that unnecessarily
+        // limits the length of the content to ~2GB by returning an int.
+        @Override
+        public int getContentLength() {
+            return -1; // Don't use this
+        }
+
+        @Override
+        public String getContentType() {
+            // Use the boundary that was sniffed out above.
+            return "multipart/form-data, boundary=" + this.boundary;
+        }
+
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return new ByteArrayInputStream(postBody.getBytes());
+        }
+
+        @Override
+        public long contentLength() {
+            return postBody.length();
+        }
     }
 }

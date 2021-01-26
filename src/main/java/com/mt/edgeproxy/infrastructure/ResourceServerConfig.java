@@ -37,9 +37,10 @@ public class ResourceServerConfig {
                 .csrf().csrfTokenRepository(cookieCsrfTokenRepository)
                 .requireCsrfProtectionMatcher(new AllExceptAntMatcher("/auth-svc/oauth/token"))
                 .and()
+                .cors().configurationSource(corsConfiguration())
+                .and()
                 .oauth2ResourceServer().jwt()
         ;
-        httpSecurity.cors().configurationSource(corsConfiguration());
         return httpSecurity.build();
     }
 
