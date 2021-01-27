@@ -47,13 +47,16 @@ public class ResourceServerConfig {
         return httpSecurity.build();
     }
 
+    /**
+     * require for csrf to be attached
+     */
     @Bean
     WebFilter addCsrfToken() {
         return (exchange, next) -> exchange
                 .<Mono<CsrfToken>>getAttribute(CsrfToken.class.getName())
                 .doOnSuccess(token -> {
                     log.debug("csrf token {}", token.getToken());
-                }) // do nothing, just subscribe :/
+                })
                 .then(next.filter(exchange));
     }
 

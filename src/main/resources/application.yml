@@ -8,6 +8,10 @@ spring:
     active: shared
   cloud:
     gateway:
+      default-filters:
+        - RemoveResponseHeader=Expires
+        - RemoveResponseHeader=Pragma
+        - DedupeResponseHeader=Cache-Control
       routes:
         - id: identityAccessModule
           uri: lb://oauth

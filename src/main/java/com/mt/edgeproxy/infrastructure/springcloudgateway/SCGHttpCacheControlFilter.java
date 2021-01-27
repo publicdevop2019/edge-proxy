@@ -1,0 +1,31 @@
+package com.mt.edgeproxy.infrastructure.springcloudgateway;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.concurrent.TimeUnit;
+
+@Slf4j
+@Component
+public class SCGHttpCacheControlFilter implements GlobalFilter, Ordered {
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        if (HttpMethod.GET.equals(exchange.getRequest().getMethod())) {
+            exchange.getResponse().getHeaders().setCacheControl(CacheControl.maxAge(5, TimeUnit.SECONDS));
+            return chain.filter(exchange);
+        }
+        return chain.filter(exchange);
+    }
+
+    @Override
+    public int getOrder() {
+        return 2;
+    }
+}

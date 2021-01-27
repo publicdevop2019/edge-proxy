@@ -92,7 +92,7 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -101;
+        return 0;
     }
 
     private Mono<String> readFormDataFromRequest(ServerWebExchange exchange, String authHeader, String requestURI, GatewayContext gatewayContext) {
