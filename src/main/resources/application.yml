@@ -37,8 +37,6 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${service.url.oauth2}/.well-known/jwks.json
-
-
 security:
   oauth2:
     client:
@@ -55,15 +53,6 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 35000
-#security:
-#  oauth2:
-#    client:
-#      clientId: 0C8AZYTQ5W5C
-#      clientSecret: root
-#      accessTokenUri: ${service.url.oauth2}/oauth/token
-#    resource:
-#      jwt:
-#        key-uri: ${service.url.oauth2}/oauth/token_key
 logbook:
   obfuscate:
     headers: Authorization,cookie
@@ -87,3 +76,10 @@ logging:
     org:
       zalando:
         logbook: TRACE
+
+app:
+  product-svc:
+    product:
+      name: product-svc/product
+    skus:
+      name: product-svc/skus
