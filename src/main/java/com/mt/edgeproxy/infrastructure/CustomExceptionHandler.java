@@ -1,6 +1,7 @@
 package com.mt.edgeproxy.infrastructure;
 
 import com.mt.edgeproxy.domain.JwtService;
+import com.mt.edgeproxy.infrastructure.springcloudgateway.SCGHttpCacheETagFilter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,13 @@ public class CustomExceptionHandler {
     })
     protected ResponseEntity<?> handle400Exception(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(ex));
+    }
+
+    @ExceptionHandler(value = {
+            SCGHttpCacheETagFilter.HttpCacheETagException.class
+    })
+    protected ResponseEntity<?> handle500Exception(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMessage(ex));
     }
 
     @Slf4j

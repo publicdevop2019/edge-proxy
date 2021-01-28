@@ -87,23 +87,22 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
                 if (body instanceof Mono) {
                     Mono<? extends DataBuffer> mono = (Mono<? extends DataBuffer>) body;
                     body = mono.flux();
-                } else if (body instanceof Flux) {
+                }
+                if (body instanceof Flux) {
                     flux = (Flux<DataBuffer>) body;
                     return super.writeWith(flux.buffer().map(dataBuffers -> {
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        dataBuffers.forEach(i -> {
-                            byte[] array = new byte[i.readableByteCount()];
-                            i.read(array);
-                            DataBufferUtils.release(i);
-                            outputStream.write(array, 0, array.length);
-                        });
-                        String result = outputStream.toString();
-                        try {
-                            if (outputStream != null) {
-                                outputStream.close();
-                            }
+                        String result;
+                        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+                            dataBuffers.forEach(i -> {
+                                byte[] array = new byte[i.readableByteCount()];
+                                i.read(array);
+                                DataBufferUtils.release(i);
+                                outputStream.write(array, 0, array.length);
+                            });
+                            result = outputStream.toString();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            log.error("unable to close resource",e);
+                            throw new HttpCacheETagException();
                         }
                         if (HttpStatus.OK.equals(exchange.getResponse().getStatusCode())) {
                             // length of W/ + " + 0 + 32bits md5 hash + "
@@ -126,54 +125,7 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
             }
         };
     }
-    private ServerHttpResponse emptyHttpResponse(ServerWebExchange exchange) {
-        ServerHttpResponse originalResponse = exchange.getResponse();
-        DataBufferFactory bufferFactory = originalResponse.bufferFactory();
-        return new ServerHttpResponseDecorator(originalResponse) {
-            @Override
-            public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
 
-                Flux<DataBuffer> flux;
-                if (body instanceof Mono) {
-                    Mono<? extends DataBuffer> mono = (Mono<? extends DataBuffer>) body;
-                    body = mono.flux();
-                } else if (body instanceof Flux) {
-                    flux = (Flux<DataBuffer>) body;
-                    return super.writeWith(flux.buffer().map(dataBuffers -> {
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        dataBuffers.forEach(i -> {
-                            byte[] array = new byte[i.readableByteCount()];
-                            i.read(array);
-                            DataBufferUtils.release(i);
-                            outputStream.write(array, 0, array.length);
-                        });
-                        String result = outputStream.toString();
-                        try {
-                            if (outputStream != null) {
-                                outputStream.close();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        if (HttpStatus.OK.equals(exchange.getResponse().getStatusCode())) {
-                            // length of W/ + " + 0 + 32bits md5 hash + "
-                            StringBuilder builder = new StringBuilder(37);
-                            builder.append("W/");
-                            builder.append("\"0");
-                            DigestUtils.appendMd5DigestAsHex(result.getBytes(), builder);
-                            builder.append('"');
-                            String etag = builder.toString();
-                            originalResponse.getHeaders().setETag(etag);
-                            String path = exchange.getRequest().getURI().getPath();
-                            String query = exchange.getRequest().getURI().getQuery();
-                            eTagStore.setETags(path, query, etag);
-                            log.info("response etag :{}", etag);
-                        }
-                        return bufferFactory.wrap(result.getBytes());
-                    }));
-                }
-                return super.writeWith(body);
-            }
-        };
+    public static class HttpCacheETagException extends RuntimeException{
     }
 }
