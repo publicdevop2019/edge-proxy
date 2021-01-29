@@ -30,10 +30,12 @@ public class SCGEndpointFilter implements GlobalFilter, Ordered {
                 request.getMethod().name(),
                 authHeader);
         if (!allow) {
+            log.debug("access is not allowed");
             ServerHttpResponse response = exchange.getResponse();
             response.setStatusCode(HttpStatus.FORBIDDEN);
             return response.setComplete();
         }
+        log.debug("access is allowed");
         return chain.filter(exchange);
     }
 

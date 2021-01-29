@@ -54,7 +54,7 @@ public class SCGRequestJsonSanitizerFilter implements GlobalFilter, Ordered {
         return serverRequest.bodyToMono(String.class).map(e -> {
             String sanitize = JsonSanitizer.sanitize(e);
             if (e.getBytes().length != sanitize.getBytes().length) {
-                log.debug("sanitized input length before {} after {}", e.getBytes().length, sanitize.getBytes().length);
+                log.debug("sanitized request length before {} after {}", e.getBytes().length, sanitize.getBytes().length);
             }
             filterContext.contentLength = sanitize.getBytes().length;
             return sanitize;

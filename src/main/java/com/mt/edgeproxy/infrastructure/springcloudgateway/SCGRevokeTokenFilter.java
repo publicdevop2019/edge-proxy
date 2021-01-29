@@ -50,6 +50,7 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         }
         //due to netty performance issue
         if (request.getPath().toString().contains("/oauth/token")) {
+            log.debug("checking revoke token");
             GatewayContext gatewayContext = new GatewayContext();
             Mono<String> modifiedBody = readFormDataFromRequest(exchange, authHeader, request.getPath().toString(), gatewayContext);
             BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
