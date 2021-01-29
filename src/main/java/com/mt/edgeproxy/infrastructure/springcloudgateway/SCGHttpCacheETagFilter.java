@@ -1,7 +1,6 @@
 package com.mt.edgeproxy.infrastructure.springcloudgateway;
 
-import com.mt.edgeproxy.infrastructure.ETagStore;
-import com.mt.edgeproxy.infrastructure.springcloudgateway.exception.ResourceCloseException;
+import com.mt.edgeproxy.domain.ETagStore;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -23,8 +21,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import static com.mt.edgeproxy.infrastructure.springcloudgateway.SCGResponseJsonSanitizerFilter.getResponseBody;
 
 @Slf4j
 @Component
@@ -92,25 +89,13 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
                 if (body instanceof Flux) {
                     flux = (Flux<DataBuffer>) body;
                     return super.writeWith(flux.buffer().map(dataBuffers -> {
-                        String result;
-                        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
-                            dataBuffers.forEach(i -> {
-                                byte[] array = new byte[i.readableByteCount()];
-                                i.read(array);
-                                DataBufferUtils.release(i);
-                                outputStream.write(array, 0, array.length);
-                            });
-                            result = outputStream.toString();
-                        } catch (IOException e) {
-                            log.error("unable to close resource",e);
-                            throw new ResourceCloseException();
-                        }
+                        String responseBody = getResponseBody(dataBuffers);
                         if (HttpStatus.OK.equals(exchange.getResponse().getStatusCode())) {
                             // length of W/ + " + 0 + 32bits md5 hash + "
                             StringBuilder builder = new StringBuilder(37);
                             builder.append("W/");
                             builder.append("\"0");
-                            DigestUtils.appendMd5DigestAsHex(result.getBytes(), builder);
+                            DigestUtils.appendMd5DigestAsHex(responseBody.getBytes(), builder);
                             builder.append('"');
                             String etag = builder.toString();
                             originalResponse.getHeaders().setETag(etag);
@@ -119,7 +104,7 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
                             eTagStore.setETags(path, query, etag);
                             log.info("response etag generated {}", etag);
                         }
-                        return bufferFactory.wrap(result.getBytes());
+                        return bufferFactory.wrap(responseBody.getBytes());
                     }));
                 }
                 return super.writeWith(body);

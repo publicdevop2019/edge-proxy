@@ -1,6 +1,5 @@
 package com.mt.edgeproxy.infrastructure.springcloudgateway;
 
-import com.mt.edgeproxy.infrastructure.springcloudgateway.exception.ResourceCloseException;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -8,7 +7,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -22,6 +20,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import static com.mt.edgeproxy.infrastructure.springcloudgateway.SCGResponseJsonSanitizerFilter.getResponseBody;
 
 @Slf4j
 @Component
@@ -52,19 +52,7 @@ public class SCGZipFilter implements GlobalFilter, Ordered {
                 if (body instanceof Flux) {
                     flux = (Flux<DataBuffer>) body;
                     return super.writeWith(flux.buffer().map(dataBuffers -> {
-                        String responseBody;
-                        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                            dataBuffers.forEach(i -> {
-                                byte[] array = new byte[i.readableByteCount()];
-                                i.read(array);
-                                DataBufferUtils.release(i);
-                                outputStream.write(array, 0, array.length);
-                            });
-                            responseBody = outputStream.toString();
-                        } catch (IOException e) {
-                            log.error("unable to close resource", e);
-                            throw new ResourceCloseException();
-                        }
+                        String responseBody = getResponseBody(dataBuffers);
                         boolean minLength = responseBody.getBytes(StandardCharsets.UTF_8).length > 1024;
                         boolean isJson = false;
                         if (originalResponse.getHeaders().getContentType() != null
