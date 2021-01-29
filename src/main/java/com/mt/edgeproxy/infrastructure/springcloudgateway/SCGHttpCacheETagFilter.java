@@ -1,6 +1,7 @@
 package com.mt.edgeproxy.infrastructure.springcloudgateway;
 
 import com.mt.edgeproxy.infrastructure.ETagStore;
+import com.mt.edgeproxy.infrastructure.springcloudgateway.exception.ResourceCloseException;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +103,7 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
                             result = outputStream.toString();
                         } catch (IOException e) {
                             log.error("unable to close resource",e);
-                            throw new HttpCacheETagException();
+                            throw new ResourceCloseException();
                         }
                         if (HttpStatus.OK.equals(exchange.getResponse().getStatusCode())) {
                             // length of W/ + " + 0 + 32bits md5 hash + "
@@ -126,6 +127,4 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
         };
     }
 
-    public static class HttpCacheETagException extends RuntimeException{
-    }
 }

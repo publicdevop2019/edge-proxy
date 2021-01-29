@@ -1,7 +1,8 @@
 package com.mt.edgeproxy.infrastructure;
 
 import com.mt.edgeproxy.domain.JwtService;
-import com.mt.edgeproxy.infrastructure.springcloudgateway.SCGHttpCacheETagFilter;
+import com.mt.edgeproxy.infrastructure.springcloudgateway.exception.GzipException;
+import com.mt.edgeproxy.infrastructure.springcloudgateway.exception.ResourceCloseException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,8 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(value = {
-            SCGHttpCacheETagFilter.HttpCacheETagException.class
+            ResourceCloseException.class,
+            GzipException.class
     })
     protected ResponseEntity<?> handle500Exception(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMessage(ex));

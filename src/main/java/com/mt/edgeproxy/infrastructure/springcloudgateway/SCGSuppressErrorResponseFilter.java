@@ -23,7 +23,7 @@ public class SCGSuppressErrorResponseFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -3;//needs to be first
+        return -3;
     }
 
     private ServerHttpResponse errorResponseDecorator(ServerWebExchange exchange) {
@@ -31,6 +31,7 @@ public class SCGSuppressErrorResponseFilter implements GlobalFilter, Ordered {
         return new ServerHttpResponseDecorator(originalResponse) {
             @Override
             public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
+                log.debug("checking response in case of downstream error");
                 if (originalResponse.getStatusCode() != null && originalResponse.getStatusCode().is5xxServerError()) {
                     originalResponse.getHeaders().setContentLength(0);
                     return Mono.empty();
