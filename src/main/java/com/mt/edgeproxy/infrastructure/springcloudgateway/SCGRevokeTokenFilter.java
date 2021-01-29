@@ -57,7 +57,7 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
             headers.putAll(exchange.getRequest().getHeaders());
             CachedBodyOutputMessage outputMessage = new CachedBodyOutputMessage(exchange, headers);
             return bodyInserter.insert(outputMessage, new BodyInserterContext()).then(Mono.defer(() -> {
-                ServerHttpRequest decorator = this.decorate(exchange, headers, outputMessage);
+                ServerHttpRequest decorator = decorate(exchange, headers, outputMessage);
                 if (gatewayContext.shouldBlock) {
                     ServerHttpResponse response = exchange.getResponse();
                     response.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -76,11 +76,11 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         }
     }
 
-    private ServerHttpRequestDecorator decorate(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage) {
+    public static ServerHttpRequestDecorator decorate(ServerWebExchange exchange, HttpHeaders headers, CachedBodyOutputMessage outputMessage) {
         return new ServerHttpRequestDecorator(exchange.getRequest()) {
             public HttpHeaders getHeaders() {
                 HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.putAll(super.getHeaders());
+                httpHeaders.putAll(headers);
                 return httpHeaders;
             }
 
@@ -112,7 +112,7 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
         });
     }
 
-    private static class CachedBodyOutputMessage implements ReactiveHttpOutputMessage {
+    public static class CachedBodyOutputMessage implements ReactiveHttpOutputMessage {
         private final DataBufferFactory bufferFactory;
         private final HttpHeaders httpHeaders;
         private Flux<DataBuffer> body = Flux.error(new IllegalStateException("The body is not set. Did handling complete with success?"));
@@ -158,7 +158,7 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
     }
 
     @Data
-    public class GatewayContext {
+    public static class GatewayContext {
         private boolean shouldBlock = false;
     }
 
