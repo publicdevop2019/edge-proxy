@@ -16,7 +16,6 @@ public class RevokeTokenService {
         if ((authHeader != null && authHeader.contains("Bearer")) ||
                 (requestURI.contains("/oauth/token") && requestBody != null && requestBody.get("refresh_token") != null)
         ) {
-            long startTime = System.currentTimeMillis();
             String jwtRaw;
             if (authHeader != null && authHeader.contains("Bearer")) {
                 jwtRaw = authHeader.replace("Bearer ", "");
@@ -34,7 +33,6 @@ public class RevokeTokenService {
             if (clientId != null) {
                 allowClient = notBlocked(clientId, issueAt);
             }
-            log.debug("elapse in token filter::" + (System.currentTimeMillis() - startTime));
             return allowUser && allowClient;
         }
         return true;

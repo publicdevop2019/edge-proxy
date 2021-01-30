@@ -39,7 +39,6 @@ public class EndpointService {
     }
 
     public boolean checkAccess(String requestURI, String method, @Nullable String authHeader) {
-        long startTime = System.currentTimeMillis();
         if (requestURI.contains("/oauth/token") || requestURI.contains("/oauth/token_key")) {
             //permit all token endpoints,
         } else if (authHeader == null || !authHeader.contains("Bearer") || requestURI.contains("/public")) {
@@ -76,7 +75,6 @@ public class EndpointService {
                 log.debug("return 403 due to not pass check");
                 return false;
             }
-            log.debug("elapse in endpoint filter::" + (System.currentTimeMillis() - startTime));
         } else {
             log.debug("return 403 due to un-registered endpoints");
             return false;

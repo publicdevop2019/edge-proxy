@@ -1,4 +1,4 @@
-//package com.mt.edgeproxy.infrastructure;
+//package com.mt.edgeproxy.infrastructure.zuul;
 //
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
@@ -7,8 +7,6 @@
 //import static java.util.Collections.singleton;
 //import static org.zalando.logbook.BodyFilter.merge;
 //import static org.zalando.logbook.BodyFilters.defaultValue;
-//import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonStringProperty;
-//
 //@Configuration
 //public class LogbookConfig {
 //    @Bean
