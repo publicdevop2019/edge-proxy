@@ -17,11 +17,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import static com.mt.edgeproxy.infrastructure.springcloudgateway.SCGResponseJsonSanitizerFilter.getResponseBody;
+import static com.mt.edgeproxy.infrastructure.springcloudgateway.SCGHttpCacheETagFilter.getResponseBody;
 
 @Slf4j
 @Component
@@ -54,8 +53,8 @@ public class SCGZipFilter implements GlobalFilter, Ordered {
                         flux = (Flux<DataBuffer>) body;
                         boolean finalIsJson = true;
                         return super.writeWith(flux.buffer().map(dataBuffers -> {
-                            String responseBody = getResponseBody(dataBuffers);
-                            boolean minLength = responseBody.getBytes(StandardCharsets.UTF_8).length > 1024;
+                            byte[] responseBody = getResponseBody(dataBuffers);
+                            boolean minLength = responseBody.length > 1024;
                             if (minLength && finalIsJson) {
                                 byte[] compressed = new byte[0];
                                 try {
@@ -63,12 +62,12 @@ public class SCGZipFilter implements GlobalFilter, Ordered {
                                 } catch (IOException e) {
                                     log.error("error during compress", e);
                                 }
-                                log.debug("gzip response length before {} after {}", responseBody.length(), compressed.length);
+                                log.debug("gzip response length before {} after {}", responseBody.length, compressed.length);
                                 originalResponse.getHeaders().setContentLength(compressed.length);
                                 originalResponse.getHeaders().set(HttpHeaders.CONTENT_ENCODING, "gzip");
                                 return bufferFactory.wrap(compressed);
                             } else {
-                                return bufferFactory.wrap(responseBody.getBytes(StandardCharsets.UTF_8));
+                                return bufferFactory.wrap(responseBody);
                             }
                         }));
                     }
@@ -80,10 +79,10 @@ public class SCGZipFilter implements GlobalFilter, Ordered {
         };
     }
 
-    private byte[] compress(String data) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length());
+    private byte[] compress(byte[] data) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
         GZIPOutputStream gzip = new GZIPOutputStream(bos);
-        gzip.write(data.getBytes());
+        gzip.write(data);
         gzip.close();
         byte[] compressed = bos.toByteArray();
         bos.close();
