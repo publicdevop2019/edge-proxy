@@ -102,7 +102,7 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
                             String path = exchange.getRequest().getURI().getPath();
                             String query = exchange.getRequest().getURI().getQuery();
                             eTagStore.setETags(path, query, etag);
-                            log.info("response etag generated {}", etag);
+                            log.debug("response etag generated {}", etag);
                         }
                         return bufferFactory.wrap(responseBody.getBytes());
                     }));

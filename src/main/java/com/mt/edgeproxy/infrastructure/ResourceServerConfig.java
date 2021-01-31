@@ -34,8 +34,7 @@ public class ResourceServerConfig {
         cookieCsrfTokenRepository.setCookiePath("/");
         httpSecurity
                 .authorizeExchange()
-                .pathMatchers("/auth-svc/oauth/token").permitAll()
-                .anyExchange().authenticated()
+                .anyExchange().permitAll()
                 .and()
                 .csrf().csrfTokenRepository(cookieCsrfTokenRepository)
                 .requireCsrfProtectionMatcher(new AllExceptAntMatcher("/auth-svc/oauth/token"))
