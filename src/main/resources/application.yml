@@ -1,11 +1,21 @@
-service:
+manytree:
   url:
     oauth2: http://localhost:8080
+    eureka:
+    endpoint: ${manytree.url.oauth2}/endpoints/root
+  etag:
+    product: product-svc/product
+    skus: product-svc/skus
+server:
+  port: 8111
 spring:
   application:
     name: proxy
-  profiles:
-    active: shared
+  zipkin:
+    baseUrl: http://localhost:9411/
+  sleuth:
+    sampler:
+      probability: 1.0
   cloud:
     gateway:
       default-filters:
@@ -13,37 +23,76 @@ spring:
         - RemoveResponseHeader=Pragma
         - DedupeResponseHeader=Cache-Control
       routes:
-        - id: identityAccessModule
+        - id: oauthModule
           uri: lb://oauth
           predicates:
             - Path=/auth-svc/**
           filters:
             - RewritePath=/auth-svc(?<segment>/?.*), $\{segment}
+        - id: profileModule
+          uri: lb://profile
+          predicates:
+            - Path=/profile-svc/**
+          filters:
+            - RewritePath=/profile-svc(?<segment>/?.*), $\{segment}
+        - id: productModule
+          uri: lb://product
+          predicates:
+            - Path=/product-svc/**
+          filters:
+            - RewritePath=/product-svc(?<segment>/?.*), $\{segment}
+        - id: messengerModule
+          uri: lb://messenger
+          predicates:
+            - Path=/messenger-svc/**
+          filters:
+            - RewritePath=/messenger-svc(?<segment>/?.*), $\{segment}
+        - id: fileUploadModule
+          uri: lb://fileUpload
+          predicates:
+            - Path=/file-upload-svc/**
+          filters:
+            - RewritePath=/file-upload-svc(?<segment>/?.*), $\{segment}
+        - id: paymentModule
+          uri: lb://payment
+          predicates:
+            - Path=/payment-svc/**
+          filters:
+            - RewritePath=/payment-svc(?<segment>/?.*), $\{segment}
+        - id: bbsModule
+          uri: lb://bbs
+          predicates:
+            - Path=/bbs-svc/**
+          filters:
+            - RewritePath=/bbs-svc(?<segment>/?.*), $\{segment}
+        - id: sagaModule
+          uri: lb://saga
+          predicates:
+            - Path=/saga-svc/**
+          filters:
+            - RewritePath=/saga-svc(?<segment>/?.*), $\{segment}
+        - id: storeModule
+          uri: lb://store
+          predicates:
+            - Path=/object-svc/**
+          filters:
+            - RewritePath=/object-svc(?<segment>/?.*), $\{segment}
   security:
     oauth2:
-      client:
-        registration:
-          manytree:
-            client-id: 0C8AZYTQ5W5C
-            client-secret: root
-            authorization-grant-type: client_credentials
-        provider:
-          manytree:
-            authorization-uri: ${service.url.oauth2}/authorize
-            token-uri: ${service.url.oauth2}/oauth/token
-            user-info-uri: ${service.url.oauth2}/userinfo
-            user-name-attribute: sub
-            jwk-set-uri: ${service.url.oauth2}/.well-known/jwks.json
       resourceserver:
         jwt:
-          jwk-set-uri: ${service.url.oauth2}/.well-known/jwks.json
-security:
-  oauth2:
-    client:
-      clientSecret: root
-      clientId: 0C8AZYTQ5W5C
-url:
-  endpoint: ${service.url.oauth2}/endpoints/root
+          jwk-set-uri: ${manytree.url.oauth2}/.well-known/jwks.json
+  redis:
+    port: 6379
+    database: 0
+    host: 127.0.0.1
+    password:
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+    timeout: 30000
 ribbon:
   ReadTimeout: 15000
 hystrix:
@@ -53,33 +102,18 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 35000
-logbook:
-  obfuscate:
-    headers: Authorization,cookie
-    parameters: access_token,password
-  write:
-    category: http.wire-log
-    level: DEBUG
-    max-body-size: 100
-  exclude:
-    - '**/v2/api-docs'
-    - '**/swagger-ui.html'
-    - '**/webjars/**'
-    - '**/swagger-resources/**'
-    - '**/csrf'
-    - '**/'
-    - '**/auth-svc/oauth/token'
 logging:
   level:
-    http:
-      wire-log: DEBUG
     org:
-      zalando:
-        logbook: TRACE
-
-app:
-  product-svc:
-    product:
-      name: product-svc/product
-    skus:
-      name: product-svc/skus
+      springframework:
+        web: INFO
+        security: INFO
+    com:
+      netflix: INFO
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:${manytree.url.eureka}}
+  instance:
+    preferIpAddress: true
+    ip-address:

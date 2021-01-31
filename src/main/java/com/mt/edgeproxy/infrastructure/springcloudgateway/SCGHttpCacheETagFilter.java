@@ -28,9 +28,9 @@ import static com.mt.edgeproxy.infrastructure.springcloudgateway.SCGResponseJson
 public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
     @Autowired
     private ETagStore eTagStore;
-    @Value("${app.product-svc.product.name}")
+    @Value("${manytree.etag.product}")
     private String productName;
-    @Value("${app.product-svc.skus.name}")
+    @Value("${manytree.etag.skus}")
     private String skuName;
 
     @Override

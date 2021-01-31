@@ -29,7 +29,7 @@ public class HttpEndpointAdapter implements EndpointAdapter {
         restTemplate.setInterceptors(Collections.singletonList(outgoingReqInterceptor));
     }
 
-    @Value("${url.endpoint}")
+    @Value("${manytree.url.endpoint}")
     private String endpointUrl;
 
     @Override
