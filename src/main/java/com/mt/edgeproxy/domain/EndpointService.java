@@ -8,6 +8,7 @@ import org.springframework.util.AntPathMatcher;
 
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class EndpointService {
         cached = DomainRegistry.retrieveEndpointService().loadAllEndpoints();
     }
 
-    public boolean checkAccess(String requestURI, String method, @Nullable String authHeader) {
+    public boolean checkAccess(String requestURI, String method, @Nullable String authHeader) throws ParseException {
         if (requestURI.contains("/oauth/token") || requestURI.contains("/oauth/token_key")) {
             //permit all token endpoints,
         } else if (authHeader == null || !authHeader.contains("Bearer") || requestURI.contains("/public")) {

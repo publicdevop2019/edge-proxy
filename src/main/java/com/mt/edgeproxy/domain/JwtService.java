@@ -13,52 +13,40 @@ import java.util.*;
 @Service
 public class JwtService {
 
-    public Set<String> getResourceIds(String jwtRaw) {
+    public Set<String> getResourceIds(String jwtRaw) throws ParseException {
         return getClaims(jwtRaw, "aud");
     }
 
-    public Set<String> getScopes(String jwtRaw) {
+    public Set<String> getScopes(String jwtRaw) throws ParseException {
         return getClaims(jwtRaw, "scope");
     }
 
-    public Set<String> getRoles(String jwtRaw) {
+    public Set<String> getRoles(String jwtRaw) throws ParseException {
         return getClaims(jwtRaw, "authorities");
     }
 
-    public Long getIssueAt(String jwtRaw) {
+    public Long getIssueAt(String jwtRaw) throws ParseException {
         return Long.parseLong(getClaims(jwtRaw, "iat").stream().findAny().get());
     }
 
-    public String getUserId(String jwtRaw) {
+    public String getUserId(String jwtRaw) throws ParseException {
         if (isUser(jwtRaw))
             return getClaims(jwtRaw, "uid").stream().findAny().get();
         return null;
     }
 
-    public String getClientId(String jwtRaw) {
+    public String getClientId(String jwtRaw) throws ParseException {
         return getClaims(jwtRaw, "client_id").stream().findAny().get();
     }
 
-    public boolean isUser(String jwtRaw) {
+    public boolean isUser(String jwtRaw) throws ParseException {
         Set<String> uid = getClaims(jwtRaw, "uid");
         return !uid.isEmpty() && !uid.contains(null);
     }
 
-    private Set<String> getClaims(String jwtRaw, String field) {
-        JWT jwt;
-        try {
-            jwt = JWTParser.parse(jwtRaw);
-        } catch (ParseException e) {
-            log.error("error during parse jwt", e);
-            throw new JwtParseException();
-        }
-        JWTClaimsSet jwtClaimsSet;
-        try {
-            jwtClaimsSet = jwt.getJWTClaimsSet();
-        } catch (ParseException e) {
-            log.error("error during parse jwt claim", e);
-            throw new JwtParseClaimException();
-        }
+    private Set<String> getClaims(String jwtRaw, String field) throws ParseException {
+        JWT jwt = JWTParser.parse(jwtRaw);
+        JWTClaimsSet jwtClaimsSet = jwt.getJWTClaimsSet();
         log.trace("getting clain for {}", field);
         if (jwtClaimsSet.getClaim(field) instanceof String) {
             String claim = (String) jwtClaimsSet.getClaim(field);
@@ -76,11 +64,5 @@ public class JwtService {
         }
         List<String> resourceIds = (List<String>) jwtClaimsSet.getClaim(field);
         return new HashSet<>(resourceIds);
-    }
-
-    public static class JwtParseException extends RuntimeException {
-    }
-
-    public static class JwtParseClaimException extends RuntimeException {
     }
 }

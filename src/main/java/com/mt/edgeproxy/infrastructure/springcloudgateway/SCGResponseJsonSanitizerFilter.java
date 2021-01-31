@@ -9,6 +9,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static com.mt.edgeproxy.infrastructure.springcloudgateway.SCGHttpCacheETagFilter.getResponseBody;
@@ -52,14 +54,23 @@ public class SCGResponseJsonSanitizerFilter implements GlobalFilter, Ordered {
                     if (body instanceof Flux) {
                         flux = (Flux<DataBuffer>) body;
                         return super.writeWith(flux.buffer().map(dataBuffers -> {
-                            String responseBody = new String(getResponseBody(dataBuffers), StandardCharsets.UTF_8);
-                            String s2 = responseBody.replace("<", "&lt;");
+                            byte[] responseBody = new byte[0];
+                            try {
+                                responseBody = getResponseBody(dataBuffers);
+                            } catch (IOException e) {
+                                log.error("error during read response", e);
+                                originalResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                                return bufferFactory.wrap(responseBody);
+                            }
+                            String responseBodyString = new String(responseBody, StandardCharsets.UTF_8);
+                            String s2 = responseBodyString.replace("<", "&lt;");
                             String s3 = s2.replace(">", "&gt;");
                             String afterSanitize = JsonSanitizer.sanitize(s3);
-                            if (headers.getContentLength() != afterSanitize.getBytes().length)
-                                log.debug("sanitized response length before {} after {}", responseBody.getBytes().length, afterSanitize.getBytes().length);
-                            headers.setContentLength(afterSanitize.getBytes().length);
-                            return bufferFactory.wrap(afterSanitize.getBytes());
+                            byte[] bytes = afterSanitize.getBytes(StandardCharsets.UTF_8);
+                            if (headers.getContentLength() != afterSanitize.getBytes(StandardCharsets.UTF_8).length)
+                                log.debug("sanitized response length before {} after {}", responseBody.length, bytes.length);
+                            headers.setContentLength(bytes.length);
+                            return bufferFactory.wrap(bytes);
                         }));
                     }
                 }

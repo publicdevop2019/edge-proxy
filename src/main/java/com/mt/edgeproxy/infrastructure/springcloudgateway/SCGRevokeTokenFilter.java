@@ -32,6 +32,7 @@ import reactor.core.publisher.Mono;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +69,15 @@ public class SCGRevokeTokenFilter implements GlobalFilter, Ordered {
                 }
             }));
         } else {
-            if (!DomainRegistry.revokeTokenService().checkAccess(authHeader, request.getPath().toString(), null)) {
-                ServerHttpResponse response = exchange.getResponse();
-                response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            ServerHttpResponse response = exchange.getResponse();
+            try {
+                if (!DomainRegistry.revokeTokenService().checkAccess(authHeader, request.getPath().toString(), null)) {
+                    response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                    return response.setComplete();
+                }
+            } catch (ParseException e) {
+                log.error("error during parse", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
                 return response.setComplete();
             }
             return chain.filter(exchange);

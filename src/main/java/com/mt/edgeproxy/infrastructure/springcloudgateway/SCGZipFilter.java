@@ -8,6 +8,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -53,7 +54,14 @@ public class SCGZipFilter implements GlobalFilter, Ordered {
                         flux = (Flux<DataBuffer>) body;
                         boolean finalIsJson = true;
                         return super.writeWith(flux.buffer().map(dataBuffers -> {
-                            byte[] responseBody = getResponseBody(dataBuffers);
+                            byte[] responseBody = new byte[0];
+                            try {
+                                responseBody = getResponseBody(dataBuffers);
+                            } catch (IOException e) {
+                                log.error("error during read response", e);
+                                originalResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                                return bufferFactory.wrap(responseBody);
+                            }
                             boolean minLength = responseBody.length > 1024;
                             if (minLength && finalIsJson) {
                                 byte[] compressed = new byte[0];

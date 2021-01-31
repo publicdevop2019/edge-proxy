@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.text.ParseException;
 import java.util.Set;
 
 @Getter
@@ -24,7 +25,7 @@ public class Endpoint {
 
     private String method;
 
-    public boolean allowAccess(String jwtRaw) {
+    public boolean allowAccess(String jwtRaw) throws ParseException {
         boolean user = DomainRegistry.jwtService().isUser(jwtRaw);
         if (isClientOnly() && user) {
             return false;

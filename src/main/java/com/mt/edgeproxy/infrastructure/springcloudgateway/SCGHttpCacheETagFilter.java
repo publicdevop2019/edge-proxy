@@ -1,7 +1,6 @@
 package com.mt.edgeproxy.infrastructure.springcloudgateway;
 
 import com.mt.edgeproxy.domain.ETagStore;
-import com.mt.edgeproxy.infrastructure.springcloudgateway.exception.ResourceCloseException;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +93,14 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
                 if (body instanceof Flux) {
                     flux = (Flux<DataBuffer>) body;
                     return super.writeWith(flux.buffer().map(dataBuffers -> {
-                        byte[] responseBody = getResponseBody(dataBuffers);
+                        byte[] responseBody = new byte[0];
+                        try {
+                            responseBody = getResponseBody(dataBuffers);
+                        } catch (IOException e) {
+                            log.error("error during read response", e);
+                            originalResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+                            return bufferFactory.wrap(responseBody);
+                        }
                         if (HttpStatus.OK.equals(exchange.getResponse().getStatusCode())) {
                             // length of W/ + " + 0 + 32bits md5 hash + "
                             StringBuilder builder = new StringBuilder(37);
@@ -117,7 +123,7 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
         };
     }
 
-    public static byte[] getResponseBody(List<DataBuffer> dataBuffers) {
+    public static byte[] getResponseBody(List<DataBuffer> dataBuffers) throws IOException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             dataBuffers.forEach(i -> {
                 byte[] array = new byte[i.readableByteCount()];
@@ -126,9 +132,6 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
                 outputStream.write(array, 0, array.length);
             });
             return outputStream.toByteArray();
-        } catch (IOException e) {
-            log.error("unable to close resource", e);
-            throw new ResourceCloseException();
         }
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.codec.multipart.Part;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
+import java.text.ParseException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 @Service
 public class RevokeTokenService {
 
-    public boolean checkAccess(String authHeader, String requestURI, Map<String, String> requestBody) {
+    public boolean checkAccess(String authHeader, String requestURI, Map<String, String> requestBody) throws ParseException {
         if ((authHeader != null && authHeader.contains("Bearer")) ||
                 (requestURI.contains("/oauth/token") && requestBody != null && requestBody.get("refresh_token") != null)
         ) {
