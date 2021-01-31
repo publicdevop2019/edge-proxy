@@ -43,37 +43,37 @@ public class SCGZipFilter implements GlobalFilter, Ordered {
         return new ServerHttpResponseDecorator(originalResponse) {
             @Override
             public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
-
-                Flux<DataBuffer> flux;
-                if (body instanceof Mono) {
-                    Mono<? extends DataBuffer> mono = (Mono<? extends DataBuffer>) body;
-                    body = mono.flux();
-                }
-                if (body instanceof Flux) {
-                    flux = (Flux<DataBuffer>) body;
-                    return super.writeWith(flux.buffer().map(dataBuffers -> {
-                        String responseBody = getResponseBody(dataBuffers);
-                        boolean minLength = responseBody.getBytes(StandardCharsets.UTF_8).length > 1024;
-                        boolean isJson = false;
-                        if (originalResponse.getHeaders().getContentType() != null
-                                && originalResponse.getHeaders().getContentType().equals(MediaType.APPLICATION_JSON_UTF8)) {
-                            isJson = true;
-                        }
-                        if (minLength && isJson) {
-                            byte[] compressed = new byte[0];
-                            try {
-                                compressed = compress(responseBody);
-                            } catch (IOException e) {
-                                log.error("error during compress", e);
+                if (originalResponse.getHeaders().getContentType() != null
+                        && originalResponse.getHeaders().getContentType().equals(MediaType.APPLICATION_JSON_UTF8)) {
+                    Flux<DataBuffer> flux;
+                    if (body instanceof Mono) {
+                        Mono<? extends DataBuffer> mono = (Mono<? extends DataBuffer>) body;
+                        body = mono.flux();
+                    }
+                    if (body instanceof Flux) {
+                        flux = (Flux<DataBuffer>) body;
+                        boolean finalIsJson = true;
+                        return super.writeWith(flux.buffer().map(dataBuffers -> {
+                            String responseBody = getResponseBody(dataBuffers);
+                            boolean minLength = responseBody.getBytes(StandardCharsets.UTF_8).length > 1024;
+                            if (minLength && finalIsJson) {
+                                byte[] compressed = new byte[0];
+                                try {
+                                    compressed = compress(responseBody);
+                                } catch (IOException e) {
+                                    log.error("error during compress", e);
+                                }
+                                log.debug("gzip response length before {} after {}", responseBody.length(), compressed.length);
+                                originalResponse.getHeaders().setContentLength(compressed.length);
+                                originalResponse.getHeaders().set(HttpHeaders.CONTENT_ENCODING, "gzip");
+                                return bufferFactory.wrap(compressed);
+                            } else {
+                                return bufferFactory.wrap(responseBody.getBytes(StandardCharsets.UTF_8));
                             }
-                            log.debug("gzip response length before {} after {}", responseBody.length(), compressed.length);
-                            originalResponse.getHeaders().setContentLength(compressed.length);
-                            originalResponse.getHeaders().set(HttpHeaders.CONTENT_ENCODING, "gzip");
-                            return bufferFactory.wrap(compressed);
-                        } else {
-                            return bufferFactory.wrap(responseBody.getBytes(StandardCharsets.UTF_8));
-                        }
-                    }));
+                        }));
+                    }
+                } else {
+                    return super.writeWith(body);
                 }
                 return super.writeWith(body);
             }
