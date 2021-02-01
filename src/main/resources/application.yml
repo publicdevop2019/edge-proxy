@@ -18,6 +18,9 @@ spring:
       probability: 1.0
   cloud:
     gateway:
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
       default-filters:
         - RemoveResponseHeader=Expires
         - RemoveResponseHeader=Pragma
@@ -77,6 +80,12 @@ spring:
             - Path=/object-svc/**
           filters:
             - RewritePath=/object-svc(?<segment>/?.*), $\{segment}
+        - id: testModule
+          uri: lb://test
+          predicates:
+            - Path=/test-svc/**
+          filters:
+            - RewritePath=/test-svc(?<segment>/?.*), $\{segment}
   security:
     oauth2:
       resourceserver:
