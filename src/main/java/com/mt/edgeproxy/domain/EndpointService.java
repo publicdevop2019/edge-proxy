@@ -45,7 +45,7 @@ public class EndpointService {
         } else if (authHeader == null || !authHeader.contains("Bearer") || requestURI.contains("/public")) {
             List<Endpoint> collect1 = cached.stream().filter(e->!e.isSecured()).filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
             if (collect1.size() == 0) {
-                log.debug("return 403 due to un-registered public endpoints");
+                log.debug("return 403 due to un-registered public endpoints or no authentication info found");
                 return false;
             }
 
