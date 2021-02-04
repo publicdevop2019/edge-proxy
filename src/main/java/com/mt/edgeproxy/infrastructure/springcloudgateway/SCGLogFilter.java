@@ -56,8 +56,14 @@ public class SCGLogFilter implements GlobalFilter, Ordered {
         }
         ServerHttpResponse decoratedResponse = uuidResponseDecorator(exchange);
         if (httpRequest != null) {
+            if ("websocket".equals(request.getHeaders().getUpgrade())) {
+                return chain.filter(exchange.mutate().request(httpRequest).build());
+            }
             return chain.filter(exchange.mutate().request(httpRequest).response(decoratedResponse).build());
         } else {
+            if ("websocket".equals(request.getHeaders().getUpgrade())) {
+                return chain.filter(exchange);
+            }
             return chain.filter(exchange.mutate().response(decoratedResponse).build());
         }
     }
