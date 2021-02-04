@@ -11,6 +11,7 @@ import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,10 @@ public class SCGResponseJsonSanitizerFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        ServerHttpRequest request = exchange.getRequest();
+        if ("websocket".equals(request.getHeaders().getUpgrade())) {
+            return chain.filter(exchange);
+        }
         ServerHttpResponse decoratedResponse = responseJsonSanitizer(exchange);
         return chain.filter(exchange.mutate().response(decoratedResponse).build());
     }

@@ -40,6 +40,9 @@ public class SCGHttpCacheETagFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        if ("websocket".equals(request.getHeaders().getUpgrade())) {
+            return chain.filter(exchange);
+        }
         String path = exchange.getRequest().getURI().getPath();
         if (!exchange.getRequest().getHeaders().getIfNoneMatch().isEmpty()) {
             String ifNoneMatch = exchange.getRequest().getHeaders().getIfNoneMatch().get(0);
