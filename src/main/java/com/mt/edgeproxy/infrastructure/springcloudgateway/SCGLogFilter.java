@@ -1,15 +1,12 @@
 package com.mt.edgeproxy.infrastructure.springcloudgateway;
 
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
 import org.slf4j.MDC;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -75,15 +72,10 @@ public class SCGLogFilter implements GlobalFilter, Ordered {
 
     private ServerHttpResponse uuidResponseDecorator(ServerWebExchange exchange) {
         ServerHttpResponse originalResponse = exchange.getResponse();
-        return new ServerHttpResponseDecorator(originalResponse) {
-            @Override
-            public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
-                List<String> uuidHeader = exchange.getRequest().getHeaders().get(REQ_UUID);
-                if (uuidHeader != null && !uuidHeader.isEmpty()) {
-                    originalResponse.getHeaders().set(REQ_UUID, uuidHeader.get(0));
-                }
-                return super.writeWith(body);
-            }
-        };
+        List<String> uuidHeader = exchange.getRequest().getHeaders().get(REQ_UUID);
+        if (uuidHeader != null && !uuidHeader.isEmpty()) {
+            originalResponse.getHeaders().set(REQ_UUID, uuidHeader.get(0));
+        }
+        return originalResponse;
     }
 }
