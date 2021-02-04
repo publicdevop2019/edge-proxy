@@ -1,0 +1,130 @@
+manytree:
+  url:
+    oauth2: http://localhost:8080
+    eureka:
+    endpoint: ${manytree.url.oauth2}/endpoints/root
+  etag:
+    product: product-svc/product
+    skus: product-svc/skus
+server:
+  port: 8111
+spring:
+  application:
+    name: proxy
+  zipkin:
+    baseUrl: http://localhost:9411/
+  sleuth:
+    sampler:
+      probability: 1.0
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
+      routes:
+        - id: oauthModule
+          uri: lb://oauth
+          predicates:
+            - Path=/auth-svc/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+            - RewritePath=/auth-svc(?<segment>/?.*), $\{segment}
+            - RemoveResponseHeader=Expires
+            - RemoveResponseHeader=Pragma
+        - id: profileModule
+          uri: lb://profile
+          predicates:
+            - Path=/profile-svc/**
+          filters:
+            - RewritePath=/profile-svc(?<segment>/?.*), $\{segment}
+        - id: productModule
+          uri: lb://product
+          predicates:
+            - Path=/product-svc/**
+          filters:
+            - RewritePath=/product-svc(?<segment>/?.*), $\{segment}
+        - id: messengerModule
+          uri: lb://messenger
+          predicates:
+            - Path=/messenger-svc/**
+          filters:
+            - RewritePath=/messenger-svc(?<segment>/?.*), $\{segment}
+        - id: fileUploadModule
+          uri: lb://fileUpload
+          predicates:
+            - Path=/file-upload-svc/**
+          filters:
+            - RewritePath=/file-upload-svc(?<segment>/?.*), $\{segment}
+        - id: paymentModule
+          uri: lb://payment
+          predicates:
+            - Path=/payment-svc/**
+          filters:
+            - RewritePath=/payment-svc(?<segment>/?.*), $\{segment}
+        - id: bbsModule
+          uri: lb://bbs
+          predicates:
+            - Path=/bbs-svc/**
+          filters:
+            - RewritePath=/bbs-svc(?<segment>/?.*), $\{segment}
+        - id: sagaModule
+          uri: lb://saga
+          predicates:
+            - Path=/saga-svc/**
+          filters:
+            - RewritePath=/saga-svc(?<segment>/?.*), $\{segment}
+        - id: storeModule
+          uri: lb://store
+          predicates:
+            - Path=/object-svc/**
+          filters:
+            - RewritePath=/object-svc(?<segment>/?.*), $\{segment}
+        - id: testModule
+          uri: lb://test
+          predicates:
+            - Path=/test-svc/**
+          filters:
+            - RewritePath=/test-svc(?<segment>/?.*), $\{segment}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${manytree.url.oauth2}/.well-known/jwks.json
+  redis:
+    port: 6379
+    database: 0
+    host: 127.0.0.1
+    password:
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+    timeout: 30000
+ribbon:
+  ReadTimeout: 15000
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 35000
+logging:
+  level:
+    org:
+      springframework:
+        web: INFO
+        security: INFO
+    com:
+      netflix: INFO
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:${manytree.url.eureka}}
+  instance:
+    preferIpAddress: true
+    ip-address:

@@ -1,4 +1,4 @@
-package com.mt.edgeproxy.infrastructure;
+package com.mt.edgeproxy.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;

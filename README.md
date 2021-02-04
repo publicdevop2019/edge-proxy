@@ -21,3 +21,6 @@
 - Gzip
 - 缓存
 - ETag缓存
+# migration
+- cors
+- csrf
