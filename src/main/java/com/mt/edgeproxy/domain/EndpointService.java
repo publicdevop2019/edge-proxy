@@ -69,7 +69,7 @@ public class EndpointService {
             if (mostSpecificSecurityProfile.isPresent()) {
                 passed = mostSpecificSecurityProfile.get().allowAccess(jwtRaw);
             } else {
-                log.debug("return 403 due to expression is empty");
+                log.debug("return 403 due to endpoint not found");
                 return false;
             }
             if (!passed) {
