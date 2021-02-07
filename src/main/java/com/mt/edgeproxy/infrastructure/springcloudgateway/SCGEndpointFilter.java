@@ -14,12 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -32,23 +28,12 @@ public class SCGEndpointFilter implements GlobalFilter, Ordered {
         HttpHeaders headers = request.getHeaders();
         List<String> temp;
         ServerHttpRequest httpRequest = null;
+        boolean webSocket = false;
         if ("websocket".equals(headers.getUpgrade())) {
+            webSocket = true;
             temp = request.getQueryParams().get("jwt");
             if (temp != null && !temp.isEmpty()) {
-                URI oldUri = request.getURI();
-                String[] split = oldUri.getQuery().split(",");
-                String modified = Arrays.stream(split).filter(e -> !e.contains("jwt")).collect(Collectors.joining(","));
                 authHeader = "Bearer " + new String(Base64.decode(temp.get(0)));
-                URI uri;
-                try {
-                    uri = new URI(oldUri.getScheme(), oldUri.getAuthority(),
-                            oldUri.getPath(), modified, oldUri.getFragment());
-                } catch (URISyntaxException e) {
-                    log.error("error during updating uri", e);
-                    response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-                    return response.setComplete();
-                }
-                httpRequest = request.mutate().uri(uri).build();
             }
         } else {
             temp = headers.get("authorization");
@@ -62,7 +47,7 @@ public class SCGEndpointFilter implements GlobalFilter, Ordered {
             allow = DomainRegistry.endpointService().checkAccess(
                     request.getPath().toString(),
                     request.getMethod().name(),
-                    authHeader);
+                    authHeader, webSocket);
         } catch (ParseException e) {
             log.error("error during parse", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -74,9 +59,6 @@ public class SCGEndpointFilter implements GlobalFilter, Ordered {
             return response.setComplete();
         }
         log.debug("access is allowed");
-        if (httpRequest != null) {
-            return chain.filter(exchange.mutate().request(httpRequest).build());
-        }
         return chain.filter(exchange);
     }
 

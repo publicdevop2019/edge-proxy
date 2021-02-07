@@ -2,32 +2,24 @@ package com.mt.edgeproxy.port.adapter.http;
 
 import com.mt.edgeproxy.domain.Endpoint;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Component
 public class HttpEndpointAdapter implements EndpointAdapter {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-
     @Autowired
-    private void setOutgoingReqInterceptor(OutgoingReqInterceptor outgoingReqInterceptor) {
-        restTemplate.setInterceptors(Collections.singletonList(outgoingReqInterceptor));
-    }
+    private RestTemplate restTemplate;
 
     @Value("${manytree.url.endpoint}")
     private String endpointUrl;
@@ -63,18 +55,4 @@ public class HttpEndpointAdapter implements EndpointAdapter {
         protected Long totalItemCount;
     }
 
-    @Component
-    @Slf4j
-    public static class OutgoingReqInterceptor implements ClientHttpRequestInterceptor {
-        @Override
-        public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] bytes, ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
-            if (null == MDC.get("UUID")) {
-                String s = UUID.randomUUID().toString();
-                log.debug("UUID not found for outgoing request, auto generate value {}", s);
-                MDC.put("UUID", s);
-            }
-            httpRequest.getHeaders().set("UUID", MDC.get("UUID"));
-            return clientHttpRequestExecution.execute(httpRequest, bytes);
-        }
-    }
 }

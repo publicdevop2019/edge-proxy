@@ -1,17 +1,54 @@
 package com.mt.edgeproxy.domain;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.util.*;
 
 @Slf4j
 @Service
 public class JwtService {
+    @EventListener(ApplicationReadyEvent.class)
+    public void loadKeys() {
+        JWKSet jwkSet = DomainRegistry.retrieveJwtPublicKeyService().loadKeys();
+        JWK jwk = jwkSet.getKeys().get(0);
+        try {
+            publicKey = jwk.toRSAKey().toRSAPublicKey();
+        } catch (JOSEException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private RSAPublicKey publicKey;
+
+    public boolean verify(String jwt) {
+        SignedJWT parse;
+        try {
+            parse = SignedJWT.parse(jwt);
+        } catch (ParseException e) {
+            log.error("error during parse signed jwt", e);
+            return false;
+        }
+        try {
+            return parse.verify(new RSASSAVerifier(publicKey));
+        } catch (JOSEException e) {
+            log.error("error during validate jwt", e);
+            return false;
+        }
+
+    }
 
     public Set<String> getResourceIds(String jwtRaw) throws ParseException {
         return getClaims(jwtRaw, "aud");

@@ -9,6 +9,7 @@ public class DomainRegistry {
     private static RevokeTokenService revokeTokenService;
     private static RetrieveEndpointService retrieveEndpointService;
     private static JwtService jwtService;
+    private static RetrieveJwtPublicKeyService retrieveJwtPublicKeyService;
 
     public static JwtService jwtService() {
         return jwtService;
@@ -26,6 +27,15 @@ public class DomainRegistry {
         return revokeTokenService;
     }
 
+    public static RetrieveJwtPublicKeyService retrieveJwtPublicKeyService() {
+        return retrieveJwtPublicKeyService;
+    }
+
+
+    @Autowired
+    public void setRetrieveJwtPublicKeyService(RetrieveJwtPublicKeyService retrieveJwtPublicKeyService) {
+        DomainRegistry.retrieveJwtPublicKeyService = retrieveJwtPublicKeyService;
+    }
 
     @Autowired
     public void setRevokeTokenRepository(RevokeTokenRepository revokeTokenRepository) {
