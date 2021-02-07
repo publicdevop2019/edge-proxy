@@ -32,8 +32,6 @@ spring:
                 redis-rate-limiter.replenishRate: 5
                 redis-rate-limiter.burstCapacity: 10
             - RewritePath=/auth-svc(?<segment>/?.*), $\{segment}
-            - RemoveResponseHeader=Expires
-            - RemoveResponseHeader=Pragma
         - id: profileModule
           uri: lb://profile
           predicates:
