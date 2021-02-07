@@ -43,6 +43,10 @@ spring:
           predicates:
             - Path=/product-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/product-svc(?<segment>/?.*), $\{segment}
         - id: messengerModule
           uri: lb://messenger
