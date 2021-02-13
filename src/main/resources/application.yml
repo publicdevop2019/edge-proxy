@@ -37,6 +37,10 @@ spring:
           predicates:
             - Path=/profile-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/profile-svc(?<segment>/?.*), $\{segment}
         - id: productModule
           uri: lb://product
@@ -53,42 +57,70 @@ spring:
           predicates:
             - Path=/messenger-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/messenger-svc(?<segment>/?.*), $\{segment}
         - id: fileUploadModule
           uri: lb://fileUpload
           predicates:
             - Path=/file-upload-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/file-upload-svc(?<segment>/?.*), $\{segment}
         - id: paymentModule
           uri: lb://payment
           predicates:
             - Path=/payment-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/payment-svc(?<segment>/?.*), $\{segment}
         - id: bbsModule
           uri: lb://bbs
           predicates:
             - Path=/bbs-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/bbs-svc(?<segment>/?.*), $\{segment}
         - id: sagaModule
           uri: lb://saga
           predicates:
             - Path=/saga-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/saga-svc(?<segment>/?.*), $\{segment}
         - id: storeModule
           uri: lb://store
           predicates:
             - Path=/object-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/object-svc(?<segment>/?.*), $\{segment}
         - id: testModule
           uri: lb://test
           predicates:
             - Path=/test-svc/**
           filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 50
+                redis-rate-limiter.burstCapacity: 100
             - RewritePath=/test-svc(?<segment>/?.*), $\{segment}
   security:
     oauth2:
