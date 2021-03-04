@@ -27,7 +27,6 @@ public class SCGEndpointFilter implements GlobalFilter, Ordered {
         ServerHttpResponse response = exchange.getResponse();
         HttpHeaders headers = request.getHeaders();
         List<String> temp;
-        ServerHttpRequest httpRequest = null;
         boolean webSocket = false;
         if ("websocket".equals(headers.getUpgrade())) {
             webSocket = true;
