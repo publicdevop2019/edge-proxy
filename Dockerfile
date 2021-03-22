@@ -30,7 +30,7 @@ ENV PATH="$PATH:$JAVA_HOME/bin"
 
 COPY --from=jlink-package /opt/jdk-11-mini-runtime /opt/jdk-11-mini-runtime
 
-COPY --from=maven ./target/EdgeProxyService.jar ./
+COPY --from=maven ./target/Proxy.jar ./
 
 EXPOSE 8111
 

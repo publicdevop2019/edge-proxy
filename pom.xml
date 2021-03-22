@@ -79,7 +79,7 @@
     </dependencies>
 
     <build>
-        <finalName>EdgeProxyService</finalName>
+        <finalName>Proxy</finalName>
     </build>
 
 </project>

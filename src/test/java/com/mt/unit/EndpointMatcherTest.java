@@ -1,12 +1,7 @@
 package com.mt.unit;
 
-import com.mt.edgeproxy.domain.Endpoint;
 //import com.mt.edgeproxy.infrastructure.EndpointFilter;
-import org.junit.Assert;
-import org.junit.Test;
 
-import java.util.List;
-import java.util.Optional;
 
 public class EndpointMatcherTest {
 
