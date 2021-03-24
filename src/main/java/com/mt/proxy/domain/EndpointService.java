@@ -46,7 +46,8 @@ public class EndpointService {
                 log.debug("return 403 due to jwt failed for verification");
                 return false;
             } else {
-                return true;
+                //check roles
+                return checkAccessByRole(requestURI, method, authHeader, true);
             }
         }
         if (requestURI.contains("/oauth/token") || requestURI.contains("/oauth/token_key")) {
@@ -61,37 +62,45 @@ public class EndpointService {
                 return true;
             }
         } else if (authHeader.contains("Bearer")) {
-            //check endpoint url, method first then check resourceId and security rule
-            String jwtRaw = authHeader.replace("Bearer ", "");
-            //for web socket, verify ticket
-            Set<String> resourceIds = DomainRegistry.jwtService().getResourceIds(jwtRaw);
-
-            //fetch security profile
-            if (resourceIds == null || resourceIds.isEmpty()) {
-                log.debug("return 403 due to resourceIds is null or empty");
-                return false;
-            }
-            List<Endpoint> collect = cached.stream().filter(e -> resourceIds.contains(e.getResourceId())).collect(Collectors.toList());
-            //fetch security rule by endpoint & method
-            List<Endpoint> collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
-
-            Optional<Endpoint> mostSpecificSecurityProfile = getMostSpecificSecurityProfile(collect1);
-            boolean passed;
-            if (mostSpecificSecurityProfile.isPresent()) {
-                passed = mostSpecificSecurityProfile.get().allowAccess(jwtRaw);
-            } else {
-                log.debug("return 403 due to endpoint not found");
-                return false;
-            }
-            if (!passed) {
-                log.debug("return 403 due to not pass check");
-                return false;
-            } else {
-                return true;
-            }
+            return checkAccessByRole(requestURI, method, authHeader, false);
         } else {
             log.debug("return 403 due to un-registered endpoints");
             return false;
+        }
+    }
+
+    private boolean checkAccessByRole(String requestURI, String method, String authHeader, boolean websocket) throws ParseException {
+        //check endpoint url, method first then check resourceId and security rule
+        String jwtRaw = authHeader.replace("Bearer ", "");
+        Set<String> resourceIds = DomainRegistry.jwtService().getResourceIds(jwtRaw);
+
+        //fetch security profile
+        if (resourceIds == null || resourceIds.isEmpty()) {
+            log.debug("return 403 due to resourceIds is null or empty");
+            return false;
+        }
+        List<Endpoint> collect = cached.stream().filter(e -> resourceIds.contains(e.getResourceId())).collect(Collectors.toList());
+        //fetch security rule by endpoint & method
+        List<Endpoint> collect1;
+        if (websocket) {
+            collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && e.isWebsocket()).collect(Collectors.toList());
+        } else {
+            collect1 = collect.stream().filter(e -> antPathMatcher.match(e.getPath(), requestURI) && method.equals(e.getMethod())).collect(Collectors.toList());
+        }
+
+        Optional<Endpoint> mostSpecificSecurityProfile = getMostSpecificSecurityProfile(collect1);
+        boolean passed;
+        if (mostSpecificSecurityProfile.isPresent()) {
+            passed = mostSpecificSecurityProfile.get().allowAccess(jwtRaw);
+        } else {
+            log.debug("return 403 due to endpoint not found");
+            return false;
+        }
+        if (!passed) {
+            log.debug("return 403 due to not pass check");
+            return false;
+        } else {
+            return true;
         }
     }
 }

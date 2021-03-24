@@ -18,6 +18,7 @@ public class Endpoint {
     private boolean secured;
     private boolean userOnly;
     private boolean clientOnly;
+    private boolean websocket;
 
     private String resourceId;
 
