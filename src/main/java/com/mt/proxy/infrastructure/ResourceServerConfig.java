@@ -64,6 +64,8 @@ public class ResourceServerConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:4300");
+        configuration.addAllowedOrigin("http://localhost:4200");
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.setAllowCredentials(true);
         configuration.addAllowedHeader("Authorization");
         configuration.addAllowedHeader("lastupdateat");
