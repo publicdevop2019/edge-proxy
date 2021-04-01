@@ -19,8 +19,8 @@ spring:
   cloud:
     gateway:
       httpclient:
-        connect-timeout: 1000
-        response-timeout: 5s
+        connect-timeout: 10000
+        response-timeout: 15s
       routes:
         - id: oauthModule
           uri: lb://oauth
