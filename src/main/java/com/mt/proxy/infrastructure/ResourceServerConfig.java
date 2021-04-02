@@ -36,10 +36,10 @@ public class ResourceServerConfig {
                 .authorizeExchange()
                 .anyExchange().permitAll()
                 .and()
-                .csrf().disable()
-//                .csrf().csrfTokenRepository(cookieCsrfTokenRepository)
-//                .requireCsrfProtectionMatcher(new AllExceptAntMatcher("/auth-svc/oauth/token"))
-//                .and()
+//                .csrf().disable()
+                .csrf().csrfTokenRepository(cookieCsrfTokenRepository)
+                .requireCsrfProtectionMatcher(new AllExceptAntMatcher("/auth-svc/oauth/token"))
+                .and()
 
                 .cors().configurationSource(corsConfiguration())
                 .and()
@@ -51,15 +51,15 @@ public class ResourceServerConfig {
     /**
      * require for csrf to be attached
      */
-//    @Bean
-//    WebFilter addCsrfToken() {
-//        return (exchange, next) -> exchange
-//                .<Mono<CsrfToken>>getAttribute(CsrfToken.class.getName())
-//                .doOnSuccess(token -> {
-//                    log.debug("csrf token {}", token.getToken());
-//                })
-//                .then(next.filter(exchange));
-//    }
+    @Bean
+    WebFilter addCsrfToken() {
+        return (exchange, next) -> exchange
+                .<Mono<CsrfToken>>getAttribute(CsrfToken.class.getName())
+                .doOnSuccess(token -> {
+                    log.debug("csrf token {}", token.getToken());
+                })
+                .then(next.filter(exchange));
+    }
 
     @Bean
     public CorsConfigurationSource corsConfiguration() {
