@@ -37,10 +37,10 @@ spring:
           predicates:
             - Path=/profile-svc/**
           filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 5
-                redis-rate-limiter.burstCapacity: 10
+#            - name: RequestRateLimiter
+#              args:
+#                redis-rate-limiter.replenishRate: 5
+#                redis-rate-limiter.burstCapacity: 10
             - RewritePath=/profile-svc(?<segment>/?.*), $\{segment}
         - id: productModule
           uri: lb://product
