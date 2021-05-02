@@ -1,6 +1,7 @@
 package com.mt.proxy.domain;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -8,17 +9,17 @@ import org.springframework.util.AntPathMatcher;
 
 import javax.annotation.Nullable;
 import java.text.ParseException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class EndpointService {
+
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
     private Set<Endpoint> cached;
-
+    @Autowired
+    private CsrfService csrfService;
     public static Optional<Endpoint> getMostSpecificSecurityProfile(List<Endpoint> collect1) {
         if (collect1.size() == 1)
             return Optional.of(collect1.get(0));
@@ -34,8 +35,12 @@ public class EndpointService {
     @EventListener(ApplicationReadyEvent.class)
     public void loadAllEndpoints() {
         cached = DomainRegistry.retrieveEndpointService().loadAllEndpoints();
+        csrfService.refreshCsrfConfig(cached);
     }
 
+    public AntPathMatcher getPathMater() {
+        return antPathMatcher;
+    }
     public boolean checkAccess(String requestURI, String method, @Nullable String authHeader, boolean webSocket) throws ParseException {
         if (webSocket) {
             if (authHeader == null) {
@@ -68,7 +73,10 @@ public class EndpointService {
             return false;
         }
     }
+    public boolean checkCsrf(String requestURI, String method, boolean webSocket){
 
+        return false;
+    }
     private boolean checkAccessByRole(String requestURI, String method, String authHeader, boolean websocket) throws ParseException {
         //check endpoint url, method first then check resourceId and security rule
         String jwtRaw = authHeader.replace("Bearer ", "");

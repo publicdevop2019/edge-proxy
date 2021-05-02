@@ -20,10 +20,10 @@ public class SCGHttpCacheControlFilter implements GlobalFilter, Ordered {
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             if (HttpMethod.GET.equals(exchange.getRequest().getMethod())) {
                 log.debug("adding cache control to current get request");
-                exchange.getResponse().getHeaders().remove("Cache-Control");
-                exchange.getResponse().getHeaders().remove("Expires");
-                exchange.getResponse().getHeaders().remove("Pragma");
-                exchange.getResponse().getHeaders().setCacheControl(CacheControl.maxAge(5, TimeUnit.SECONDS));
+//                exchange.getResponse().getHeaders().remove("Cache-Control");
+//                exchange.getResponse().getHeaders().remove("Expires");
+//                exchange.getResponse().getHeaders().remove("Pragma");
+//                exchange.getResponse().getHeaders().setCacheControl(CacheControl.maxAge(5, TimeUnit.SECONDS));
             }
         }));
     }

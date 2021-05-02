@@ -1,6 +1,7 @@
 package com.mt.proxy.infrastructure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,7 +27,8 @@ import java.util.Set;
 @Configuration
 @EnableWebFluxSecurity
 public class ResourceServerConfig {
-
+    @Autowired
+    private CustomEndpointCsrfMatcher customEndpointCsrfMatcher;
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
         CookieServerCsrfTokenRepository cookieCsrfTokenRepository = new CookieServerCsrfTokenRepository();
@@ -36,9 +38,8 @@ public class ResourceServerConfig {
                 .authorizeExchange()
                 .anyExchange().permitAll()
                 .and()
-//                .csrf().disable()
                 .csrf().csrfTokenRepository(cookieCsrfTokenRepository)
-                .requireCsrfProtectionMatcher(new AllExceptAntMatcher("/auth-svc/oauth/token"))
+                .requireCsrfProtectionMatcher(customEndpointCsrfMatcher)
                 .and()
 
                 .cors().configurationSource(corsConfiguration())
@@ -92,23 +93,5 @@ public class ResourceServerConfig {
         return source;
     }
 
-    private static class AllExceptAntMatcher implements ServerWebExchangeMatcher {
-        private static final Set<HttpMethod> ALLOWED_METHODS = new HashSet<>(
-                Arrays.asList(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.TRACE, HttpMethod.OPTIONS));
 
-        private final String ignorePattern;
-
-        public AllExceptAntMatcher(String path) {
-            this.ignorePattern = path;
-        }
-
-        @Override
-        public Mono<MatchResult> matches(ServerWebExchange exchange) {
-            AntPathMatcher antPathMatcher = new AntPathMatcher(this.ignorePattern);
-            return Mono.just(exchange.getRequest())
-                    .filter(e -> antPathMatcher.match(this.ignorePattern, e.getPath().value()) || ALLOWED_METHODS.contains(e.getMethod()))
-                    .flatMap(e -> MatchResult.notMatch())
-                    .switchIfEmpty(MatchResult.match());
-        }
-    }
 }

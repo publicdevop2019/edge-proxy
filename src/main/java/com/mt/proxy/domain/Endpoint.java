@@ -19,6 +19,7 @@ public class Endpoint {
     private boolean userOnly;
     private boolean clientOnly;
     private boolean websocket;
+    private boolean csrfEnabled;
 
     private String resourceId;
 
