@@ -20,6 +20,8 @@ public class EndpointService {
     private Set<Endpoint> cached;
     @Autowired
     private CsrfService csrfService;
+    @Autowired
+    private CorsService corsService;
     public static Optional<Endpoint> getMostSpecificSecurityProfile(List<Endpoint> collect1) {
         if (collect1.size() == 1)
             return Optional.of(collect1.get(0));
@@ -36,6 +38,7 @@ public class EndpointService {
     public void loadAllEndpoints() {
         cached = DomainRegistry.retrieveEndpointService().loadAllEndpoints();
         csrfService.refreshCsrfConfig(cached);
+        corsService.refreshCorsfConfig(cached);
     }
 
     public AntPathMatcher getPathMater() {

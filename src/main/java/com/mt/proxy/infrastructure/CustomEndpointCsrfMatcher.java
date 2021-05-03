@@ -1,8 +1,8 @@
 package com.mt.proxy.infrastructure;
 
 import com.mt.proxy.domain.CsrfService;
-import com.mt.proxy.domain.Endpoint;
 import com.mt.proxy.domain.EndpointService;
+import com.mt.proxy.domain.MethodPathKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
@@ -11,8 +11,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,9 +26,9 @@ public class CustomEndpointCsrfMatcher implements ServerWebExchangeMatcher {
     public Mono<MatchResult> matches(ServerWebExchange exchange) {
         return Mono.just(exchange.getRequest())
                 .filter(e -> {
-                    Set<String> strings = csrfService.getPathMethodMap().keySet();
+                    Set<MethodPathKey> patchKeyStream = csrfService.getCsrfList();
                     AntPathMatcher matcher = endpointService.getPathMater();
-                    Optional<String> first = strings.stream().filter(pattern -> matcher.match(pattern, e.getPath().value())).filter(key -> csrfService.getPathMethodMap().get(key).equalsIgnoreCase(e.getMethodValue())).findFirst();
+                    Optional<MethodPathKey> first = patchKeyStream.stream().filter(pattern -> matcher.match(pattern.getPath(), e.getPath().value())).filter(key -> key.getMethod().equalsIgnoreCase(e.getMethodValue())).findFirst();
                     return first.isPresent();
                 })
                 .flatMap(e -> MatchResult.notMatch())

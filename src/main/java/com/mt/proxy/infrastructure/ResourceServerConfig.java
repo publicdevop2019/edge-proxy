@@ -1,5 +1,6 @@
 package com.mt.proxy.infrastructure;
 
+import com.mt.proxy.domain.CorsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,8 @@ import java.util.Set;
 public class ResourceServerConfig {
     @Autowired
     private CustomEndpointCsrfMatcher customEndpointCsrfMatcher;
+    @Autowired
+    private CorsService corsService;
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
         CookieServerCsrfTokenRepository cookieCsrfTokenRepository = new CookieServerCsrfTokenRepository();
@@ -42,7 +45,7 @@ public class ResourceServerConfig {
                 .requireCsrfProtectionMatcher(customEndpointCsrfMatcher)
                 .and()
 
-                .cors().configurationSource(corsConfiguration())
+                .cors().configurationSource(corsService)
                 .and()
                 .oauth2ResourceServer().jwt()
         ;
@@ -61,37 +64,4 @@ public class ResourceServerConfig {
                 })
                 .then(next.filter(exchange));
     }
-
-    @Bean
-    public CorsConfigurationSource corsConfiguration() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:4300");
-        configuration.addAllowedOrigin("http://localhost:4200");
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.setAllowCredentials(true);
-        configuration.addAllowedHeader("Authorization");
-        configuration.addAllowedHeader("lastupdateat");
-        configuration.addAllowedHeader("uuid");
-        configuration.addAllowedHeader("changeId");
-        configuration.addAllowedHeader("X-XSRF-TOKEN");
-        configuration.addAllowedHeader("Content-Type");
-        configuration.addAllowedHeader("Accept");
-        configuration.addAllowedHeader("Access-Control-Request-Method");
-        configuration.addAllowedHeader("x-requested-with");
-        configuration.addExposedHeader("location");
-        configuration.addExposedHeader("lastupdateat");
-        configuration.addExposedHeader("uuid");
-        configuration.addAllowedMethod("POST");
-        configuration.addAllowedMethod("PATCH");
-        configuration.addAllowedMethod("GET");
-        configuration.addAllowedMethod("DELETE");
-        configuration.addAllowedMethod("PUT");
-        configuration.addAllowedMethod("OPTIONS");
-        configuration.setMaxAge(86400L); // permission may be cached for 1 day (86400 seconds)
-        source.registerCorsConfiguration("/**/**/**", configuration);
-        return source;
-    }
-
-
 }

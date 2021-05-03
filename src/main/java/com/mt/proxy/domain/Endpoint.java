@@ -20,7 +20,7 @@ public class Endpoint {
     private boolean clientOnly;
     private boolean websocket;
     private boolean csrfEnabled;
-
+    private CorsConfig corsConfig;
     private String resourceId;
 
     private String path;
@@ -55,5 +55,18 @@ public class Endpoint {
     @Override
     public int hashCode() {
         return Objects.hashCode(resourceId, path, method);
+    }
+
+    @Getter
+    public static class CorsConfig {
+        private Set<String> origin;
+        private boolean credentials;
+        private Set<String> allowedHeaders;
+        private Set<String> exposedHeaders;
+        private Long maxAge;
+
+
+        public CorsConfig() {
+        }
     }
 }
