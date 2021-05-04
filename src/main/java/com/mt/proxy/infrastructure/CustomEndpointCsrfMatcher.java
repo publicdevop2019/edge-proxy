@@ -26,7 +26,7 @@ public class CustomEndpointCsrfMatcher implements ServerWebExchangeMatcher {
     public Mono<MatchResult> matches(ServerWebExchange exchange) {
         return Mono.just(exchange.getRequest())
                 .filter(e -> {
-                    Set<MethodPathKey> patchKeyStream = csrfService.getCsrfList();
+                    Set<MethodPathKey> patchKeyStream = csrfService.getBypassList();
                     AntPathMatcher matcher = endpointService.getPathMater();
                     Optional<MethodPathKey> first = patchKeyStream.stream().filter(pattern -> matcher.match(pattern.getPath(), e.getPath().value())).filter(key -> key.getMethod().equalsIgnoreCase(e.getMethodValue())).findFirst();
                     return first.isPresent();

@@ -22,7 +22,8 @@ public class CorsService implements CorsConfigurationSource {
 
     public void refreshCorsfConfig(Set<Endpoint> cached) {
         log.debug("refresh cors config");
-        cached.forEach(endpoint -> {
+        corsConfigurations.clear();
+        cached.stream().filter(this::hasCorsInfo).forEach(endpoint -> {
             MethodPathKey options = new MethodPathKey("OPTIONS", endpoint.getPath());
             if (corsConfigurations.get(options) != null) {
                 CorsConfiguration corsConfiguration = corsConfigurations.get(options);
@@ -36,6 +37,10 @@ public class CorsService implements CorsConfigurationSource {
             }
         });
         log.debug("refresh cors config completed");
+    }
+
+    private boolean hasCorsInfo(Endpoint e) {
+        return e.getCorsConfig() != null;
     }
 
     private void appendCorsConfiguration(CorsConfiguration corsConfiguration, Endpoint endpoint) {

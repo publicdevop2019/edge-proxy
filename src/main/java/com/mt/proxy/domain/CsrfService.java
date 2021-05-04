@@ -9,18 +9,18 @@ import java.util.Set;
 @Slf4j
 @Service
 public class CsrfService {
-    private final Set<MethodPathKey> csrfList = new HashSet<>();
+    private final Set<MethodPathKey> bypassList = new HashSet<>();
 
     public void refreshCsrfConfig(Set<Endpoint> endpoints) {
         log.debug("refresh csrf config");
-        csrfList.clear();
+        bypassList.clear();
         endpoints.stream().filter(e -> !e.isCsrfEnabled()).forEach(e -> {
-            csrfList.add(new MethodPathKey(e.getMethod(),e.getPath()));
+            bypassList.add(new MethodPathKey(e.getMethod(),e.getPath()));
         });
         log.debug("refresh csrf config completed");
     }
 
-    public Set<MethodPathKey> getCsrfList() {
-        return csrfList;
+    public Set<MethodPathKey> getBypassList() {
+        return bypassList;
     }
 }
