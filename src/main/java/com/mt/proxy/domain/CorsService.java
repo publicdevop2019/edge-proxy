@@ -8,10 +8,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.server.ServerWebExchange;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -62,14 +60,29 @@ public class CorsService implements CorsConfigurationSource {
     @Override
     public CorsConfiguration getCorsConfiguration(ServerWebExchange exchange) {
         AntPathMatcher pathMater = endpointService.getPathMater();
-        CorsConfiguration corsConfiguration = this.corsConfigurations.entrySet().stream()
+        Map<MethodPathKey, CorsConfiguration> methodPathKeyCorsConfigHashMap = new HashMap<>();
+        this.corsConfigurations.entrySet().stream()
                 .filter(entry -> pathMater.match(entry.getKey().getPath(), exchange.getRequest().getPath().value())
                         &&
                         exchange.getRequest().getMethodValue().equalsIgnoreCase(entry.getKey().getMethod()))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
-        log.debug("found {}", corsConfiguration);
+                .forEach(e->{
+                    methodPathKeyCorsConfigHashMap.put(e.getKey(),e.getValue());
+                });
+        CorsConfiguration corsConfiguration = getMostSpecificSecurityProfile(methodPathKeyCorsConfigHashMap).stream().findFirst().orElse(null);
+        log.debug("found {} for path {} with method {}", corsConfiguration,exchange.getRequest().getPath().value(),exchange.getRequest().getMethodValue());
         return corsConfiguration;
+    }
+
+    private static Optional<CorsConfiguration> getMostSpecificSecurityProfile(Map<MethodPathKey, CorsConfiguration> map) {
+        Set<MethodPathKey> methodPathKeys = map.keySet();
+        if (methodPathKeys.size() == 1)
+            return Optional.of(map.get(methodPathKeys.toArray()[0]));
+        List<MethodPathKey> collect = methodPathKeys.stream().filter(e -> !e.getPath().contains("/**")).collect(Collectors.toList());
+        if (collect.size() == 1)
+            return Optional.of(map.get(collect.toArray()[0]));
+        List<MethodPathKey> collect2 = methodPathKeys.stream().filter(e -> !e.getPath().endsWith("/**")).collect(Collectors.toList());
+        if (collect2.size() == 1)
+            return Optional.of(map.get(collect2.toArray()[0]));
+        return Optional.empty();
     }
 }
