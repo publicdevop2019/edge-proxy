@@ -43,7 +43,7 @@ spring:
                 redis-rate-limiter.burstCapacity: 10
             - RewritePath=/profile-svc(?<segment>/?.*), $\{segment}
         - id: productModule
-          uri: lb://product
+          uri: lb://mall
           predicates:
             - Path=/product-svc/**
           filters:
